@@ -69,13 +69,15 @@ def find_library(filename, paths = [], notfound_msg = ""):
 	d = find_containing_dir(filename, std_libdirs + paths, notfound_msg)
 	return os.path.join(d, filename)
 
-def libname(name):
+def libname(name, loadable_module = False):
 	""" Translate a library name to a filename (e.g., foo -> libfoo.so). """
 	system = platform.system()
 
-	if system not in [ 'Darwin', 'Windows' ]:
-		name = 'lib' + name
+	# Loadable modules don't get a 'lib' prefix on any platform.
+	if system != 'Windows':
+		name = name if loadable_module else 'lib' + name
 
+	# Platform-specific suffixes:
 	if system == 'Darwin':
 		name += '.dylib'
 
