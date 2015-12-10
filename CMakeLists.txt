@@ -6,7 +6,7 @@ project(LOOM)
 # Include LLVM configuration, working around current limitations in the
 # LLVM CMake configuration tools by calling llvm-config directly.
 #
-# Thanks to theraven for pointing this out and providing a code example
+# Thanks to David Chisnall for pointing this out and providing a code example
 # (https://github.com/CompilerTeaching/SimplePass/blob/master/CMakeLists.txt).
 #
 find_program(LLVM_CONFIG NAMES llvm-config DOC "Path to llvm-config utility")
