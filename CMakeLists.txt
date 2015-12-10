@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(TESLA)
+project(LOOM)
 
 #
 # Include LLVM configuration, working around current limitations in the
