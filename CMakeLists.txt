@@ -10,6 +10,9 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 
+# Where to find LLVM binaries (e.g., llvm-lit).
+set(LLVM_BINARY_DIR ${LLVM_DIR}/../../../bin)
+
 # Always use C++11.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
