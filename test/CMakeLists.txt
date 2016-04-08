@@ -11,7 +11,6 @@ endif ()
 
 
 add_custom_target(check
-	ALL
 	COMMAND
 		${LLVM_LIT} ${LIT_OPTIONS} ${CMAKE_CURRENT_SOURCE_DIR}
 		--param=build_dir=${CMAKE_BINARY_DIR}
