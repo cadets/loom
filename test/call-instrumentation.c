@@ -8,8 +8,6 @@
  * RUN: %clang -S -emit-llvm %cflags %t.c -o %t.ll
  * RUN: %loom -S %t.ll -loom-file %t.yaml -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
- *
- * XFAIL: *
  */
 
 #if defined (POLICY_FILE)
