@@ -4,6 +4,15 @@ project(LOOM)
 
 find_package(LLVM REQUIRED CONFIG)
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
+
+# Based on http://stackoverflow.com/questions/27863706:
+#
+# AddLLVM expects LLVM{LIBRARY,RUNTIME}_OUTPUT_INTDIR to be set in order
+# to build successfully out of the LLVM tree on non-Mac platforms.
+set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin)
+set(LLVM_LIBRARY_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib)
+
+include(HandleLLVMOptions)
 include(AddLLVM)
 
 add_definitions(${LLVM_DEFINITIONS})
