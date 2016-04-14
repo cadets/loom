@@ -1,0 +1,25 @@
+# ninja log v5
+1	791	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+1	780	0	src/CMakeFiles/LLVMLoom.dir/LoomPass.cc.o	f09d00df91ac4463
+145	1159	0	build.ninja	68464582337f7ee2
+3	1544	0	test/loom.xml	86d040fb7d474cc1
+791	830	0	lib/LLVMLoom.so	4d1d74429a42cbab
+1	684	0	src/CMakeFiles/LLVMLoom.dir/InstrumentationFn.cc.o	ae6867e525deaef7
+93	1513	0	src/CMakeFiles/LLVMLoom.dir/PolicyFile.cc.o	8e0311f61581863c
+1	312	0	src/CMakeFiles/LLVMLoom.dir/Strings.cc.o	fbab774edfe8ad8e
+1	809	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+809	848	0	lib/LLVMLoom.so	4d1d74429a42cbab
+1	791	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+791	830	0	lib/LLVMLoom.so	4d1d74429a42cbab
+1	790	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+791	829	0	lib/LLVMLoom.so	4d1d74429a42cbab
+4	1015	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+1015	1053	0	lib/LLVMLoom.so	4d1d74429a42cbab
+1	864	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+864	903	0	lib/LLVMLoom.so	4d1d74429a42cbab
+3	1028	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+1028	1066	0	lib/LLVMLoom.so	4d1d74429a42cbab
+1	791	0	src/CMakeFiles/LLVMLoom.dir/OptPass.cc.o	23b0181ed6583133
+791	830	0	lib/LLVMLoom.so	4d1d74429a42cbab
+1	573	0	test/CMakeFiles/check	d439aa5f8d834a90
+1	573	0	test/loom.xml	d439aa5f8d834a90

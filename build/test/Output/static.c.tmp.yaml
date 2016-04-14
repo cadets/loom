@@ -1,0 +1,14 @@
+# 1 "/usr/home/ck8418/dev/loom/test/static.c"
+# 1 "<built-in>" 1
+# 1 "<built-in>" 3
+# 315 "<built-in>" 3
+# 1 "<command line>" 1
+# 1 "<built-in>" 2
+# 1 "/usr/home/ck8418/dev/loom/test/static.c" 2
+# 17 "/usr/home/ck8418/dev/loom/test/static.c"
+hook_prefix: __test_hook
+
+functions:
+    - name: foo
+      callee: [ entry, exit ]
+      caller: [ entry, exit ]
