@@ -31,8 +31,13 @@
  */
 
 #include "PolicyFile.hh"
+#include "InstrumentationFn.hh"
 
 #include "llvm/Pass.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/CallingConv.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/Support/raw_ostream.h"
 
 using namespace llvm;
@@ -49,7 +54,7 @@ namespace {
 }
 
 
-bool OptPass::runOnModule(Module&)
+bool OptPass::runOnModule(Module &module)
 {
   ErrorOr<std::unique_ptr<PolicyFile>> policyFile = PolicyFile::Open();
   if (std::error_code err = policyFile.getError())
@@ -60,7 +65,42 @@ bool OptPass::runOnModule(Module&)
 
   outs() << "Got policy file!\n";
 
-  return false;
+  ErrorOr<std::unique_ptr<PolicyFile>> p = PolicyFile::Open();
+  if (p.getError())
+  {
+    errs() << p.getError().message() << "\n";
+    errs() << "error when retrieving Policy File \n";
+    return false;
+  }
+  assert(*p);
+  Policy& policy = **p;
+
+  std::map<CallInst*, std::vector<Policy::Direction>> callInstsMap;
+  InstrumentationFn::findAllCallInsts(&callInstsMap, module, policy);  
+
+  //Iterate over call instructions and create a new instrumented function 
+  //and create a function call to that new function
+  for (std::map<CallInst*, std::vector<Policy::Direction>>::iterator i = callInstsMap.begin(); i != callInstsMap.end(); ++i) 
+  {
+    CallInst* callInst = (*i).first;
+    Function* pOldF = callInst->getCalledFunction();
+    callInst->setCallingConv(pOldF->getCallingConv());
+    std::vector<Value*> argumentValues;
+    for (Use *m = callInst->arg_begin(), *n = callInst->arg_end(); m != n; ++m) 
+    {
+        argumentValues.push_back(m->get());
+    }
+      
+    std::vector<Policy::Direction> directions = (*i).second;
+    for(std::vector<Policy::Direction>::iterator it=directions.begin(); it !=directions.end(); ++it) 
+    {
+      Function* pNewF = InstrumentationFn::createInstrFunction(module, (*i).first, *it, policy);
+      IRBuilder<> Builder(&*callInst);
+      CallInst *callToInstr = Builder.CreateCall(pNewF, argumentValues);    
+      callToInstr->setAttributes(pOldF->getAttributes());
+    }
+  }
+  return true;
 }
 
 

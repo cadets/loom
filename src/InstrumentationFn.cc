@@ -31,6 +31,8 @@
  */
 
 #include "InstrumentationFn.hh"
+#include "llvm/IR/TypeBuilder.h"
+#include "llvm/IR/InstIterator.h"
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
@@ -94,4 +96,120 @@ void InstrumentationFn::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
 
 void InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
   CallInst::Create(InstrFn, Args)->insertAfter(I);
+}
+
+std::vector<Type*> InstrumentationFn::getParameterTypes(Function *pOldF) {
+  std::vector<Type*> paramTypes;
+  SymbolTableList<Argument> *oldArgList = &(pOldF->getArgumentList()); 
+  for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(); k != l; k++) 
+  {
+    paramTypes.push_back(k->getType());
+  }
+  return paramTypes;
+}
+
+void InstrumentationFn::setArgumentNames(Function *pOldF, Function *pNewF) {
+  SymbolTableList<Argument> *oldArgList = &(pOldF->getArgumentList()); 
+  for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(), m = pNewF->getArgumentList().begin(); k != l; ++k, ++m) {
+    m->setName(k->getName());
+  }
+}
+
+void InstrumentationFn::addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, std::vector<Value*> argumentValues) 
+{
+  FunctionType *printfFT = TypeBuilder<int(const char *, ...), false>::get(pOldF->getContext());  
+  Function *printf = Function::Create(printfFT, Function::ExternalLinkage, "printf", &module);
+  //printf->setCallingConv(pOldF->getCallingConv());
+  std::vector<Value*> printfArgs;
+  std::string calledFunctionName = pOldF->getName();
+  std::string printfStringArg = "calling " + calledFunctionName + "(";
+  for(std::vector<Value*>::iterator it=argumentValues.begin(); it !=argumentValues.end(); ++it) 
+  {
+    Type *argType = (*it)->getType();
+    if(argType->isIntegerTy(32)) 
+    {
+      printfStringArg.append("%d");
+    }
+    else if (argType->isFloatTy() || argType->isDoubleTy()) 
+    {
+      printfStringArg.append("%.0f");
+    }
+    else if (argType->isIntegerTy(8)) 
+    {
+      printfStringArg.append("%c");
+    }
+    else if (argType->isPointerTy()) 
+    {
+      printfStringArg.append("%s");
+    }
+    if(*it==argumentValues.back()) 
+    {
+      printfStringArg.append(")\n\"");
+    }
+    else 
+    {
+      printfStringArg.append(", ");
+    }
+  }
+  Value *arg1 = Builder.CreateGlobalStringPtr(printfStringArg);
+  printfArgs.push_back(arg1);
+  printfArgs.insert(printfArgs.end(), argumentValues.begin(), argumentValues.end());
+  Builder.CreateCall(printf, printfArgs);
+}
+
+void InstrumentationFn::findAllCallInsts(std::map<CallInst*, std::vector<Policy::Direction>> *callInstsMap, Module &module, Policy& policy)
+{
+  for (Module::iterator i = module.begin(), e = module.end(); i!=e; i++) 
+  {
+    for (inst_iterator j = inst_begin(*i), e = inst_end(*i); j != e; ++j) 
+    {
+      if (CallInst* callInst = dyn_cast<CallInst>(&*j)) 
+      {
+        auto directions = policy.CallInstrumentation(*callInst->getCalledFunction());
+        if (not directions.empty()) 
+        {
+          callInstsMap->insert(std::make_pair(callInst, directions));  
+        }
+      }
+    }
+  }
+}
+
+Function* InstrumentationFn::createInstrFunction(llvm::Module &module, llvm::CallInst* callInst, Policy::Direction direction, Policy& policy) 
+{
+  Function* pOldF = callInst->getCalledFunction();
+   callInst->setCallingConv(pOldF->getCallingConv());
+  std::vector<Value*> argumentValues;
+  for (Use *m = callInst->arg_begin(), *n = callInst->arg_end(); m != n; ++m) 
+  {
+      argumentValues.push_back(m->get());
+  }
+  std::string oldName = pOldF->getName();
+  std::string newFunctionName;
+  std::vector<std::string> instrNameArgs;
+  std::string arg = "";
+  if (direction == Policy::Direction::In) 
+  {
+    arg = "call";
+  }
+  else if (direction == Policy::Direction::Out) 
+  {
+    arg = "return";
+  }
+  instrNameArgs.push_back(arg);
+  arg = callInst->getCalledFunction()->getName();
+  instrNameArgs.push_back(arg);
+  arg = "";
+  instrNameArgs.push_back(arg);
+  newFunctionName = policy.InstrName(instrNameArgs);
+  FunctionType *pNewFT = FunctionType::get(Type::getVoidTy(module.getContext()), InstrumentationFn::getParameterTypes(pOldF), false);
+  Function *pNewF = Function::Create(pNewFT, Function::ExternalLinkage, newFunctionName, &module);
+  pNewF->setCallingConv(pOldF->getCallingConv());
+  InstrumentationFn::setArgumentNames(pOldF, pNewF);
+  //Create a basic block and add printf call
+  BasicBlock *block = BasicBlock::Create(module.getContext(), "entry", pNewF);
+  IRBuilder<> Builder(block);
+  InstrumentationFn::addPrintfCall(Builder, pOldF, module, argumentValues);
+  Builder.CreateRetVoid();
+  return pNewF;
 }
