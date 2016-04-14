@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<testsuites>
-<testsuite name='LOOM' tests='4' failures='0'>
-<testcase classname='LOOM.LOOM' name='call-instrumentation.c' time='0.32'/>
-<testcase classname='LOOM.LOOM' name='function-instrumentation.c' time='0.47'/>
-<testcase classname='LOOM.LOOM' name='load-plugin.ll' time='0.07'/>
-<testcase classname='LOOM.LOOM' name='static.c' time='0.36'/>
-</testsuite>
-</testsuites>
