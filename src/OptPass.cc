@@ -31,8 +31,9 @@
  */
 
 
-#include "llvm/Pass.h"
+#include "PolicyFile.hh"
 
+#include "llvm/Pass.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/CallingConv.h"
@@ -40,16 +41,17 @@
 #include "llvm/IR/InstIterator.h"
 #include "llvm/IR/TypeBuilder.h"
 #include "llvm/Support/raw_ostream.h"
-#include <llvm-c/Core.h>
-#include "PolicyFile.hh"
-
+#include "llvm-c/Core.h"
 
 using namespace llvm;
 using namespace loom;
-Function* createInstrFunction(Module &module, CallInst* callInst, Policy::Direction direction, Policy& policy);
-std::vector<Type*> getParameterTypes(Function *pOldF);
-void setArgumentNames(Function *pOldF, Function *pNewF);
-void addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, std::vector<Value*> argumentValues);
+
+static void storeAllCallInsts(std::map<CallInst*, std::vector<Policy::Direction>> *callInstsMap, Module &module, Policy &policy);
+static Function* createInstrFunction(Module &module, CallInst *callInst, Policy::Direction direction, Policy &policy);
+static std::vector<Type*> getParameterTypes(Function *pOldF);
+static void setArgumentNames(Function *pOldF, Function *pNewF);
+static void addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, std::vector<Value*> argumentValues);
+
 
 namespace {
   struct OptPass : public ModulePass {
@@ -59,6 +61,7 @@ namespace {
     bool runOnModule(Module&) override;
   };
 }
+
 
 bool OptPass::runOnModule(Module &module)
 {
@@ -71,67 +74,85 @@ bool OptPass::runOnModule(Module &module)
 
   outs() << "Got policy file!\n";
 
-	std::map<CallInst*, std::vector<Policy::Direction>> callInstsMap;
-		ErrorOr<std::unique_ptr<PolicyFile>> p = PolicyFile::Open();
-		if (p.getError()) {
-			errs() << p.getError().message() << "\n";
-			errs() << "error when retrieving Policy File \n";
-			return false;
-		}
-		assert(*p);
-		Policy& policy = **p;
+	ErrorOr<std::unique_ptr<PolicyFile>> p = PolicyFile::Open();
+	if (p.getError())
+	{
+		errs() << p.getError().message() << "\n";
+		errs() << "error when retrieving Policy File \n";
+		return false;
+	}
+	assert(*p);
+	Policy& policy = **p;
 
-    for (Module::iterator i = module.begin(), e = module.end(); i!=e; i++) {
-			for (inst_iterator j = inst_begin(*i), e = inst_end(*i); j != e; ++j) {
-				if (CallInst* callInst = dyn_cast<CallInst>(&*j)) {  
-					auto directions = policy.CallInstrumentation(*callInst->getCalledFunction());
-					if (not directions.empty()) {
-						callInstsMap.insert(std::make_pair(callInst, directions));	
-					}
-				}
-			}
-    }
-		//Iterate over call instructions and create a new instrumented function 
-		//and create a function call to that new function
-		for (std::map<CallInst*, std::vector<Policy::Direction>>::iterator i = callInstsMap.begin(); i != callInstsMap.end(); ++i) {
-			
-			CallInst* callInst = (*i).first;
-			Function* pOldF = callInst->getCalledFunction();
-  		callInst->setCallingConv(pOldF->getCallingConv());
-			std::vector<Value*> argumentValues;
-			for (Use *m = callInst->arg_begin(), *n = callInst->arg_end(); m != n; ++m) {
-				  argumentValues.push_back(m->get());
-			}
-				
-			std::vector<Policy::Direction> directions = (*i).second;
-			for(std::vector<Policy::Direction>::iterator it=directions.begin(); it !=directions.end(); ++it) {
-				Function* pNewF = createInstrFunction(module, (*i).first, *it, policy);
-				IRBuilder<> Builder(&*callInst);
-				CallInst *callToInstr = Builder.CreateCall(pNewF, argumentValues);		
-				callToInstr->setAttributes(pOldF->getAttributes());
-			}
+	std::map<CallInst*, std::vector<Policy::Direction>> callInstsMap;
+	storeAllCallInsts(&callInstsMap, module, policy);	
+
+	//Iterate over call instructions and create a new instrumented function 
+	//and create a function call to that new function
+	for (std::map<CallInst*, std::vector<Policy::Direction>>::iterator i = callInstsMap.begin(); i != callInstsMap.end(); ++i) 
+	{
+		CallInst* callInst = (*i).first;
+		Function* pOldF = callInst->getCalledFunction();
+		callInst->setCallingConv(pOldF->getCallingConv());
+		std::vector<Value*> argumentValues;
+		for (Use *m = callInst->arg_begin(), *n = callInst->arg_end(); m != n; ++m) 
+		{
+				argumentValues.push_back(m->get());
 		}
-    return true;
+			
+		std::vector<Policy::Direction> directions = (*i).second;
+		for(std::vector<Policy::Direction>::iterator it=directions.begin(); it !=directions.end(); ++it) 
+		{
+			Function* pNewF = createInstrFunction(module, (*i).first, *it, policy);
+			IRBuilder<> Builder(&*callInst);
+			CallInst *callToInstr = Builder.CreateCall(pNewF, argumentValues);		
+			callToInstr->setAttributes(pOldF->getAttributes());
+		}
+	}
+	return true;
 }
+
 
 char OptPass::ID = 0;
 static RegisterPass<OptPass> X("loom", "Loom instrumentation", false, false);
 
-Function* createInstrFunction(Module &module, CallInst* callInst, Policy::Direction direction, Policy& policy) {
+void storeAllCallInsts(std::map<CallInst*, std::vector<Policy::Direction>> *callInstsMap, Module &module, Policy& policy)
+{
+	for (Module::iterator i = module.begin(), e = module.end(); i!=e; i++) 
+	{
+		for (inst_iterator j = inst_begin(*i), e = inst_end(*i); j != e; ++j) 
+		{
+			if (CallInst* callInst = dyn_cast<CallInst>(&*j)) 
+			{
+				auto directions = policy.CallInstrumentation(*callInst->getCalledFunction());
+				if (not directions.empty()) 
+				{
+					callInstsMap->insert(std::make_pair(callInst, directions));	
+				}
+			}
+		}
+	}
+}
+
+Function* createInstrFunction(Module &module, CallInst* callInst, Policy::Direction direction, Policy& policy) 
+{
 	Function* pOldF = callInst->getCalledFunction();
  	callInst->setCallingConv(pOldF->getCallingConv());
 	std::vector<Value*> argumentValues;
-	for (Use *m = callInst->arg_begin(), *n = callInst->arg_end(); m != n; ++m) {
+	for (Use *m = callInst->arg_begin(), *n = callInst->arg_end(); m != n; ++m) 
+	{
 		  argumentValues.push_back(m->get());
 	}
 	std::string oldName = pOldF->getName();
 	std::string newFunctionName;
 	std::vector<std::string> instrNameArgs;
 	std::string arg = "";
-	if (direction == Policy::Direction::In) {
+	if (direction == Policy::Direction::In) 
+	{
 		arg = "call";
 	}
-	else if (direction == Policy::Direction::Out) {
+	else if (direction == Policy::Direction::Out) 
+	{
 		arg = "return";
 	}
 	instrNameArgs.push_back(arg);
@@ -140,7 +161,6 @@ Function* createInstrFunction(Module &module, CallInst* callInst, Policy::Direct
 	arg = "";
 	instrNameArgs.push_back(arg);
 	newFunctionName = policy.InstrName(instrNameArgs);
-	
   FunctionType *pNewFT = FunctionType::get(Type::getVoidTy(module.getContext()), getParameterTypes(pOldF), false);
 	Function *pNewF = Function::Create(pNewFT, Function::ExternalLinkage, newFunctionName, &module);
   pNewF->setCallingConv(pOldF->getCallingConv());
@@ -153,47 +173,59 @@ Function* createInstrFunction(Module &module, CallInst* callInst, Policy::Direct
 	return pNewF;
 }
 
-std::vector<Type*> getParameterTypes(Function *pOldF) {
+std::vector<Type*> getParameterTypes(Function *pOldF) 
+{
 	std::vector<Type*> paramTypes;
 	SymbolTableList<Argument> *oldArgList = &(pOldF->getArgumentList()); 
-	for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(); k != l; k++) {
+	for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(); k != l; k++) 
+	{
 		paramTypes.push_back(k->getType());
 	}
 	return paramTypes;
 }
 
-void setArgumentNames(Function *pOldF, Function *pNewF) {
+void setArgumentNames(Function *pOldF, Function *pNewF) 
+{
 	SymbolTableList<Argument> *oldArgList = &(pOldF->getArgumentList()); 
-	for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(), m = pNewF->getArgumentList().begin(); k != l; ++k, ++m) {
+	for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(), m = pNewF->getArgumentList().begin(); k != l; ++k, ++m) 
+	{
 		m->setName(k->getName());
 	}
 }
 
-void addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, std::vector<Value*> argumentValues) {
+void addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, std::vector<Value*> argumentValues) 
+{
 	FunctionType *printfFT = TypeBuilder<int(const char *, ...), false>::get(pOldF->getContext());	
 	Function *printf = Function::Create(printfFT, Function::ExternalLinkage, "printf", &module);
   //printf->setCallingConv(pOldF->getCallingConv());
 	std::vector<Value*> printfArgs;
 	std::string calledFunctionName = pOldF->getName();
 	std::string printfStringArg = "calling " + calledFunctionName + "(";
-	for(std::vector<Value*>::iterator it=argumentValues.begin(); it !=argumentValues.end(); ++it) {
+	for(std::vector<Value*>::iterator it=argumentValues.begin(); it !=argumentValues.end(); ++it) 
+	{
 		Type *argType = (*it)->getType();
-		if(argType->isIntegerTy(32)) {
+		if(argType->isIntegerTy(32)) 
+		{
 			printfStringArg.append("%d");
 		}
-		else if (argType->isFloatTy() || argType->isDoubleTy()) {
+		else if (argType->isFloatTy() || argType->isDoubleTy()) 
+		{
 			printfStringArg.append("%.0f");
 		}
-		else if (argType->isIntegerTy(8)) {
+		else if (argType->isIntegerTy(8)) 
+		{
 			printfStringArg.append("%c");
 		}
-		else if (argType->isPointerTy()) {
+		else if (argType->isPointerTy()) 
+		{
 			printfStringArg.append("%s");
 		}
-		if(*it==argumentValues.back()) {
+		if(*it==argumentValues.back()) 
+		{
 			printfStringArg.append(")\n\"");
 		}
-		else {
+		else 
+		{
 			printfStringArg.append(", ");
 		}
 	}
