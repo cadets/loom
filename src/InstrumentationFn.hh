@@ -30,8 +30,10 @@
  * SUCH DAMAGE.
  */
 
-#ifndef	LOOM_INSTRUMENTATION_FN_H
-#define	LOOM_INSTRUMENTATION_FN_H
+#ifndef  LOOM_INSTRUMENTATION_FN_H
+#define  LOOM_INSTRUMENTATION_FN_H
+
+#include "PolicyFile.hh"
 
 #include <llvm/ADT/ArrayRef.h>
 #include <llvm/ADT/StringRef.h>
@@ -62,6 +64,21 @@ public:
   /// Insert a call to this instrumentation just after the given Instruction.
   void CallAfter(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
 
+  /// Get the parameter types of the passed function.
+  static std::vector<llvm::Type*> getParameterTypes(llvm::Function *pOldF); 
+
+  ///
+  static void setArgumentNames(llvm::Function *pOldF, llvm::Function *pNewF);
+
+  ///
+  static void addPrintfCall(llvm::IRBuilder<> Builder, llvm::Function *pOldF, llvm::Module &module, std::vector<llvm::Value*> argumentValues);
+
+  ///
+  static void findAllCallInsts(std::map<llvm::CallInst*, std::vector<Policy::Direction>> *callInstsMap, llvm::Module &module, Policy &policy);
+
+  ///
+  static llvm::Function* createInstrFunction(llvm::Module &module, llvm::CallInst *callInst, Policy::Direction direction, Policy &policy);
+
   // TODO: drop this if ObjC doesn't absolutely need it
   llvm::Function* getImplementation() { return InstrFn; }
 
@@ -78,4 +95,4 @@ private:
 
 }
 
-#endif	/* !LOOM_INSTRUMENTATION_FN_H */
+#endif  /* !LOOM_INSTRUMENTATION_FN_H */
