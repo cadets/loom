@@ -37,6 +37,7 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/CallingConv.h"
+#include "llvm/IR/CallSite.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -63,17 +64,8 @@ bool OptPass::runOnModule(Module &module)
     return false;
   }
 
-  outs() << "Got policy file!\n";
-
-  ErrorOr<std::unique_ptr<PolicyFile>> p = PolicyFile::Open();
-  if (p.getError())
-  {
-    errs() << p.getError().message() << "\n";
-    errs() << "error when retrieving Policy File \n";
-    return false;
-  }
-  assert(*p);
-  Policy& policy = **p;
+  assert(*policyFile);
+  Policy& policy = **policyFile;
 
   std::map<CallInst*, std::vector<Policy::Direction>> callInstsMap;
   InstrumentationFn::findAllCallInsts(&callInstsMap, module, policy);  
