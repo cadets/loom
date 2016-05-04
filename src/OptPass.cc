@@ -1,6 +1,7 @@
 //! @file OptPass.cc  Definition of @ref loom::OptPass.
 /*
  * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016 Cem Kilic
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -43,6 +44,8 @@
 
 using namespace llvm;
 using namespace loom;
+using std::string;
+using std::vector;
 
 
 namespace {
@@ -55,7 +58,7 @@ namespace {
 }
 
 
-bool OptPass::runOnModule(Module &module)
+bool OptPass::runOnModule(Module &Mod)
 {
   ErrorOr<std::unique_ptr<PolicyFile>> policyFile = PolicyFile::Open();
   if (std::error_code err = policyFile.getError()) {
@@ -66,26 +69,60 @@ bool OptPass::runOnModule(Module &module)
   assert(*policyFile);
   Policy& policy = **policyFile;
 
-  std::map<CallInst*, std::vector<Policy::Direction>> callInstsMap;
-  InstrumentationFn::findAllCallInsts(&callInstsMap, module, policy);
+  std::map<CallInst*, vector<Policy::Direction>> callInstsMap;
+  InstrumentationFn::findAllCallInsts(&callInstsMap, Mod, policy);
 
   //Iterate over call instructions and create a new instrumented function
   //and create a function call to that new function
   for (auto i = callInstsMap.begin(); i != callInstsMap.end(); ++i) {
-    CallInst* callInst = (*i).first;
-    Function* pOldF = callInst->getCalledFunction();
-    callInst->setCallingConv(pOldF->getCallingConv());
-    std::vector<Value*> argumentValues;
-    for (Use *m = callInst->arg_begin(), *n = callInst->arg_end(); m != n; ++m) {
-        argumentValues.push_back(m->get());
+    CallInst* call = i->first;
+
+    vector<Value*> Arguments;
+    for (Use *m = call->arg_begin(), *n = call->arg_end(); m != n; ++m) {
+        Arguments.push_back(m->get());
     }
 
-    std::vector<Policy::Direction> directions = i->second;
-    for(auto it = directions.begin(); it !=directions.end(); ++it) {
-      Function* pNewF = InstrumentationFn::createInstrFunction(module, (*i).first, *it, policy);
-      IRBuilder<> Builder(&*callInst);
-      CallInst *callToInstr = Builder.CreateCall(pNewF, argumentValues);
-      callToInstr->setAttributes(pOldF->getAttributes());
+    Function* Target = call->getCalledFunction();
+    assert(Target); // TODO: support indirect targets, too
+    const string TargetName = Target->getName();
+
+    vector<Policy::Direction> directions = i->second;
+    for(auto d = directions.begin(); d !=directions.end(); ++d) {
+      vector<string> InstrNameComponents;
+
+      switch (*d) {
+      case Policy::Direction::In:
+        InstrNameComponents.push_back("call");
+        break;
+
+      case Policy::Direction::Out:
+        InstrNameComponents.push_back("return");
+      }
+
+      InstrNameComponents.push_back(TargetName);
+      const string InstrName = policy.InstrName(InstrNameComponents);
+
+      // Call instrumentation cannot be done entirely within a translation unit,
+      // as there may be other calls to the same function in other units.
+      GlobalValue::LinkageTypes Linkage = Function::ExternalLinkage;
+
+      vector<Type*> ParameterTypes = InstrumentationFn::getParameterTypes(Target);
+
+      std::unique_ptr<InstrumentationFn> InstrFn =
+        InstrumentationFn::Create(InstrName, ParameterTypes, Linkage, Mod);
+
+#if 0
+  InstrumentationFn::setArgumentNames(target, pNewF);
+
+  //Create a basic block and add printf call
+  BasicBlock *block = BasicBlock::Create(module.getContext(), "entry", pNewF);
+  IRBuilder<> Builder(block);
+  InstrumentationFn::addPrintfCall(Builder, target, module, arguments);
+  Builder.CreateRetVoid();
+#endif
+
+      InstrFn->CallBefore(call, Arguments);
+      //callToInstr->setAttributes(target->getAttributes());
     }
   }
   return true;

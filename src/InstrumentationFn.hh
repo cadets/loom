@@ -81,12 +81,6 @@ public:
                                std::vector<Policy::Direction>> *callInstsMap,
                                llvm::Module &module, Policy &policy);
 
-  ///
-  static llvm::Function* createInstrFunction(llvm::Module &module,
-                                             llvm::CallInst *callInst,
-                                             Policy::Direction direction,
-                                             Policy &policy);
-
   // TODO: drop this if ObjC doesn't absolutely need it
   llvm::Function* getImplementation() { return InstrFn; }
 
