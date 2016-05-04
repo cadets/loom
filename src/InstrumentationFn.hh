@@ -1,6 +1,7 @@
 //! @file InstrumentationFn.h  Declaration of @ref loom::InstrumentationFn.
 /*
- * Copyright (c) 2012-2013,2015 Jonathan Anderson
+ * Copyright (c) 2012-2013,2015-2016 Jonathan Anderson
+ * Copyright (c) 2016 Cem Kilic
  * All rights reserved.
  *
  * This software was developed by SRI International and the University of
@@ -65,19 +66,26 @@ public:
   void CallAfter(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
 
   /// Get the parameter types of the passed function.
-  static std::vector<llvm::Type*> getParameterTypes(llvm::Function *pOldF); 
+  static std::vector<llvm::Type*> getParameterTypes(llvm::Function *pOldF);
 
   ///
   static void setArgumentNames(llvm::Function *pOldF, llvm::Function *pNewF);
 
   ///
-  static void addPrintfCall(llvm::IRBuilder<> Builder, llvm::Function *pOldF, llvm::Module &module, std::vector<llvm::Value*> argumentValues);
+  static void addPrintfCall(llvm::IRBuilder<> Builder, llvm::Function *pOldF,
+                            llvm::Module &module,
+                            std::vector<llvm::Value*> argumentValues);
 
   ///
-  static void findAllCallInsts(std::map<llvm::CallInst*, std::vector<Policy::Direction>> *callInstsMap, llvm::Module &module, Policy &policy);
+  static void findAllCallInsts(std::map<llvm::CallInst*,
+                               std::vector<Policy::Direction>> *callInstsMap,
+                               llvm::Module &module, Policy &policy);
 
   ///
-  static llvm::Function* createInstrFunction(llvm::Module &module, llvm::CallInst *callInst, Policy::Direction direction, Policy &policy);
+  static llvm::Function* createInstrFunction(llvm::Module &module,
+                                             llvm::CallInst *callInst,
+                                             Policy::Direction direction,
+                                             Policy &policy);
 
   // TODO: drop this if ObjC doesn't absolutely need it
   llvm::Function* getImplementation() { return InstrFn; }
