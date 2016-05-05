@@ -102,9 +102,9 @@ bool OptPass::runOnModule(Module &Mod)
       InstrNameComponents.push_back(TargetName);
       const string InstrName = policy.InstrName(InstrNameComponents);
 
-      // Call instrumentation cannot be done entirely within a translation unit,
-      // as there may be other calls to the same function in other units.
-      GlobalValue::LinkageTypes Linkage = Function::ExternalLinkage;
+      // Call instrumentation can be done entirely within a translation unit:
+      // calls in other units can use their own instrumentation functions.
+      GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
 
       vector<Type*> ParameterTypes = InstrumentationFn::getParameterTypes(Target);
 
