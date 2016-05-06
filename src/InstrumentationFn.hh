@@ -67,6 +67,17 @@ public:
   /// Insert a call to this instrumentation just after the given Instruction.
   void CallAfter(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
 
+  /**
+   * Get an IRBuilder that can be used to insert new instructions into the
+   * instrumentation's preamble block.
+   *
+   * The preamble is a block where we can put instructions that should run
+   * whenever the instrumentation is called, regardless of the values that
+   * are passed into it. This could be used to implement gprof-style counting
+   * or simple logging.
+   */
+  llvm::IRBuilder<> GetPreambleBuilder();
+
   ///
   static void addPrintfCall(llvm::IRBuilder<> Builder, llvm::Function *pOldF,
                             llvm::Module &module,
@@ -77,12 +88,14 @@ public:
 
 
 private:
-  InstrumentationFn(llvm::Function *InstrFn, llvm::BasicBlock *End)
-    : InstrFn(InstrFn), End(End)
+  InstrumentationFn(llvm::Function *InstrFn, llvm::BasicBlock *Preamble,
+                    llvm::BasicBlock *End)
+    : InstrFn(InstrFn), Preamble(Preamble), End(End)
   {
   }
 
   llvm::Function *InstrFn;      //!< The instrumentation function.
+  llvm::BasicBlock *Preamble;   //!< Cross-instrumentation logging, etc.
   llvm::BasicBlock *End;        //!< End of the instrumentation chain.
 };
 

@@ -78,29 +78,37 @@ InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
   }
 
   //
-  // Invariant: instrumentation functions should have two exit blocks, one for
-  // normal termination and one for abnormal termination.
+  // Invariant: instrumentation functions should have a "preamble" block,
+  // which contains instructions to execute first for all instrumented events
+  // (e.g., logging calls) and an "exit" block after all actions required by
+  // the instrumentation have been taken.
   //
-  // The function starts out with the entry block jumping to the exit block.
+  // The function starts out with the preamble branching to the exit block.
   // Instrumentation is added in new BasicBlocks in between.
   //
-  BasicBlock *EndBlock;
+  BasicBlock *Preamble, *EndBlock;
 
   if (InstrFn->empty()) {
-    BasicBlock *Entry = BasicBlock::Create(Ctx, "entry", InstrFn);
-    BasicBlock *Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
+    Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
     EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
 
-    IRBuilder<>(Entry).CreateBr(Preamble);
     IRBuilder<>(Preamble).CreateBr(EndBlock);
     IRBuilder<>(EndBlock).CreateRetVoid();
 
-  } else
+  } else {
+    Preamble = FindBlock("preamble", *InstrFn);
     EndBlock = FindBlock("exit", *InstrFn);
+  }
 
   return unique_ptr<InstrumentationFn> {
-    new InstrumentationFn(InstrFn, EndBlock)
+    new InstrumentationFn(InstrFn, Preamble, EndBlock)
   };
+}
+
+
+IRBuilder<> InstrumentationFn::GetPreambleBuilder()
+{
+  return IRBuilder<>(Preamble->getTerminator());
 }
 
 
