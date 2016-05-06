@@ -27,32 +27,34 @@ functions:
 
 #else
 
-// CHECK: define void @foo()
-void	foo(void) {}
+// CHECK: define [[FOO_TYPE:.*]] @foo(i32, float, double)
+int	foo(int x, float y, double z) { return x; }
 
-// CHECK: define void @bar()
-void	bar(void) {}
+// CHECK: define [[BAR_TYPE:.*]] @bar(i32, i8*)
+float	bar(unsigned int i, const char *s) { return i; }
 
-// CHECK: define void @baz()
-void	baz(void) {}
+// CHECK: define double @baz()
+double	baz(void) { return 0; }
 
 int
 main(int argc, char *argv[])
 {
 	// We should instrument foo's call and return:
-	// CHECK: call void @[[PREFIX:__test_hook]]_call_foo
-	foo();
-	// CHECK: call void @[[PREFIX]]_return_foo
+	// CHECK: call void @[[PREFIX:__test_hook]]_call_foo([[FOO_ARGS:.*]])
+	// CHECK: [[FOO_RET:.*]] = call [[FOO_TYPE]] @foo([[FOO_ARGS]])
+	foo(1, 2, 3);
+	// CHECK: call void @[[PREFIX]]_return_foo([[FOO_TYPE]][[FOO_RET]], [[FOO_ARGS]])
 
 	// We should instrument bar's call but not return:
-	// CHECK: call void @[[PREFIX]]_call_bar
-	bar();
+	// CHECK: call void @[[PREFIX]]_call_bar([[BAR_ARGS:.*]])
+	// CHECK: call [[BAR_TYPE]] @bar([[BAR_ARGS]])
+	bar(4, "5");
 	// CHECK-NOT: call void @[[PREFIX]]_return_bar
 
 	// We should not instrument the call to baz:
-	// CHECK-NOT: call void @[[PREFIX]]_call_baz
+	// CHECK-NOT: call {{.*}}_call_baz
 	baz();
-	// CHECK-NOT: call void @[[PREFIX]]_return_baz
+	// CHECK-NOT: call {{.*}}_return_baz
 
 	return 0;
 }
