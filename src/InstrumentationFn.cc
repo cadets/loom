@@ -112,6 +112,30 @@ IRBuilder<> InstrumentationFn::GetPreambleBuilder()
 }
 
 
+IRBuilder<> InstrumentationFn::AddAction(StringRef Name)
+{
+  // Get the last block in the instrumentation chain before "end"
+  // and unhook it from "end": we need to insert the new block in between.
+  BasicBlock *Predecessor = End->getSinglePredecessor();
+  assert(Predecessor);
+
+  End->removePredecessor(Predecessor);
+  Predecessor->getTerminator()->eraseFromParent();
+
+  // Create the new instrumentation block and insert it between the
+  // old last-but-one block and the "end" block.
+  LLVMContext& Ctx = InstrFn->getContext();
+  BasicBlock *BB = BasicBlock::Create(Ctx, Name, InstrFn, End);
+
+  IRBuilder<>(Predecessor).CreateBr(BB);
+  BranchInst *Terminator = IRBuilder<>(BB).CreateBr(End);
+
+  // Return an IRBuilder positioned immediately before the final branch
+  // to the "end" block.
+  return IRBuilder<>(Terminator);
+}
+
+
 void InstrumentationFn::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
   CallInst::Create(InstrFn, Args)->insertBefore(I);
 }
