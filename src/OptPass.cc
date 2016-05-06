@@ -76,6 +76,8 @@ bool OptPass::runOnModule(Module &Mod)
   //and create a function call to that new function
   for (auto i = callInstsMap.begin(); i != callInstsMap.end(); ++i) {
     CallInst* call = i->first;
+    Type* callType = call->getType();
+    const bool voidFunction = callType->isVoidTy();
 
     vector<Value*> Arguments;
     for (Use *m = call->arg_begin(), *n = call->arg_end(); m != n; ++m) {
@@ -89,6 +91,7 @@ bool OptPass::runOnModule(Module &Mod)
     vector<Policy::Direction> directions = i->second;
     for(auto d = directions.begin(); d !=directions.end(); ++d) {
       vector<string> InstrNameComponents;
+      vector<Type*> ParameterTypes = InstrumentationFn::getParameterTypes(Target);
 
       switch (*d) {
       case Policy::Direction::In:
@@ -97,6 +100,8 @@ bool OptPass::runOnModule(Module &Mod)
 
       case Policy::Direction::Out:
         InstrNameComponents.push_back("return");
+        if (not voidFunction)
+          ParameterTypes.insert(ParameterTypes.begin(), call->getType());
       }
 
       InstrNameComponents.push_back(TargetName);
@@ -105,8 +110,6 @@ bool OptPass::runOnModule(Module &Mod)
       // Call instrumentation can be done entirely within a translation unit:
       // calls in other units can use their own instrumentation functions.
       GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
-
-      vector<Type*> ParameterTypes = InstrumentationFn::getParameterTypes(Target);
 
       std::unique_ptr<InstrumentationFn> InstrFn =
         InstrumentationFn::Create(InstrName, ParameterTypes, Linkage, Mod);
@@ -121,7 +124,17 @@ bool OptPass::runOnModule(Module &Mod)
   Builder.CreateRetVoid();
 #endif
 
-      InstrFn->CallBefore(call, Arguments);
+      switch (*d) {
+      case Policy::Direction::In:
+        InstrFn->CallBefore(call, Arguments);
+        break;
+
+      case Policy::Direction::Out:
+        if (not voidFunction)
+          Arguments.insert(Arguments.begin(), call);
+        InstrFn->CallAfter(call, Arguments);
+        break;
+      }
       //callToInstr->setAttributes(target->getAttributes());
     }
   }
