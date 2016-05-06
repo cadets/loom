@@ -54,13 +54,15 @@ using std::vector;
 namespace {
   struct OptPass : public ModulePass {
     static char ID;
-    OptPass() : ModulePass(ID) {}
+    OptPass() : ModulePass(ID), PolFile(PolicyFile::Open()) {}
 
     bool runOnModule(Module&) override;
 
     /// Instrument a single call instruction, before and/or after according
     /// to the given vector of directions.
     bool Instrument(CallInst*, Policy&);
+
+    llvm::ErrorOr<std::unique_ptr<PolicyFile>> PolFile;
   };
 }
 
@@ -69,14 +71,14 @@ static std::vector<Type*> ParameterTypes(Function*);
 
 bool OptPass::runOnModule(Module &Mod)
 {
-  ErrorOr<std::unique_ptr<PolicyFile>> PolicyFile = PolicyFile::Open();
-  if (std::error_code err = PolicyFile.getError()) {
+  if (std::error_code err = PolFile.getError()) {
     errs() << "Error opening LOOM policy file: " << err.message() << "\n";
     return false;
   }
 
   assert(*PolicyFile);
-  Policy& P = **PolicyFile;
+  Policy& P = **PolFile;
+
   bool ModifiedIR = false;
 
   //
