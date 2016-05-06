@@ -55,8 +55,10 @@ namespace loom {
  */
 class InstrumentationFn {
 public:
+  typedef std::pair<std::string,llvm::Type*> Parameter;
+
   static std::unique_ptr<InstrumentationFn>
-    Create(llvm::StringRef Name, llvm::ArrayRef<llvm::Type*> ParameterTypes,
+    Create(llvm::StringRef Name, llvm::ArrayRef<Parameter> ParameterDetails,
            llvm::GlobalValue::LinkageTypes, llvm::Module&);
 
   /// Insert a call to this instrumentation just before the given Instruction.
@@ -64,9 +66,6 @@ public:
 
   /// Insert a call to this instrumentation just after the given Instruction.
   void CallAfter(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
-
-  ///
-  static void setArgumentNames(llvm::Function *pOldF, llvm::Function *pNewF);
 
   ///
   static void addPrintfCall(llvm::IRBuilder<> Builder, llvm::Function *pOldF,

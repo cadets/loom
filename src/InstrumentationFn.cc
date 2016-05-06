@@ -42,6 +42,7 @@ using namespace loom;
 
 using std::string;
 using std::unique_ptr;
+using std::vector;
 
 
 static BasicBlock *FindBlock(StringRef Name, Function& Fn) {
@@ -54,14 +55,27 @@ static BasicBlock *FindBlock(StringRef Name, Function& Fn) {
 
 
 unique_ptr<InstrumentationFn>
-InstrumentationFn::Create(StringRef Name, ArrayRef<Type*> ParamTypes,
+InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
                           GlobalValue::LinkageTypes Linkage, Module& M) {
 
   LLVMContext& Ctx = M.getContext();
 
+  vector<Type*> ParamTypes;
+  for (auto& P : Parameters) {
+    ParamTypes.push_back(P.second);
+  }
+
   FunctionType *T = FunctionType::get(Type::getVoidTy(Ctx), ParamTypes, false);
   auto *InstrFn = dyn_cast<Function>(M.getOrInsertFunction(Name, T));
   InstrFn->setLinkage(Linkage);
+
+  // Set instrumentation function's parameter names:
+  SymbolTableList<Argument>& ArgList = InstrFn->getArgumentList();
+  size_t i = 0;
+  for (auto a = ArgList.begin(); a != ArgList.end(); a++) {
+    a->setName(Parameters[i].first);
+    i++;
+  }
 
   //
   // Invariant: instrumentation functions should have two exit blocks, one for
@@ -96,13 +110,6 @@ void InstrumentationFn::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
 
 void InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
   CallInst::Create(InstrFn, Args)->insertAfter(I);
-}
-
-void InstrumentationFn::setArgumentNames(Function *pOldF, Function *pNewF) {
-  SymbolTableList<Argument> *oldArgList = &(pOldF->getArgumentList());
-  for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(), m = pNewF->getArgumentList().begin(); k != l; ++k, ++m) {
-    m->setName(k->getName());
-  }
 }
 
 void InstrumentationFn::addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, std::vector<Value*> argumentValues)

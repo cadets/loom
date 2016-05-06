@@ -47,6 +47,7 @@
 
 using namespace llvm;
 using namespace loom;
+using Parameter = loom::InstrumentationFn::Parameter;
 using std::string;
 using std::vector;
 
@@ -70,7 +71,7 @@ namespace {
   };
 }
 
-static std::vector<Type*> ParameterTypes(Function*);
+static std::vector<Parameter> GetParameters(Function*);
 
 
 bool OptPass::runOnModule(Module &Mod)
@@ -138,7 +139,7 @@ bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
   const bool voidFunction = CallType->isVoidTy();
 
   vector<string> InstrNameComponents;
-  vector<Type*> ParamTypes = ParameterTypes(Target);
+  vector<Parameter> Parameters = GetParameters(Target);
 
   switch (Dir) {
   case Policy::Direction::In:
@@ -148,7 +149,7 @@ bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
   case Policy::Direction::Out:
     InstrNameComponents.push_back("return");
     if (not voidFunction)
-      ParamTypes.insert(ParamTypes.begin(), Call->getType());
+      Parameters.emplace(Parameters.begin(), "retval", Call->getType());
   }
 
   InstrNameComponents.push_back(TargetName);
@@ -160,11 +161,9 @@ bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
 
   Module& Mod = *Call->getModule();
   std::unique_ptr<InstrumentationFn> InstrFn =
-    InstrumentationFn::Create(InstrName, ParamTypes, Linkage, Mod);
+    InstrumentationFn::Create(InstrName, Parameters, Linkage, Mod);
 
 #if 0
-InstrumentationFn::setArgumentNames(target, pNewF);
-
 //Create a basic block and add printf call
 BasicBlock *block = BasicBlock::Create(module.getContext(), "entry", pNewF);
 IRBuilder<> Builder(block);
@@ -188,12 +187,12 @@ Builder.CreateRetVoid();
   return true;
 }
 
-static std::vector<Type*> ParameterTypes(Function *Fn) {
-  std::vector<Type*> Types;
+static std::vector<Parameter> GetParameters(Function *Fn) {
+  std::vector<Parameter> Parameters;
   for(auto& Arg : Fn->getArgumentList()) {
-    Types.push_back(Arg.getType());
+    Parameters.emplace_back(Arg.getName(), Arg.getType());
   }
-  return Types;
+  return Parameters;
 }
 
 char OptPass::ID = 0;
