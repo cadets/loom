@@ -45,15 +45,6 @@ using std::unique_ptr;
 using std::vector;
 
 
-static BasicBlock *FindBlock(StringRef Name, Function& Fn) {
-  for (auto& B : Fn)
-    if (B.getName() == Name)
-      return &B;
-
-  return NULL;
-}
-
-
 unique_ptr<InstrumentationFn>
 InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
                           GlobalValue::LinkageTypes Linkage, Module& M) {

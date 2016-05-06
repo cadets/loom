@@ -41,6 +41,15 @@ using namespace loom;
 using std::vector;
 
 
+BasicBlock* loom::FindBlock(StringRef Name, Function& Fn) {
+  for (auto& B : Fn)
+    if (B.getName() == Name)
+      return &B;
+
+  return NULL;
+}
+
+
 vector<Parameter> loom::GetParameters(Function *Fn) {
   vector<Parameter> Parameters;
   for(auto& Arg : Fn->getArgumentList()) {
