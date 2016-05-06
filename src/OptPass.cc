@@ -39,6 +39,7 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/CallingConv.h"
 #include "llvm/IR/CallSite.h"
+#include "llvm/IR/InstIterator.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -57,6 +58,8 @@ namespace {
   };
 }
 
+static std::vector<Type*> ParameterTypes(Function*);
+
 
 bool OptPass::runOnModule(Module &Mod)
 {
@@ -69,8 +72,26 @@ bool OptPass::runOnModule(Module &Mod)
   assert(*policyFile);
   Policy& policy = **policyFile;
 
+  //
+  // First find all of the calls that need to be instrumented.
+  // This will prevent us from invalidating iterators or
+  // instrumenting our instrumentation.
+  //
   std::map<CallInst*, vector<Policy::Direction>> calls;
-  InstrumentationFn::findAllCallInsts(&calls, Mod, policy);
+
+  for (auto& Fn : Mod) {
+    for (auto& Inst : instructions(Fn)) {
+      if (CallInst* callInst = dyn_cast<CallInst>(&Inst)) {
+        Function *Target = callInst->getCalledFunction();
+        if (not Target)
+          continue;
+
+        auto directions = policy.CallInstrumentation(*Target);
+        if (not directions.empty())
+          calls.emplace(callInst, directions);
+      }
+    }
+  }
 
   //Iterate over call instructions and create a new instrumented function
   //and create a function call to that new function
@@ -91,7 +112,7 @@ bool OptPass::runOnModule(Module &Mod)
     vector<Policy::Direction> directions = i->second;
     for(auto d = directions.begin(); d !=directions.end(); ++d) {
       vector<string> InstrNameComponents;
-      vector<Type*> ParameterTypes = InstrumentationFn::getParameterTypes(Target);
+      vector<Type*> ParameterTypes = ParameterTypes(Target);
 
       switch (*d) {
       case Policy::Direction::In:
@@ -101,7 +122,7 @@ bool OptPass::runOnModule(Module &Mod)
       case Policy::Direction::Out:
         InstrNameComponents.push_back("return");
         if (not voidFunction)
-          ParameterTypes.insert(ParameterTypes.begin(), call->getType());
+          ParameterTypes.insert(ParamTypes.begin(), call->getType());
       }
 
       InstrNameComponents.push_back(TargetName);
@@ -112,7 +133,7 @@ bool OptPass::runOnModule(Module &Mod)
       GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
 
       std::unique_ptr<InstrumentationFn> InstrFn =
-        InstrumentationFn::Create(InstrName, ParameterTypes, Linkage, Mod);
+        InstrumentationFn::Create(InstrName, ParamTypes, Linkage, Mod);
 
 #if 0
   InstrumentationFn::setArgumentNames(target, pNewF);
@@ -141,6 +162,13 @@ bool OptPass::runOnModule(Module &Mod)
   return true;
 }
 
+static std::vector<Type*> ParameterTypes(Function *Fn) {
+  std::vector<Type*> Types;
+  for(auto& Arg : Fn->getArgumentList()) {
+    Types.push_back(Arg.getType());
+  }
+  return Types;
+}
 
 char OptPass::ID = 0;
 static RegisterPass<OptPass> X("loom", "Loom instrumentation", false, false);

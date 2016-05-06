@@ -33,7 +33,6 @@
 
 #include "InstrumentationFn.hh"
 #include "llvm/IR/TypeBuilder.h"
-#include "llvm/IR/InstIterator.h"
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
@@ -99,15 +98,6 @@ void InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
   CallInst::Create(InstrFn, Args)->insertAfter(I);
 }
 
-std::vector<Type*> InstrumentationFn::getParameterTypes(Function *pOldF) {
-  std::vector<Type*> paramTypes;
-  SymbolTableList<Argument> *oldArgList = &(pOldF->getArgumentList());
-  for(auto k = oldArgList->begin(), l = oldArgList->end(); k != l; k++) {
-    paramTypes.push_back(k->getType());
-  }
-  return paramTypes;
-}
-
 void InstrumentationFn::setArgumentNames(Function *pOldF, Function *pNewF) {
   SymbolTableList<Argument> *oldArgList = &(pOldF->getArgumentList());
   for(ilist_iterator<Argument> k = oldArgList->begin(), l = oldArgList->end(), m = pNewF->getArgumentList().begin(); k != l; ++k, ++m) {
@@ -154,19 +144,4 @@ void InstrumentationFn::addPrintfCall(IRBuilder<> Builder, Function *pOldF, Modu
   printfArgs.push_back(arg1);
   printfArgs.insert(printfArgs.end(), argumentValues.begin(), argumentValues.end());
   Builder.CreateCall(printf, printfArgs);
-}
-
-void InstrumentationFn::findAllCallInsts(std::map<CallInst*, std::vector<Policy::Direction>> *callInstsMap, Module &module, Policy& policy)
-{
-  for (Module::iterator i = module.begin(), e = module.end(); i!=e; i++) {
-    for (inst_iterator j = inst_begin(*i), e = inst_end(*i); j != e; ++j) {
-      if (CallInst* callInst = dyn_cast<CallInst>(&*j)) {
-        auto directions = policy.CallInstrumentation(*callInst->getCalledFunction());
-        if (not directions.empty())
-        {
-          callInstsMap->insert(std::make_pair(callInst, directions));
-        }
-      }
-    }
-  }
 }
