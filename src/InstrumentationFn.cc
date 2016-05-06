@@ -144,7 +144,7 @@ void InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
   CallInst::Create(InstrFn, Args)->insertAfter(I);
 }
 
-void InstrumentationFn::addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, std::vector<Value*> argumentValues)
+void InstrumentationFn::addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, vector<Value*> argumentValues)
 {
   FunctionType *printfFT =
     TypeBuilder<int(const char *, ...), false>::get(pOldF->getContext());
@@ -152,7 +152,7 @@ void InstrumentationFn::addPrintfCall(IRBuilder<> Builder, Function *pOldF, Modu
   Function *printf = Function::Create(printfFT, Function::ExternalLinkage,
                                       "printf", &module);
 
-  std::vector<Value*> printfArgs;
+  vector<Value*> printfArgs;
   std::string calledFunctionName = pOldF->getName();
   std::string printfStringArg = "calling " + calledFunctionName + "(";
   for(auto it=argumentValues.begin(); it !=argumentValues.end(); ++it)
