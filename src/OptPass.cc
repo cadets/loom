@@ -62,6 +62,10 @@ namespace {
     /// to the given vector of directions.
     bool Instrument(CallInst*, Policy&);
 
+    /// Instrument a single call in a single direction (call or return).
+    bool Instrument(CallInst*, Function *Target, Policy&, Policy::Direction,
+                    vector<Value*> Args);
+
     llvm::ErrorOr<std::unique_ptr<PolicyFile>> PolFile;
   };
 }
@@ -109,11 +113,6 @@ bool OptPass::runOnModule(Module &Mod)
 
 
 bool OptPass::Instrument(CallInst *Call, Policy& Pol) {
-
-  Module& Mod = *Call->getModule();
-  Type *CallType = Call->getType();
-  const bool voidFunction = CallType->isVoidTy();
-
   vector<Value*> Arguments;
   for (Use *m = Call->arg_begin(), *n = Call->arg_end(); m != n; ++m) {
       Arguments.push_back(m->get());
@@ -122,32 +121,46 @@ bool OptPass::Instrument(CallInst *Call, Policy& Pol) {
   Function* Target = Call->getCalledFunction();
   assert(Target); // TODO: support indirect targets, too
   assert(not Pol.CallInstrumentation(*Target).empty());
-  const string TargetName = Target->getName();
 
   for(auto Dir : Pol.CallInstrumentation(*Target)) {
-    vector<string> InstrNameComponents;
-    vector<Type*> ParamTypes = ParameterTypes(Target);
+    Instrument(Call, Target, Pol, Dir, Arguments);
+  }
 
-    switch (Dir) {
-    case Policy::Direction::In:
-      InstrNameComponents.push_back("call");
-      break;
+  return true;
+}
 
-    case Policy::Direction::Out:
-      InstrNameComponents.push_back("return");
-      if (not voidFunction)
-        ParamTypes.insert(ParamTypes.begin(), Call->getType());
-    }
 
-    InstrNameComponents.push_back(TargetName);
-    const string InstrName = Pol.InstrName(InstrNameComponents);
+bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
+                         Policy::Direction Dir, vector<Value*> Arguments) {
 
-    // Call instrumentation can be done entirely within a translation unit:
-    // calls in other units can use their own instrumentation functions.
-    GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
+  const string TargetName = Target->getName();
+  Type *CallType = Call->getType();
+  const bool voidFunction = CallType->isVoidTy();
 
-    std::unique_ptr<InstrumentationFn> InstrFn =
-      InstrumentationFn::Create(InstrName, ParamTypes, Linkage, Mod);
+  vector<string> InstrNameComponents;
+  vector<Type*> ParamTypes = ParameterTypes(Target);
+
+  switch (Dir) {
+  case Policy::Direction::In:
+    InstrNameComponents.push_back("call");
+    break;
+
+  case Policy::Direction::Out:
+    InstrNameComponents.push_back("return");
+    if (not voidFunction)
+      ParamTypes.insert(ParamTypes.begin(), Call->getType());
+  }
+
+  InstrNameComponents.push_back(TargetName);
+  const string InstrName = Pol.InstrName(InstrNameComponents);
+
+  // Call instrumentation can be done entirely within a translation unit:
+  // calls in other units can use their own instrumentation functions.
+  GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
+
+  Module& Mod = *Call->getModule();
+  std::unique_ptr<InstrumentationFn> InstrFn =
+    InstrumentationFn::Create(InstrName, ParamTypes, Linkage, Mod);
 
 #if 0
 InstrumentationFn::setArgumentNames(target, pNewF);
@@ -159,19 +172,18 @@ InstrumentationFn::addPrintfCall(Builder, target, module, arguments);
 Builder.CreateRetVoid();
 #endif
 
-    switch (Dir) {
-    case Policy::Direction::In:
-      InstrFn->CallBefore(Call, Arguments);
-      break;
+  switch (Dir) {
+  case Policy::Direction::In:
+    InstrFn->CallBefore(Call, Arguments);
+    break;
 
-    case Policy::Direction::Out:
-      if (not voidFunction)
-        Arguments.insert(Arguments.begin(), Call);
-      InstrFn->CallAfter(Call, Arguments);
-      break;
-    }
-    //callToInstr->setAttributes(target->getAttributes());
+  case Policy::Direction::Out:
+    if (not voidFunction)
+      Arguments.insert(Arguments.begin(), Call);
+    InstrFn->CallAfter(Call, Arguments);
+    break;
   }
+  //callToInstr->setAttributes(target->getAttributes());
 
   return true;
 }
