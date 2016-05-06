@@ -27,10 +27,10 @@ functions:
 
 #else
 
-// CHECK: define [[FOO_TYPE:.*]] @foo(i32, float, double)
+// CHECK: define [[FOO_TYPE:.*]] @foo(i32{{.*}}, float{{.*}}, double{{.*}})
 int	foo(int x, float y, double z) { return x; }
 
-// CHECK: define [[BAR_TYPE:.*]] @bar(i32, i8*)
+// CHECK: define [[BAR_TYPE:.*]] @bar(i32{{.*}}, i8*{{.*}})
 float	bar(unsigned int i, const char *s) { return i; }
 
 // CHECK: define double @baz()
