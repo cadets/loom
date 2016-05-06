@@ -34,6 +34,7 @@
 #ifndef  LOOM_INSTRUMENTATION_FN_H
 #define  LOOM_INSTRUMENTATION_FN_H
 
+#include "IRUtils.hh"
 #include "PolicyFile.hh"
 
 #include <llvm/ADT/ArrayRef.h>
@@ -55,8 +56,6 @@ namespace loom {
  */
 class InstrumentationFn {
 public:
-  typedef std::pair<std::string,llvm::Type*> Parameter;
-
   static std::unique_ptr<InstrumentationFn>
     Create(llvm::StringRef Name, llvm::ArrayRef<Parameter> ParameterDetails,
            llvm::GlobalValue::LinkageTypes, llvm::Module&);

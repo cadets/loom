@@ -33,6 +33,7 @@
 
 #include "PolicyFile.hh"
 #include "InstrumentationFn.hh"
+#include "IRUtils.hh"
 
 #include "llvm/Pass.h"
 #include "llvm/IR/Module.h"
@@ -41,13 +42,13 @@
 #include "llvm/IR/CallSite.h"
 #include "llvm/IR/InstIterator.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/TypeBuilder.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <unordered_set>
 
 using namespace llvm;
 using namespace loom;
-using Parameter = loom::InstrumentationFn::Parameter;
 using std::string;
 using std::vector;
 
@@ -70,8 +71,6 @@ namespace {
     llvm::ErrorOr<std::unique_ptr<PolicyFile>> PolFile;
   };
 }
-
-static std::vector<Parameter> GetParameters(Function*);
 
 
 bool OptPass::runOnModule(Module &Mod)
@@ -187,13 +186,6 @@ Builder.CreateRetVoid();
   return true;
 }
 
-static std::vector<Parameter> GetParameters(Function *Fn) {
-  std::vector<Parameter> Parameters;
-  for(auto& Arg : Fn->getArgumentList()) {
-    Parameters.emplace_back(Arg.getName(), Arg.getType());
-  }
-  return Parameters;
-}
 
 char OptPass::ID = 0;
 static RegisterPass<OptPass> X("loom", "Loom instrumentation", false, false);
