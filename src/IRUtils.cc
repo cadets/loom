@@ -48,3 +48,15 @@ vector<Parameter> loom::GetParameters(Function *Fn) {
   }
   return Parameters;
 }
+
+
+Function* loom::GetPrintfLikeFunction(Module& Mod, StringRef Name) {
+  Function *Fn = Mod.getFunction(Name);
+  if (Fn)
+    return Fn;
+
+  LLVMContext& Ctx = Mod.getContext();
+  FunctionType *FT = TypeBuilder<int(const char *, ...), false>::get(Ctx);
+
+  return Function::Create(FT, Function::ExternalLinkage, Name, &Mod);
+}
