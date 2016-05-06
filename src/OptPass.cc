@@ -43,6 +43,8 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <unordered_set>
+
 using namespace llvm;
 using namespace loom;
 using std::string;
@@ -55,6 +57,10 @@ namespace {
     OptPass() : ModulePass(ID) {}
 
     bool runOnModule(Module&) override;
+
+    /// Instrument a single call instruction, before and/or after according
+    /// to the given vector of directions.
+    bool Instrument(CallInst*, Policy&);
   };
 }
 
@@ -63,102 +69,108 @@ static std::vector<Type*> ParameterTypes(Function*);
 
 bool OptPass::runOnModule(Module &Mod)
 {
-  ErrorOr<std::unique_ptr<PolicyFile>> policyFile = PolicyFile::Open();
-  if (std::error_code err = policyFile.getError()) {
+  ErrorOr<std::unique_ptr<PolicyFile>> PolicyFile = PolicyFile::Open();
+  if (std::error_code err = PolicyFile.getError()) {
     errs() << "Error opening LOOM policy file: " << err.message() << "\n";
     return false;
   }
 
-  assert(*policyFile);
-  Policy& policy = **policyFile;
+  assert(*PolicyFile);
+  Policy& P = **PolicyFile;
+  bool ModifiedIR = false;
 
   //
   // First find all of the calls that need to be instrumented.
   // This will prevent us from invalidating iterators or
   // instrumenting our instrumentation.
   //
-  std::map<CallInst*, vector<Policy::Direction>> calls;
+  std::unordered_set<CallInst*> Calls;
 
   for (auto& Fn : Mod) {
     for (auto& Inst : instructions(Fn)) {
-      if (CallInst* callInst = dyn_cast<CallInst>(&Inst)) {
-        Function *Target = callInst->getCalledFunction();
-        if (not Target)
-          continue;
-
-        auto directions = policy.CallInstrumentation(*Target);
-        if (not directions.empty())
-          calls.emplace(callInst, directions);
+      if (CallInst* Call = dyn_cast<CallInst>(&Inst)) {
+        Function *Target = Call->getCalledFunction();
+        if (Target and not P.CallInstrumentation(*Target).empty())
+          Calls.insert(Call);
       }
     }
   }
 
-  //Iterate over call instructions and create a new instrumented function
-  //and create a function call to that new function
-  for (auto i = calls.begin(); i != calls.end(); ++i) {
-    CallInst* call = i->first;
-    Type* callType = call->getType();
-    const bool voidFunction = callType->isVoidTy();
+  //
+  // Instrument function calls:
+  //
+  for (auto *Call : Calls)
+    ModifiedIR |= Instrument(Call, P);
 
-    vector<Value*> Arguments;
-    for (Use *m = call->arg_begin(), *n = call->arg_end(); m != n; ++m) {
-        Arguments.push_back(m->get());
+  return ModifiedIR;
+}
+
+
+bool OptPass::Instrument(CallInst *Call, Policy& Pol) {
+
+  Module& Mod = *Call->getModule();
+  Type *CallType = Call->getType();
+  const bool voidFunction = CallType->isVoidTy();
+
+  vector<Value*> Arguments;
+  for (Use *m = Call->arg_begin(), *n = Call->arg_end(); m != n; ++m) {
+      Arguments.push_back(m->get());
+  }
+
+  Function* Target = Call->getCalledFunction();
+  assert(Target); // TODO: support indirect targets, too
+  assert(not Pol.CallInstrumentation(*Target).empty());
+  const string TargetName = Target->getName();
+
+  for(auto Dir : Pol.CallInstrumentation(*Target)) {
+    vector<string> InstrNameComponents;
+    vector<Type*> ParamTypes = ParameterTypes(Target);
+
+    switch (Dir) {
+    case Policy::Direction::In:
+      InstrNameComponents.push_back("call");
+      break;
+
+    case Policy::Direction::Out:
+      InstrNameComponents.push_back("return");
+      if (not voidFunction)
+        ParamTypes.insert(ParamTypes.begin(), Call->getType());
     }
 
-    Function* Target = call->getCalledFunction();
-    assert(Target); // TODO: support indirect targets, too
-    const string TargetName = Target->getName();
+    InstrNameComponents.push_back(TargetName);
+    const string InstrName = Pol.InstrName(InstrNameComponents);
 
-    vector<Policy::Direction> directions = i->second;
-    for(auto d = directions.begin(); d !=directions.end(); ++d) {
-      vector<string> InstrNameComponents;
-      vector<Type*> ParameterTypes = ParameterTypes(Target);
+    // Call instrumentation can be done entirely within a translation unit:
+    // calls in other units can use their own instrumentation functions.
+    GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
 
-      switch (*d) {
-      case Policy::Direction::In:
-        InstrNameComponents.push_back("call");
-        break;
-
-      case Policy::Direction::Out:
-        InstrNameComponents.push_back("return");
-        if (not voidFunction)
-          ParameterTypes.insert(ParamTypes.begin(), call->getType());
-      }
-
-      InstrNameComponents.push_back(TargetName);
-      const string InstrName = policy.InstrName(InstrNameComponents);
-
-      // Call instrumentation can be done entirely within a translation unit:
-      // calls in other units can use their own instrumentation functions.
-      GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
-
-      std::unique_ptr<InstrumentationFn> InstrFn =
-        InstrumentationFn::Create(InstrName, ParamTypes, Linkage, Mod);
+    std::unique_ptr<InstrumentationFn> InstrFn =
+      InstrumentationFn::Create(InstrName, ParamTypes, Linkage, Mod);
 
 #if 0
-  InstrumentationFn::setArgumentNames(target, pNewF);
+InstrumentationFn::setArgumentNames(target, pNewF);
 
-  //Create a basic block and add printf call
-  BasicBlock *block = BasicBlock::Create(module.getContext(), "entry", pNewF);
-  IRBuilder<> Builder(block);
-  InstrumentationFn::addPrintfCall(Builder, target, module, arguments);
-  Builder.CreateRetVoid();
+//Create a basic block and add printf call
+BasicBlock *block = BasicBlock::Create(module.getContext(), "entry", pNewF);
+IRBuilder<> Builder(block);
+InstrumentationFn::addPrintfCall(Builder, target, module, arguments);
+Builder.CreateRetVoid();
 #endif
 
-      switch (*d) {
-      case Policy::Direction::In:
-        InstrFn->CallBefore(call, Arguments);
-        break;
+    switch (Dir) {
+    case Policy::Direction::In:
+      InstrFn->CallBefore(Call, Arguments);
+      break;
 
-      case Policy::Direction::Out:
-        if (not voidFunction)
-          Arguments.insert(Arguments.begin(), call);
-        InstrFn->CallAfter(call, Arguments);
-        break;
-      }
-      //callToInstr->setAttributes(target->getAttributes());
+    case Policy::Direction::Out:
+      if (not voidFunction)
+        Arguments.insert(Arguments.begin(), Call);
+      InstrFn->CallAfter(Call, Arguments);
+      break;
     }
+    //callToInstr->setAttributes(target->getAttributes());
   }
+
   return true;
 }
 
