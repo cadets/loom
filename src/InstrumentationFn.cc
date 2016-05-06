@@ -135,6 +135,11 @@ void InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
   CallInst::Create(InstrFn, Args)->insertAfter(I);
 }
 
+
+Function::ArgumentListType& InstrumentationFn::GetParameters() {
+  return InstrFn->getArgumentList();
+}
+
 void InstrumentationFn::addPrintfCall(IRBuilder<> Builder, Function *pOldF, Module &module, vector<Value*> argumentValues)
 {
   FunctionType *printfFT =

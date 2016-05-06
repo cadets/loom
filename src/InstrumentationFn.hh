@@ -67,6 +67,15 @@ public:
   void CallAfter(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
 
   /**
+   * Retrieve the instrumentation function's parameters.
+   *
+   * The mapping from instrumented values to instrumentation function parameters
+   * depends on the specifics of the instrumentation (e.g., call and return
+   * instrumentation may differ in that return may see a return value).
+   */
+  llvm::Function::ArgumentListType& GetParameters();
+
+  /**
    * Get an IRBuilder that can be used to insert new instructions into the
    * instrumentation's preamble block.
    *
