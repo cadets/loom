@@ -140,17 +140,20 @@ bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
   vector<string> InstrNameComponents;
   vector<Parameter> Parameters = GetParameters(Target);
 
+  string Description;
+
   switch (Dir) {
   case Policy::Direction::In:
-    InstrNameComponents.push_back("call");
+    Description = "call";
     break;
 
   case Policy::Direction::Out:
-    InstrNameComponents.push_back("return");
+    Description = "return";
     if (not voidFunction)
       Parameters.emplace(Parameters.begin(), "retval", Call->getType());
   }
 
+  InstrNameComponents.push_back(Description);
   InstrNameComponents.push_back(TargetName);
   const string InstrName = Pol.InstrName(InstrNameComponents);
 
@@ -162,13 +165,18 @@ bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
   std::unique_ptr<InstrumentationFn> InstrFn =
     InstrumentationFn::Create(InstrName, Parameters, Linkage, Mod);
 
-#if 0
-//Create a basic block and add printf call
-BasicBlock *block = BasicBlock::Create(module.getContext(), "entry", pNewF);
-IRBuilder<> Builder(block);
-InstrumentationFn::addPrintfCall(Builder, target, module, arguments);
-Builder.CreateRetVoid();
-#endif
+  Function *Printf = GetPrintfLikeFunction(Mod);
+  IRBuilder<> Builder = InstrFn->GetPreambleBuilder();
+
+  Value *FormatString =
+    CreateFormatString(Mod, Builder, Description + ": ", Parameters);
+
+  vector<Value*> PrintfArgs = { FormatString };
+  for (auto& Arg : InstrFn->GetParameters()) {
+    PrintfArgs.push_back(&Arg);
+  }
+
+  Builder.CreateCall(Printf, PrintfArgs);
 
   switch (Dir) {
   case Policy::Direction::In:

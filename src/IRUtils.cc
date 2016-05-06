@@ -36,9 +36,41 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/TypeBuilder.h"
 
+#include <sstream>
+
 using namespace llvm;
 using namespace loom;
 using std::vector;
+
+
+Value* loom::CreateFormatString(Module& Mod, IRBuilder<>& Builder,
+                                StringRef Prefix, ArrayRef<Parameter> Params,
+                                StringRef Suffix, FormatStringStyle Style) {
+
+  std::stringstream FormatString;
+
+  // TODO: libxo details (e.g., parameter names)
+
+  for (auto& P : Params) {
+    Type *T = P.second;
+
+    if (T->isIntegerTy(32)) {
+      FormatString << "%d";
+
+    } else if (T->isFloatTy() || T->isDoubleTy()) {
+      FormatString << "%.0f";
+
+    } else if (T->isIntegerTy(8)) {
+      FormatString << "%c";
+
+    } else if (T->isPointerTy()) {
+      FormatString << "%s";
+
+    }
+  }
+
+  return Builder.CreateGlobalStringPtr(FormatString.str());
+}
 
 
 BasicBlock* loom::FindBlock(StringRef Name, Function& Fn) {

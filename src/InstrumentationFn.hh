@@ -89,11 +89,6 @@ public:
   /// Add a new link in the chain of actions for this instrumentation.
   llvm::IRBuilder<> AddAction(llvm::StringRef Name);
 
-  ///
-  static void addPrintfCall(llvm::IRBuilder<> Builder, llvm::Function *pOldF,
-                            llvm::Module &module,
-                            std::vector<llvm::Value*> argumentValues);
-
   // TODO: drop this if ObjC doesn't absolutely need it
   llvm::Function* getImplementation() { return InstrFn; }
 
