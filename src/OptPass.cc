@@ -69,12 +69,12 @@ bool OptPass::runOnModule(Module &Mod)
   assert(*policyFile);
   Policy& policy = **policyFile;
 
-  std::map<CallInst*, vector<Policy::Direction>> callInstsMap;
-  InstrumentationFn::findAllCallInsts(&callInstsMap, Mod, policy);
+  std::map<CallInst*, vector<Policy::Direction>> calls;
+  InstrumentationFn::findAllCallInsts(&calls, Mod, policy);
 
   //Iterate over call instructions and create a new instrumented function
   //and create a function call to that new function
-  for (auto i = callInstsMap.begin(); i != callInstsMap.end(); ++i) {
+  for (auto i = calls.begin(); i != calls.end(); ++i) {
     CallInst* call = i->first;
     Type* callType = call->getType();
     const bool voidFunction = callType->isVoidTy();
