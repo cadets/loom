@@ -80,7 +80,7 @@ bool OptPass::runOnModule(Module &Mod)
     return false;
   }
 
-  assert(*PolicyFile);
+  assert(*PolFile);
   Policy& P = **PolFile;
 
   bool ModifiedIR = false;
