@@ -49,25 +49,29 @@ Value* loom::CreateFormatString(Module& Mod, IRBuilder<>& Builder,
 
   std::stringstream FormatString;
 
+  FormatString << Prefix.str();
+
   // TODO: libxo details (e.g., parameter names)
 
   for (auto& P : Params) {
     Type *T = P.second;
 
     if (T->isIntegerTy(32)) {
-      FormatString << "%d";
+      FormatString << " %d";
 
     } else if (T->isFloatTy() || T->isDoubleTy()) {
-      FormatString << "%.0f";
+      FormatString << " %.0f";
 
     } else if (T->isIntegerTy(8)) {
-      FormatString << "%c";
+      FormatString << " %c";
 
     } else if (T->isPointerTy()) {
-      FormatString << "%s";
+      FormatString << " %s";
 
     }
   }
+
+  FormatString << Suffix.str();
 
   return Builder.CreateGlobalStringPtr(FormatString.str());
 }
