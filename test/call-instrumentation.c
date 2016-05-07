@@ -5,11 +5,11 @@
  * Commands for llvm-lit:
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %s > %t.c
- * RUN: %clang -S -emit-llvm %cflags %t.c -o %t.ll
+ * RUN: %clang %cflags -S -emit-llvm %cflags %t.c -o %t.ll
  * RUN: %loom -loom -S %t.ll -loom-file %t.yaml -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
  * RUN: %llc -filetype=obj %t.instr.ll -o %t.instr.o
- * RUN: %clang -lxo %t.instr.o -o %t.instr
+ * RUN: %clang %ldflags %t.instr.o -o %t.instr
  * RUN: %t.instr > %t.output
  * RUN: %filecheck -input-file %t.output %s -check-prefix CHECK-OUTPUT
  */
