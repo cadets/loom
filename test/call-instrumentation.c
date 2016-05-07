@@ -8,6 +8,10 @@
  * RUN: %clang -S -emit-llvm %cflags %t.c -o %t.ll
  * RUN: %loom -loom -S %t.ll -loom-file %t.yaml -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
+ * RUN: %llc -filetype=obj %t.instr.ll -o %t.instr.o
+ * RUN: %clang -lxo %t.instr.o -o %t.instr
+ * RUN: %t.instr > %t.output
+ * RUN: %filecheck -input-file %t.output %s -check-prefix CHECK-OUTPUT
  */
 
 #if defined (POLICY_FILE)
@@ -39,17 +43,27 @@ double	baz(void) { return 0; }
 int
 main(int argc, char *argv[])
 {
+	printf("Hello, world!\n");
+
+	printf("First, we will call foo():\n");
+
 	// We should instrument foo's call and return:
 	// CHECK: call void @[[PREFIX:__test_hook]]_call_foo([[FOO_ARGS:.*]])
 	// CHECK: [[FOO_RET:.*]] = call [[FOO_TYPE]] @foo([[FOO_ARGS]])
+	// CHECK-OUTPUT: call foo: 1 2 3
 	foo(1, 2, 3);
+	// CHECK-OUTPUT: return foo: 1 2 3
 	// CHECK: call void @[[PREFIX]]_return_foo([[FOO_TYPE]][[FOO_RET]], [[FOO_ARGS]])
+
+	printf("Then bar():\n");
 
 	// We should instrument bar's call but not return:
 	// CHECK: call void @[[PREFIX]]_call_bar([[BAR_ARGS:.*]])
 	// CHECK: call [[BAR_TYPE]] @bar([[BAR_ARGS]])
 	bar(4, "5");
 	// CHECK-NOT: call void @[[PREFIX]]_return_bar
+
+	printf("And finally baz():\n");
 
 	// We should not instrument the call to baz:
 	// CHECK-NOT: call {{.*}}_call_baz
