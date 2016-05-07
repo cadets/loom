@@ -168,8 +168,10 @@ bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
   Function *Printf = GetPrintfLikeFunction(Mod);
   IRBuilder<> Builder = InstrFn->GetPreambleBuilder();
 
+  string FormatStringPrefix = Description + " " + TargetName + ":";
+
   Value *FormatString =
-    CreateFormatString(Mod, Builder, Description + ": ", Parameters, "\n");
+    CreateFormatString(Mod, Builder, FormatStringPrefix, Parameters, "\n");
 
   vector<Value*> PrintfArgs = { FormatString };
   for (auto& Arg : InstrFn->GetParameters()) {
