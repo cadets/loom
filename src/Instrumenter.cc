@@ -82,7 +82,6 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   // calls in other units can use their own instrumentation functions.
   GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
 
-  Module& Mod = *Call->getModule();
   std::unique_ptr<InstrumentationFn> InstrFn =
     InstrumentationFn::Create(InstrName, Parameters, Linkage, Mod);
 
