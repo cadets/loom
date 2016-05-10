@@ -67,7 +67,7 @@ Value* loom::CreateFormatString(Module& Mod, IRBuilder<>& Builder,
 
     } else if (T->isPointerTy()
                and T->getPointerElementType()->isIntegerTy(8)) {
-      FormatString << " %s";
+      FormatString << " \"%s\"";
 
     } else if (T->isPointerTy()) {
       FormatString << " %p";
