@@ -32,20 +32,15 @@
  */
 
 #include "PolicyFile.hh"
-#include "InstrumentationFn.hh"
+#include "Instrumenter.hh"
 #include "IRUtils.hh"
 
 #include "llvm/Pass.h"
 #include "llvm/IR/Module.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/CallingConv.h"
-#include "llvm/IR/CallSite.h"
 #include "llvm/IR/InstIterator.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/TypeBuilder.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include <unordered_set>
+#include <unordered_map>
 
 using namespace llvm;
 using namespace loom;
@@ -59,14 +54,6 @@ namespace {
     OptPass() : ModulePass(ID), PolFile(PolicyFile::Open()) {}
 
     bool runOnModule(Module&) override;
-
-    /// Instrument a single call instruction, before and/or after according
-    /// to the given vector of directions.
-    bool Instrument(CallInst*, Policy&);
-
-    /// Instrument a single call in a single direction (call or return).
-    bool Instrument(CallInst*, Function *Target, Policy&, Policy::Direction,
-                    vector<Value*> Args);
 
     llvm::ErrorOr<std::unique_ptr<PolicyFile>> PolFile;
   };
@@ -83,126 +70,48 @@ bool OptPass::runOnModule(Module &Mod)
   assert(*PolFile);
   Policy& P = **PolFile;
 
-  bool ModifiedIR = false;
-
   //
   // First find all of the calls that need to be instrumented.
   // This will prevent us from invalidating iterators or
   // instrumenting our instrumentation.
   //
-  std::unordered_set<CallInst*> Calls;
+  std::unordered_map<CallInst*, std::vector<Policy::Direction>> Calls;
 
   for (auto& Fn : Mod) {
     for (auto& Inst : instructions(Fn)) {
       if (CallInst* Call = dyn_cast<CallInst>(&Inst)) {
         Function *Target = Call->getCalledFunction();
-        if (Target and not P.CallInstrumentation(*Target).empty())
-          Calls.insert(Call);
+        if (not Target)
+          continue; // TODO: support indirect targets
+
+        vector<Policy::Direction> Directions = P.CallInstrumentation(*Target);
+        if (not Directions.empty())
+          Calls.emplace(Call, Directions);
       }
     }
   }
 
   //
+  // Now actually instrument things:
+  //
+  Instrumenter Instr(Mod, [&P](const std::vector<std::string>& Components)
+                          {
+                            return P.InstrName(Components);
+                          });
+
+  bool ModifiedIR = false;
+
+  //
   // Instrument function calls:
   //
-  for (auto *Call : Calls)
-    ModifiedIR |= Instrument(Call, P);
+  for (auto& i : Calls) {
+    for(auto Dir : i.second) {
+      ModifiedIR |= Instr.Instrument(i.first, Dir);
+    }
+  }
 
   return ModifiedIR;
 }
-
-
-bool OptPass::Instrument(CallInst *Call, Policy& Pol) {
-  vector<Value*> Arguments;
-  for (Use *m = Call->arg_begin(), *n = Call->arg_end(); m != n; ++m) {
-      Arguments.push_back(m->get());
-  }
-
-  Function* Target = Call->getCalledFunction();
-  assert(Target); // TODO: support indirect targets, too
-  assert(not Pol.CallInstrumentation(*Target).empty());
-
-  for(auto Dir : Pol.CallInstrumentation(*Target)) {
-    Instrument(Call, Target, Pol, Dir, Arguments);
-  }
-
-  return true;
-}
-
-
-bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
-                         Policy::Direction Dir, vector<Value*> Arguments) {
-
-  const string TargetName = Target->getName();
-  Type *CallType = Call->getType();
-  const bool voidFunction = CallType->isVoidTy();
-
-  vector<string> InstrNameComponents;
-  vector<Parameter> Parameters = GetParameters(Target);
-
-  string Description;
-
-  switch (Dir) {
-  case Policy::Direction::In:
-    Description = "call";
-    break;
-
-  case Policy::Direction::Out:
-    Description = "return";
-    if (not voidFunction)
-      Parameters.emplace(Parameters.begin(), "retval", Call->getType());
-  }
-
-  InstrNameComponents.push_back(Description);
-  InstrNameComponents.push_back(TargetName);
-  const string InstrName = Pol.InstrName(InstrNameComponents);
-
-  // Call instrumentation can be done entirely within a translation unit:
-  // calls in other units can use their own instrumentation functions.
-  GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
-
-  Module& Mod = *Call->getModule();
-  std::unique_ptr<InstrumentationFn> InstrFn =
-    InstrumentationFn::Create(InstrName, Parameters, Linkage, Mod);
-
-  Function *Printf = GetPrintfLikeFunction(Mod);
-  IRBuilder<> Builder = InstrFn->GetPreambleBuilder();
-
-  string FormatStringPrefix = Description + " " + TargetName + ":";
-
-  Value *FormatString =
-    CreateFormatString(Mod, Builder, FormatStringPrefix, Parameters, "\n");
-
-  vector<Value*> PrintfArgs = { FormatString };
-  for (auto& P : InstrFn->GetParameters()) {
-    Value *Arg = &P;
-
-    // Convert float arguments to double for printf
-    if (Arg->getType()->isFloatTy()) {
-      Arg = Builder.CreateFPExt(Arg, Builder.getDoubleTy());
-    }
-
-    PrintfArgs.push_back(Arg);
-  }
-
-  Builder.CreateCall(Printf, PrintfArgs);
-
-  switch (Dir) {
-  case Policy::Direction::In:
-    InstrFn->CallBefore(Call, Arguments);
-    break;
-
-  case Policy::Direction::Out:
-    if (not voidFunction)
-      Arguments.insert(Arguments.begin(), Call);
-    InstrFn->CallAfter(Call, Arguments);
-    break;
-  }
-  //callToInstr->setAttributes(target->getAttributes());
-
-  return true;
-}
-
 
 char OptPass::ID = 0;
 static RegisterPass<OptPass> X("loom", "Loom instrumentation", false, false);
