@@ -64,7 +64,7 @@ main(int argc, char *argv[])
 	// CHECK: [[FOO_RET:.*]] = call [[FOO_TYPE]] @foo([[FOO_ARGS]])
 	// CHECK-OUTPUT: call foo: 1 2 3
 	foo(1, 2, 3);
-	// CHECK-OUTPUT: return foo: 1 2 3
+	// CHECK-OUTPUT: return foo: 1 1 2 3
 	// CHECK: call void @[[PREFIX]]_return_foo([[FOO_TYPE]][[FOO_RET]], [[FOO_ARGS]])
 
 	printf("Then bar():\n");
