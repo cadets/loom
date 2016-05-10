@@ -174,8 +174,15 @@ bool OptPass::Instrument(CallInst *Call, Function *Target, Policy& Pol,
     CreateFormatString(Mod, Builder, FormatStringPrefix, Parameters, "\n");
 
   vector<Value*> PrintfArgs = { FormatString };
-  for (auto& Arg : InstrFn->GetParameters()) {
-    PrintfArgs.push_back(&Arg);
+  for (auto& P : InstrFn->GetParameters()) {
+    Value *Arg = &P;
+
+    // Convert float arguments to double for printf
+    if (Arg->getType()->isFloatTy()) {
+      Arg = Builder.CreateFPExt(Arg, Builder.getDoubleTy());
+    }
+
+    PrintfArgs.push_back(Arg);
   }
 
   Builder.CreateCall(Printf, PrintfArgs);
