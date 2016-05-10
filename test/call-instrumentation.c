@@ -32,13 +32,25 @@ functions:
 #else
 
 // CHECK: define [[FOO_TYPE:.*]] @foo(i32{{.*}}, float{{.*}}, double{{.*}})
-int	foo(int x, float y, double z) { return x; }
+int	foo(int x, float y, double z)
+{
+	printf("foo(%d, %f, %f\n", x, y, z);
+	return x;
+}
 
 // CHECK: define [[BAR_TYPE:.*]] @bar(i32{{.*}}, i8*{{.*}})
-float	bar(unsigned int i, const char *s) { return i; }
+float	bar(unsigned int i, const char *s)
+{
+	printf("bar(%d, \"%s\")\n", i, s);
+	return i;
+}
 
 // CHECK: define double @baz()
-double	baz(void) { return 0; }
+double	baz(void)
+{
+	printf("baz()\n");
+	return 0;
+}
 
 int
 main(int argc, char *argv[])
