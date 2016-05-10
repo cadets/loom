@@ -72,14 +72,18 @@ main(int argc, char *argv[])
 	// We should instrument bar's call but not return:
 	// CHECK: call void @[[PREFIX]]_call_bar([[BAR_ARGS:.*]])
 	// CHECK: call [[BAR_TYPE]] @bar([[BAR_ARGS]])
+	// CHECK-OUTPUT: call bar: 4 5
 	bar(4, "5");
+	// CHECK-OUTPUT-NOT: return bar
 	// CHECK-NOT: call void @[[PREFIX]]_return_bar
 
 	printf("And finally baz():\n");
 
 	// We should not instrument the call to baz:
 	// CHECK-NOT: call {{.*}}_call_baz
+	// CHECK-OUTPUT-NOT: call baz
 	baz();
+	// CHECK-OUTPUT-NOT: return baz
 	// CHECK-NOT: call {{.*}}_return_baz
 
 	return 0;
