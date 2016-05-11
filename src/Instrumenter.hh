@@ -61,7 +61,8 @@ public:
 private:
   InstrumentationFn& GetOrCreateInstrFn(llvm::StringRef Name,
                                         const std::vector<Parameter>&,
-                                        llvm::GlobalValue::LinkageTypes);
+                                        llvm::GlobalValue::LinkageTypes,
+                                        bool CreateDefinition);
 
   llvm::Module& Mod;
   llvm::StringMap<std::unique_ptr<InstrumentationFn>> InstrFns;

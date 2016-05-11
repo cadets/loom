@@ -81,7 +81,8 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   // Call instrumentation can be done entirely within a translation unit:
   // calls in other units can use their own instrumentation functions.
   InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName, Parameters,
-                                                  Function::InternalLinkage);
+                                                  Function::InternalLinkage,
+                                                  true);
 
   Function *Printf = GetPrintfLikeFunction(Mod);
   IRBuilder<> Builder = InstrFn.GetPreambleBuilder();
@@ -125,12 +126,14 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 InstrumentationFn&
 Instrumenter::GetOrCreateInstrFn(StringRef Name,
                                  const vector<Parameter>& P,
-                                 GlobalValue::LinkageTypes Linkage)
+                                 GlobalValue::LinkageTypes Linkage,
+                                 bool CreateDefinition)
 {
   auto i = InstrFns.find(Name);
   if (i != InstrFns.end())
     return *i->second;
 
-  InstrFns[Name] = InstrumentationFn::Create(Name, P, Linkage, Mod);
+  InstrFns[Name] = InstrumentationFn::Create(Name, P, Linkage, Mod,
+                                             CreateDefinition);
   return *InstrFns[Name];
 }

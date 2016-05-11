@@ -58,7 +58,8 @@ class InstrumentationFn {
 public:
   static std::unique_ptr<InstrumentationFn>
     Create(llvm::StringRef Name, llvm::ArrayRef<Parameter> ParameterDetails,
-           llvm::GlobalValue::LinkageTypes, llvm::Module&);
+           llvm::GlobalValue::LinkageTypes, llvm::Module&,
+           bool Define = false);
 
   /// Has this instrumentation been defined, or is it just a declaration?
   bool isDefined() const;

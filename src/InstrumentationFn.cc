@@ -47,7 +47,8 @@ using std::vector;
 
 unique_ptr<InstrumentationFn>
 InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
-                          GlobalValue::LinkageTypes Linkage, Module& M) {
+                          GlobalValue::LinkageTypes Linkage, Module& M,
+                          bool Define) {
 
   LLVMContext& Ctx = M.getContext();
 
@@ -69,17 +70,17 @@ InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
   }
 
   //
-  // Invariant: instrumentation functions should have a "preamble" block,
-  // which contains instructions to execute first for all instrumented events
-  // (e.g., logging calls) and an "exit" block after all actions required by
-  // the instrumentation have been taken.
+  // Invariant: instrumentation functions, if defined, should have a
+  // "preamble" block, which contains instructions to execute first for
+  // all instrumented events (e.g., logging calls) and an "exit" block
+  // after all actions required by the instrumentation have been taken.
   //
   // The function starts out with the preamble branching to the exit block.
   // Instrumentation is added in new BasicBlocks in between.
   //
   BasicBlock *Preamble, *EndBlock;
 
-  if (InstrFn->empty()) {
+  if (Define && InstrFn->empty()) {
     Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
     EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
 
@@ -99,12 +100,15 @@ InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
 
 IRBuilder<> InstrumentationFn::GetPreambleBuilder()
 {
+  assert(Preamble);
   return IRBuilder<>(Preamble->getTerminator());
 }
 
 
 IRBuilder<> InstrumentationFn::AddAction(StringRef Name)
 {
+  assert(Preamble && End);
+
   // Get the last block in the instrumentation chain before "end"
   // and unhook it from "end": we need to insert the new block in between.
   BasicBlock *Predecessor = End->getSinglePredecessor();
@@ -128,7 +132,10 @@ IRBuilder<> InstrumentationFn::AddAction(StringRef Name)
 
 
 bool InstrumentationFn::isDefined() const {
-  return not InstrFn->getBasicBlockList().empty();
+  assert((Preamble == nullptr) == (End == nullptr)
+         == InstrFn->getBasicBlockList().empty());
+
+  return (Preamble != nullptr);
 }
 
 
