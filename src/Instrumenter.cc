@@ -80,13 +80,11 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   // Call instrumentation can be done entirely within a translation unit:
   // calls in other units can use their own instrumentation functions.
-  GlobalValue::LinkageTypes Linkage = Function::InternalLinkage;
-
-  std::unique_ptr<InstrumentationFn> InstrFn =
-    InstrumentationFn::Create(InstrName, Parameters, Linkage, Mod);
+  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName, Parameters,
+                                                  Function::InternalLinkage);
 
   Function *Printf = GetPrintfLikeFunction(Mod);
-  IRBuilder<> Builder = InstrFn->GetPreambleBuilder();
+  IRBuilder<> Builder = InstrFn.GetPreambleBuilder();
 
   string FormatStringPrefix = Description + " " + TargetName + ":";
 
@@ -94,7 +92,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
     CreateFormatString(Mod, Builder, FormatStringPrefix, Parameters, "\n");
 
   vector<Value*> PrintfArgs = { FormatString };
-  for (auto& P : InstrFn->GetParameters()) {
+  for (auto& P : InstrFn.GetParameters()) {
     Value *Arg = &P;
 
     // Convert float arguments to double for printf
@@ -109,16 +107,30 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   switch (Dir) {
   case Policy::Direction::In:
-    InstrFn->CallBefore(Call, Arguments);
+    InstrFn.CallBefore(Call, Arguments);
     break;
 
   case Policy::Direction::Out:
     if (not voidFunction)
       Arguments.insert(Arguments.begin(), Call);
-    InstrFn->CallAfter(Call, Arguments);
+    InstrFn.CallAfter(Call, Arguments);
     break;
   }
   //callToInstr->setAttributes(target->getAttributes());
 
   return true;
+}
+
+
+InstrumentationFn&
+Instrumenter::GetOrCreateInstrFn(StringRef Name,
+                                 const vector<Parameter>& P,
+                                 GlobalValue::LinkageTypes Linkage)
+{
+  auto i = InstrFns.find(Name);
+  if (i != InstrFns.end())
+    return *i->second;
+
+  InstrFns[Name] = InstrumentationFn::Create(Name, P, Linkage, Mod);
+  return *InstrFns[Name];
 }
