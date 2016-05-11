@@ -65,10 +65,12 @@ public:
   bool isDefined() const;
 
   /// Insert a call to this instrumentation just before the given Instruction.
-  void CallBefore(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
+  llvm::CallInst* CallBefore(llvm::Instruction*,
+                             llvm::ArrayRef<llvm::Value*> Args);
 
   /// Insert a call to this instrumentation just after the given Instruction.
-  void CallAfter(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
+  llvm::CallInst* CallAfter(llvm::Instruction*,
+                            llvm::ArrayRef<llvm::Value*> Args);
 
   /**
    * Retrieve the instrumentation function's parameters.

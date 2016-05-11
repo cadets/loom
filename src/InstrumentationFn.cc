@@ -139,12 +139,16 @@ bool InstrumentationFn::isDefined() const {
 }
 
 
-void InstrumentationFn::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
-  CallInst::Create(InstrFn, Args)->insertBefore(I);
+CallInst* InstrumentationFn::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
+  CallInst *C = CallInst::Create(InstrFn, Args);
+  C->insertBefore(I);
+  return C;
 }
 
-void InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
-  CallInst::Create(InstrFn, Args)->insertAfter(I);
+CallInst* InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
+  CallInst *C = CallInst::Create(InstrFn, Args);
+  C->insertAfter(I);
+  return C;
 }
 
 
