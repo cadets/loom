@@ -127,6 +127,11 @@ IRBuilder<> InstrumentationFn::AddAction(StringRef Name)
 }
 
 
+bool InstrumentationFn::isDefined() const {
+  return not InstrFn->getBasicBlockList().empty();
+}
+
+
 void InstrumentationFn::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
   CallInst::Create(InstrFn, Args)->insertBefore(I);
 }

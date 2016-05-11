@@ -60,6 +60,9 @@ public:
     Create(llvm::StringRef Name, llvm::ArrayRef<Parameter> ParameterDetails,
            llvm::GlobalValue::LinkageTypes, llvm::Module&);
 
+  /// Has this instrumentation been defined, or is it just a declaration?
+  bool isDefined() const;
+
   /// Insert a call to this instrumentation just before the given Instruction.
   void CallBefore(llvm::Instruction*, llvm::ArrayRef<llvm::Value*> Args);
 
