@@ -105,9 +105,7 @@ bool OptPass::runOnModule(Module &Mod)
   // Instrument function calls:
   //
   for (auto& i : Calls) {
-    for(auto Dir : i.second) {
-      ModifiedIR |= Instr.Instrument(i.first, Dir);
-    }
+    ModifiedIR |= Instr.Instrument(i.first, i.second);
   }
 
   return ModifiedIR;

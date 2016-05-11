@@ -54,6 +54,9 @@ public:
    */
   Instrumenter(llvm::Module&, NameFn NF);
 
+  /// Instrument a function call in the call and/or return direction.
+  bool Instrument(llvm::CallInst*, const std::vector<Policy::Direction>&);
+
   /// Instrument a function call (caller-side), either calling or returning.
   bool Instrument(llvm::CallInst *Call, Policy::Direction);
 

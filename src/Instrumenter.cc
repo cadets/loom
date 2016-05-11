@@ -44,6 +44,19 @@ Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF)
 }
 
 
+bool Instrumenter::Instrument(CallInst *Call,
+                              const std::vector<Policy::Direction>& D)
+{
+  bool ModifiedIR = false;
+
+  for(auto Dir : D) {
+    ModifiedIR |= Instrument(Call, Dir);
+  }
+
+  return ModifiedIR;
+}
+
+
 bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 {
   Function* Target = Call->getCalledFunction();
