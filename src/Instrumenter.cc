@@ -119,18 +119,21 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   Builder.CreateCall(Printf, PrintfArgs);
 
+  CallInst *InstrCall;
+
   switch (Dir) {
   case Policy::Direction::In:
-    InstrFn.CallBefore(Call, Arguments);
+    InstrCall = InstrFn.CallBefore(Call, Arguments);
     break;
 
   case Policy::Direction::Out:
     if (not voidFunction)
       Arguments.insert(Arguments.begin(), Call);
-    InstrFn.CallAfter(Call, Arguments);
+    InstrCall = InstrFn.CallAfter(Call, Arguments);
     break;
   }
-  //callToInstr->setAttributes(target->getAttributes());
+
+  InstrCall->setAttributes(Target->getAttributes());
 
   return true;
 }
