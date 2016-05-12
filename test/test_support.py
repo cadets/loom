@@ -25,6 +25,7 @@ default_path = llvm_bindir + os.pathsep + os.environ.get('PATH')
 
 
 def cflags(dirs, defines = [], extra = []):
+	dirs += [ '/usr/local/include' ]
 	return ' '.join([
 		' '.join([ '-I %s' % d for d in dirs if d not in std_incdirs ]),
 		' '.join([ '-D %s' % d for d in defines ]),
@@ -32,6 +33,7 @@ def cflags(dirs, defines = [], extra = []):
 	])
 
 def ldflags(dirs, libs, extras = []):
+	dirs += [ '/usr/local/lib' ]
 	return ' '.join([
 		' '.join([ '-L %s' % d for d in dirs if d not in std_libdirs ]),
 		' '.join([ '-l %s' % l for l in libs ])
