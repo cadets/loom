@@ -73,6 +73,9 @@ unique_ptr<Logger> Logger::Create(Module& Mod, LogType Log) {
 
   case LogType::Libxo:
     return unique_ptr<Logger>(new LibxoLogger(Mod));
+
+  case LogType::None:
+    return unique_ptr<Logger>();
   }
 }
 

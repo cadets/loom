@@ -59,6 +59,9 @@ public:
 
     /// Juniper's libxo, which generates text or structured output
     Libxo,
+
+    /// Don't log things.
+    None,
   };
 
   /// Create a new Logger of the specified type (`printf`, `libxo`, etc.).
