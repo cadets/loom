@@ -151,31 +151,38 @@ Value*
 LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
                                 ArrayRef<Parameter> Params, StringRef Suffix) {
 
-  // TODO: actually libxoize this!
   std::stringstream FormatString;
 
   FormatString << Prefix.str();
 
   for (auto& P : Params) {
+    const string Name = P.first;
     Type *T = P.second;
 
+    FormatString
+      << "{P: }"                 // padding
+      << "{h:" << Name << "/"    // humanize values (e.g., "44M")
+      ;
+
     if (T->isIntegerTy(32)) {
-      FormatString << " %d";
+      FormatString << "%d";
 
     } else if (T->isFloatTy() || T->isDoubleTy()) {
-      FormatString << " %.0f";
+      FormatString << "%.0f";
 
     } else if (T->isIntegerTy(8)) {
-      FormatString << " %c";
+      FormatString << "%c";
 
     } else if (T->isPointerTy()
                and T->getPointerElementType()->isIntegerTy(8)) {
-      FormatString << " \"%s\"";
+      FormatString << "\"%s\"";
 
     } else if (T->isPointerTy()) {
-      FormatString << " %p";
+      FormatString << "%p";
 
     }
+
+    FormatString << "}"; // close the format string
   }
 
   FormatString << Suffix.str();

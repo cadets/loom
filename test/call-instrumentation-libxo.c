@@ -12,8 +12,6 @@
  * RUN: %clang %ldflags %t.instr.o -o %t.instr
  * RUN: %t.instr > %t.output
  * RUN: %filecheck -input-file %t.output %s -check-prefix CHECK-OUTPUT
- *
- * XFAIL: *
  */
 
 #if defined (POLICY_FILE)
