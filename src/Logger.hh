@@ -80,6 +80,11 @@ public:
                                           llvm::ArrayRef<Parameter>,
                                           llvm::StringRef Suffix) = 0;
 
+  /// Create a format string that we can pass to the logging function.
+  llvm::Value* CreateFormatString(llvm::IRBuilder<>&, llvm::StringRef Prefix,
+                                  llvm::ArrayRef<llvm::Value*>,
+                                  llvm::StringRef Suffix);
+
 protected:
   Logger(llvm::Module& Mod) : Mod(Mod) {}
 

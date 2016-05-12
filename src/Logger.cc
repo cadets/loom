@@ -96,6 +96,17 @@ FunctionType* Logger::GetType() {
 }
 
 
+Value* Logger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
+                                  ArrayRef<Value*> Values, StringRef Suffix) {
+  std::vector<Parameter> NamedTypes;
+  for (Value *V : Values) {
+    NamedTypes.emplace_back(V->getName(), V->getType());
+  }
+
+  return CreateFormatString(Builder, Prefix, NamedTypes, Suffix);
+}
+
+
 Value*
 LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
                                 ArrayRef<Parameter> Params, StringRef Suffix) {
