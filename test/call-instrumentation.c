@@ -1,4 +1,4 @@
-/*
+/**
  * \file  call-instrumentation.c
  * \brief Tests caller-context function instrumentation.
  *
