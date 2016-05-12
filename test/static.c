@@ -4,7 +4,7 @@
  *
  * Commands for llvm-lit:
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
- * RUN: %cpp %s > %t.c
+ * RUN: %cpp %cflags %s > %t.c
  * RUN: %clang -S -emit-llvm %cflags %t.c -o %t.ll
  * RUN: %loom -S %t.ll -loom-file %t.yaml -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
