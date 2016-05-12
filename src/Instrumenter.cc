@@ -70,22 +70,14 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   const string TargetName = Target->getName();
   Type *CallType = Call->getType();
   const bool voidFunction = CallType->isVoidTy();
+  const bool Return = (Dir == Policy::Direction::Out);
+  const string Description = Return ? "return" : "call";
 
   vector<string> InstrNameComponents;
   vector<Parameter> Parameters = GetParameters(Target);
 
-  string Description;
-
-  switch (Dir) {
-  case Policy::Direction::In:
-    Description = "call";
-    break;
-
-  case Policy::Direction::Out:
-    Description = "return";
-    if (not voidFunction)
+  if (Return and not voidFunction)
       Parameters.emplace(Parameters.begin(), "retval", Call->getType());
-  }
 
   InstrNameComponents.push_back(Description);
   InstrNameComponents.push_back(TargetName);
@@ -121,16 +113,12 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   CallInst *InstrCall;
 
-  switch (Dir) {
-  case Policy::Direction::In:
-    InstrCall = InstrFn.CallBefore(Call, Arguments);
-    break;
-
-  case Policy::Direction::Out:
+  if (Return) {
     if (not voidFunction)
       Arguments.insert(Arguments.begin(), Call);
     InstrCall = InstrFn.CallAfter(Call, Arguments);
-    break;
+  } else {
+    InstrCall = InstrFn.CallBefore(Call, Arguments);
   }
 
   InstrCall->setAttributes(Target->getAttributes());
