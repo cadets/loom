@@ -56,6 +56,8 @@ namespace {
     bool runOnModule(Module&) override;
 
     llvm::ErrorOr<std::unique_ptr<PolicyFile>> PolFile;
+
+    const Logger::LogType LogType = Logger::LogType::Printf; // TODO: fix!
   };
 }
 
@@ -94,10 +96,13 @@ bool OptPass::runOnModule(Module &Mod)
   //
   // Now actually instrument things:
   //
-  Instrumenter Instr(Mod, [&P](const std::vector<std::string>& Components)
-                          {
-                            return P.InstrName(Components);
-                          });
+  Instrumenter::NameFn Name =
+    [&P](const std::vector<std::string>& Components)
+    {
+      return P.InstrName(Components);
+    };
+
+  std::unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, LogType));
 
   bool ModifiedIR = false;
 
@@ -105,7 +110,7 @@ bool OptPass::runOnModule(Module &Mod)
   // Instrument function calls:
   //
   for (auto& i : Calls) {
-    ModifiedIR |= Instr.Instrument(i.first, i.second);
+    ModifiedIR |= Instr->Instrument(i.first, i.second);
   }
 
   return ModifiedIR;

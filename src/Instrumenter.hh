@@ -34,6 +34,7 @@
 #define LOOM_INSTRUMENTER_H_
 
 #include "InstrumentationFn.hh"
+#include "Logger.hh"
 #include "Policy.hh"
 
 #include <functional>
@@ -47,12 +48,13 @@ public:
   typedef std::function<std::string (const std::vector<std::string>&)> NameFn;
 
   /**
-   * Constructor.
+   * Create a new Instrumenter instance.
    *
    * @param   NF      a function that can be called to name instrumentation
    *                  (e.g., ["call","foo"] => "__loom_hook_call_foo")
    */
-  Instrumenter(llvm::Module&, NameFn NF);
+  static std::unique_ptr<Instrumenter>
+    Create(llvm::Module&, NameFn NF, Logger::LogType L = Logger::LogType::None);
 
   /// Instrument a function call in the call and/or return direction.
   bool Instrument(llvm::CallInst*, const std::vector<Policy::Direction>&);
@@ -62,6 +64,8 @@ public:
 
 
 private:
+  Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<Logger>);
+
   InstrumentationFn& GetOrCreateInstrFn(llvm::StringRef Name,
                                         llvm::StringRef FormatStringPrefix,
                                         const ParamVec&,
@@ -71,6 +75,7 @@ private:
   llvm::Module& Mod;
   llvm::StringMap<std::unique_ptr<InstrumentationFn>> InstrFns;
   NameFn Name;
+  std::unique_ptr<Logger> Log;
 };
 
 } // namespace loom

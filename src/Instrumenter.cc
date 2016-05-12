@@ -39,12 +39,18 @@ using namespace llvm;
 using namespace loom;
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 
-Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF)
-  : Mod(Mod), Name(NF)
-{
+unique_ptr<Instrumenter>
+Instrumenter::Create(Module& Mod, NameFn NF, Logger::LogType L) {
+  unique_ptr<Logger> Log = Logger::Create(Mod, L);
+  return unique_ptr<Instrumenter>(new Instrumenter(Mod, NF, std::move(Log)));
 }
+
+
+Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF, unique_ptr<Logger> Log)
+  : Mod(Mod), Name(NF), Log(std::move(Log)) {}
 
 
 bool Instrumenter::Instrument(CallInst *Call,
@@ -136,10 +142,10 @@ Instrumenter::GetOrCreateInstrFn(StringRef Name, StringRef FormatPrefix,
   assert(InstrFns[Name]);
   InstrumentationFn& Fn = *InstrFns[Name];
 
-  IRBuilder<> Builder = Fn.GetPreambleBuilder();
-  std::unique_ptr<Logger> Log(Logger::Create(Mod, Logger::LogType::Printf));
-
-  Log->Call(Builder, FormatPrefix, Fn.GetParameters(), "\n");
+  if (Log) {
+    IRBuilder<> Builder = Fn.GetPreambleBuilder();
+    Log->Call(Builder, FormatPrefix, Fn.GetParameters(), "\n");
+  }
 
   return Fn;
 }
