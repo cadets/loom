@@ -61,6 +61,35 @@ public:
   bool Instrument(llvm::CallInst *Call, Policy::Direction);
 
 
+  /// Ways that we can log values.
+  enum class Logger {
+
+    /// The libc printf() function
+    Printf,
+
+    /// Juniper's libxo, which generates text or structured output
+    Libxo,
+  };
+
+  /**
+   * Create a format string for a call to printf (or a printf-like function),
+   * store it in a module as a global variable and get a pointer to it, suitable
+   * for passing directly to printf.
+   *
+   * @param    Prefix      text to print before the values
+   * @param    Values      names and types for the values that will be passed
+   *                       to printf together with the format string,
+   *                       and which the format string should describe
+   * @param    Suffix      text to print after the values
+   * @param    Style       what sort of format string to generate
+   *                       (traditional printf, libxo, etc.)
+   */
+  llvm::Value*
+  CreateFormatString(llvm::IRBuilder<>&, llvm::StringRef Prefix,
+                     llvm::ArrayRef<Parameter> Values,
+                     llvm::StringRef Suffix = "",
+                     Logger Style = Logger::Printf);
+
 private:
   InstrumentationFn& GetOrCreateInstrFn(llvm::StringRef Name,
                                         const std::vector<Parameter>&,
