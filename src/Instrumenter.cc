@@ -65,25 +65,21 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   Function* Target = Call->getCalledFunction();
   assert(Target); // TODO: support indirect targets, too
 
-  vector<Value*> Arguments;
-  for (Use *m = Call->arg_begin(), *n = Call->arg_end(); m != n; ++m) {
-      Arguments.push_back(m->get());
-  }
-
+  // Get some relevant details about the call and the target function.
   const string TargetName = Target->getName();
   Type *CallType = Call->getType();
   const bool voidFunction = CallType->isVoidTy();
   const bool Return = (Dir == Policy::Direction::Out);
-  const string Description = Return ? "return" : "call";
 
-  vector<string> InstrNameComponents;
+  //
+  // Find or create the instrumentation function.
+  //
   ParamVec Parameters = GetParameters(Target);
-
   if (Return and not voidFunction)
       Parameters.emplace(Parameters.begin(), "retval", Call->getType());
 
-  InstrNameComponents.push_back(Description);
-  InstrNameComponents.push_back(TargetName);
+  const string Description = Return ? "return" : "call";
+  vector<string> InstrNameComponents { Description, TargetName };
   const string InstrName = Name(InstrNameComponents);
 
   // Call instrumentation can be done entirely within a translation unit:
@@ -98,15 +94,27 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   string FormatStringPrefix = Description + " " + TargetName + ":";
   Log->Call(Builder, FormatStringPrefix, InstrFn.GetParameters(), "\n");
 
-  CallInst *InstrCall;
-
-  if (Return) {
-    if (not voidFunction)
-      Arguments.insert(Arguments.begin(), Call);
-    InstrCall = InstrFn.CallAfter(Call, Arguments);
-  } else {
-    InstrCall = InstrFn.CallBefore(Call, Arguments);
+  //
+  // Having found or created the instrumentation function itself,
+  // figure out what values we are going to pass to it.
+  //
+  vector<Value*> Arguments;
+  if (Return and not voidFunction) {
+    Arguments.push_back(Call);  // the return value, if present, comes first
   }
+
+  for (Use *m = Call->arg_begin(), *n = Call->arg_end(); m != n; ++m) {
+    Arguments.push_back(m->get());
+  }
+
+  //
+  // Call the instrumentation.
+  //
+  CallInst *InstrCall =
+    Return
+    ? InstrFn.CallAfter(Call, Arguments)
+    : InstrFn.CallBefore(Call, Arguments)
+    ;
 
   InstrCall->setAttributes(Target->getAttributes());
 
