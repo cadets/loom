@@ -81,6 +81,29 @@ unique_ptr<Logger> Logger::Create(Module& Mod, LogType Log) {
 }
 
 
+CallInst* Logger::Call(IRBuilder<>& Builder, StringRef Prefix,
+                       ArrayRef<Value*> Values, StringRef Suffix) {
+
+  vector<Value*> Args = AdaptArguments(Values, Builder);
+
+  Value *FormatString = CreateFormatString(Builder, Prefix, Args, Suffix);
+  Args.emplace(Args.begin(), FormatString);
+
+  return Builder.CreateCall(GetFunction(), Args);
+}
+
+
+CallInst* Logger::Call(IRBuilder<>& Builder, StringRef FormatStringPrefix,
+                       Function::ArgumentListType& Args, StringRef Suffix) {
+
+  vector<Value*> LogArgs(Args.size());
+  std::transform(Args.begin(), Args.end(), LogArgs.begin(),
+                 [&](Value& V) { return &V; });
+
+  return Call(Builder, FormatStringPrefix, LogArgs, Suffix);
+}
+
+
 Function* Logger::GetFunction() {
   const string Name = FunctionName();
 

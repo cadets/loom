@@ -92,28 +92,11 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
                                                   Function::InternalLinkage,
                                                   true);
 
-  std::unique_ptr<Logger> Log(Logger::Create(Mod, Logger::LogType::Printf));
-  Function *Printf = Log->GetFunction();
   IRBuilder<> Builder = InstrFn.GetPreambleBuilder();
+  std::unique_ptr<Logger> Log(Logger::Create(Mod, Logger::LogType::Printf));
 
   string FormatStringPrefix = Description + " " + TargetName + ":";
-
-  Value *FormatString =
-    Log->CreateFormatString(Builder, FormatStringPrefix, Parameters, "\n");
-
-  vector<Value*> PrintfArgs = { FormatString };
-  for (auto& P : InstrFn.GetParameters()) {
-    Value *Arg = &P;
-
-    // Convert float arguments to double for printf
-    if (Arg->getType()->isFloatTy()) {
-      Arg = Builder.CreateFPExt(Arg, Builder.getDoubleTy());
-    }
-
-    PrintfArgs.push_back(Arg);
-  }
-
-  Builder.CreateCall(Printf, PrintfArgs);
+  Log->Call(Builder, FormatStringPrefix, InstrFn.GetParameters(), "\n");
 
   CallInst *InstrCall;
 

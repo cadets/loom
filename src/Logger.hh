@@ -68,6 +68,16 @@ public:
   static std::unique_ptr<Logger> Create(llvm::Module&,
                                         LogType Log = LogType::Printf);
 
+  /// Log a set of values, with optional prefix and suffix text.
+  llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
+                       llvm::ArrayRef<llvm::Value*> Values,
+                       llvm::StringRef Suffix = "");
+
+  /// Log a function's arguments, with optional prefix and suffix text.
+  llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
+                       llvm::Function::ArgumentListType&,
+                       llvm::StringRef Suffix = "");
+
   /// Get (or create) declaration for the logging function.
   llvm::Function* GetFunction();
 
