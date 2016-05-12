@@ -1,12 +1,12 @@
-/*
- * \file  function-instrumentation.c
- * \brief Tests callee-context function instrumentation.
+/**
+ * \file  function-instrumentation-libxo.c
+ * \brief Tests callee-context function instrumentation using libxo.
  *
  * Commands for llvm-lit:
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %cflags %s > %t.c
  * RUN: %clang %cflags -S -emit-llvm %cflags %t.c -o %t.ll
- * RUN: %loom -S %t.ll -loom-file %t.yaml -loom-logging=printf -o %t.instr.ll
+ * RUN: %loom -S %t.ll -loom-file %t.yaml -loom-logging=libxo -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
  * RUN: %llc -filetype=obj %t.instr.ll -o %t.instr.o
  * RUN: %clang %ldflags %t.instr.o -o %t.instr
@@ -28,6 +28,11 @@ functions:
     - name: baz
 
 #else
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <libxo/xo.h>
 
 // CHECK: define [[FOO_TYPE:.*]] @foo([[FOO_ARGS:.*]])
 int	foo(int x, float y, double z)
@@ -60,24 +65,23 @@ double	baz(void)
 int
 main(int argc, char *argv[])
 {
+	atexit(xo_finish_atexit);
+
 	printf("Hello, world!\n");
 
 	printf("First, we will call foo():\n");
 	foo(1, 2, 3);
 	// CHECK-OUTPUT: enter foo: 1 2 3
-	// CHECK-OUTPUT: foo(1, 2, 3)
 	// CHECK-OUTPUT: leave foo: 1 1 2 3
 
 	printf("Then bar():\n");
 	bar(4, "5");
 	// CHECK-OUTPUT: enter bar: 4 "5"
-	// CHECK-OUTPUT: bar(4, "5")
 	// CHECK-OUTPUT-NOT: leave bar
 
 	printf("And finally baz():\n");
 	baz();
 	// CHECK-OUTPUT-NOT: enter baz
-	// CHECK-OUTPUT: baz
 	// CHECK-OUTPUT-NOT: leave baz
 
 

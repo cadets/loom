@@ -124,6 +124,84 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 }
 
 
+bool
+Instrumenter::Instrument(Function& Fn, const vector<Policy::Direction>& D) {
+  bool ModifiedIR = false;
+
+  for (auto Dir : D) {
+    ModifiedIR |= Instrument(Fn, Dir);
+  }
+
+  return ModifiedIR;
+}
+
+
+bool
+Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
+  const bool Return = (Dir == Policy::Direction::Out);
+  const string Description = Return ? "leave" : "enter";
+  StringRef FnName = Fn.getName();
+
+  assert(isa<PointerType>(Fn.getType()));
+  FunctionType *FnType = dyn_cast<FunctionType>(Fn.getType()->getElementType());
+  assert(FnType);
+  const bool voidFunction = FnType->isVoidTy();
+
+  vector<string> InstrNameComponents { Description, FnName };
+  const string InstrName = Name(InstrNameComponents);
+
+  vector<Value*> Arguments;
+  vector<Parameter> InstrParameters;
+
+  if (Return and not voidFunction)
+    InstrParameters.emplace_back("retval", FnType->getReturnType());
+
+  for (auto& Arg : Fn.getArgumentList()) {
+      Arguments.push_back(&Arg);
+      InstrParameters.emplace_back(Arg.getName(), Arg.getType());
+  }
+
+
+  string FormatStringPrefix = (Description + " " + FnName + ":").str();
+
+  // Callee-side function instrumentation can have internal linkage.
+  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
+                                                  FormatStringPrefix,
+                                                  InstrParameters,
+                                                  Function::InternalLinkage,
+                                                  true);
+
+  if (Return) {
+    for (auto& Block : Fn) {
+      TerminatorInst *Terminator = Block.getTerminator();
+      if (auto *Ret = dyn_cast<ReturnInst>(Terminator)) {
+        vector<Value*> InstrArgs;
+        if (not voidFunction) {
+          InstrArgs.push_back(Ret->getReturnValue());
+        }
+        InstrArgs.insert(InstrArgs.end(), Arguments.begin(), Arguments.end());
+
+        Terminator->dump();
+        for (auto& A : InstrArgs) {
+          A->dump();
+        }
+
+        InstrFn.getImplementation()->dump();
+        InstrFn.CallBefore(Terminator, InstrArgs);
+      }
+    }
+
+  } else {
+    assert(not Fn.getBasicBlockList().empty());
+    BasicBlock& Entry = Fn.getBasicBlockList().front();
+
+    InstrFn.CallBefore(&Entry.front(), Arguments);
+  }
+
+  return false;
+}
+
+
 InstrumentationFn&
 Instrumenter::GetOrCreateInstrFn(StringRef Name, StringRef FormatPrefix,
                                  const ParamVec& P,

@@ -62,6 +62,12 @@ public:
   /// Instrument a function call (caller-side), either calling or returning.
   bool Instrument(llvm::CallInst *Call, Policy::Direction);
 
+  /// Instrument a function entry and/or exit.
+  bool Instrument(llvm::Function&, const std::vector<Policy::Direction>&);
+
+  /// Instrument a function entry or exit.
+  bool Instrument(llvm::Function&, Policy::Direction);
+
 
 private:
   Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<Logger>);

@@ -80,15 +80,31 @@ bool OptPass::runOnModule(Module &Mod)
   assert(*PolFile);
   Policy& P = **PolFile;
 
+  Instrumenter::NameFn Name =
+    [&P](const std::vector<std::string>& Components)
+    {
+      return P.InstrName(Components);
+    };
+  std::unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, LogType));
+
+  bool ModifiedIR = false;
+
   //
-  // First find all of the calls that need to be instrumented.
-  // This will prevent us from invalidating iterators or
-  // instrumenting our instrumentation.
+  // In order to keep from invalidating iterators or instrumenting our
+  // instrumentation, we need to decide on the instruction-oriented
+  // instrumentation points like calls before we actually instrument them.
   //
   std::unordered_map<CallInst*, std::vector<Policy::Direction>> Calls;
 
   for (auto& Fn : Mod) {
+    // Do we need to instrument this function?
+    vector<Policy::Direction> Directions = P.FunctionInstrumentation(Fn);
+    if (not Directions.empty()) {
+      Instr->Instrument(Fn, Directions);
+    }
+
     for (auto& Inst : instructions(Fn)) {
+      // Is this a call to instrument?
       if (CallInst* Call = dyn_cast<CallInst>(&Inst)) {
         Function *Target = Call->getCalledFunction();
         if (not Target)
@@ -100,19 +116,6 @@ bool OptPass::runOnModule(Module &Mod)
       }
     }
   }
-
-  //
-  // Now actually instrument things:
-  //
-  Instrumenter::NameFn Name =
-    [&P](const std::vector<std::string>& Components)
-    {
-      return P.InstrName(Components);
-    };
-
-  std::unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, LogType));
-
-  bool ModifiedIR = false;
 
   //
   // Instrument function calls:
