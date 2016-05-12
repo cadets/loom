@@ -31,6 +31,7 @@
  */
 
 #include "Instrumenter.hh"
+#include "Logger.hh"
 
 #include <sstream>
 
@@ -91,13 +92,14 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
                                                   Function::InternalLinkage,
                                                   true);
 
-  Function *Printf = GetPrintfLikeFunction(Mod);
+  std::unique_ptr<Logger> Log(Logger::Create(Mod, Logger::LogType::Printf));
+  Function *Printf = Log->GetFunction();
   IRBuilder<> Builder = InstrFn.GetPreambleBuilder();
 
   string FormatStringPrefix = Description + " " + TargetName + ":";
 
   Value *FormatString =
-    CreateFormatString(Builder, FormatStringPrefix, Parameters, "\n");
+    Log->CreateFormatString(Builder, FormatStringPrefix, Parameters, "\n");
 
   vector<Value*> PrintfArgs = { FormatString };
   for (auto& P : InstrFn.GetParameters()) {
@@ -128,44 +130,6 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   return true;
 }
 
-
-Value*
-Instrumenter::CreateFormatString(IRBuilder<>& Builder,
-                                 StringRef Prefix, ArrayRef<Parameter> Params,
-                                 StringRef Suffix, Logger Log) {
-
-  std::stringstream FormatString;
-
-  FormatString << Prefix.str();
-
-  // TODO: libxo details (e.g., parameter names)
-
-  for (auto& P : Params) {
-    Type *T = P.second;
-
-    if (T->isIntegerTy(32)) {
-      FormatString << " %d";
-
-    } else if (T->isFloatTy() || T->isDoubleTy()) {
-      FormatString << " %.0f";
-
-    } else if (T->isIntegerTy(8)) {
-      FormatString << " %c";
-
-    } else if (T->isPointerTy()
-               and T->getPointerElementType()->isIntegerTy(8)) {
-      FormatString << " \"%s\"";
-
-    } else if (T->isPointerTy()) {
-      FormatString << " %p";
-
-    }
-  }
-
-  FormatString << Suffix.str();
-
-  return Builder.CreateGlobalStringPtr(FormatString.str());
-}
 
 InstrumentationFn&
 Instrumenter::GetOrCreateInstrFn(StringRef Name,

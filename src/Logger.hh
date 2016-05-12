@@ -1,4 +1,4 @@
-//! @file IRUtils.cc  Definition of LLVM IR utility functions.
+//! @file Logger.hh  Declaration of @ref loom::Logger.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.
@@ -30,31 +30,61 @@
  * SUCH DAMAGE.
  */
 
+#ifndef LOOM_LOGGER_H
+#define LOOM_LOGGER_H
+
 #include "IRUtils.hh"
 
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Function.h"
+#include <llvm/IR/IRBuilder.h>
 
-#include <sstream>
+#include <memory>
 
-using namespace llvm;
-using namespace loom;
-using std::vector;
-
-
-BasicBlock* loom::FindBlock(StringRef Name, Function& Fn) {
-  for (auto& B : Fn)
-    if (B.getName() == Name)
-      return &B;
-
-  return NULL;
+namespace llvm {
+  class Function;
+  class FunctionType;
+  class Module;
+  class Value;
 }
 
+namespace loom {
 
-vector<Parameter> loom::GetParameters(Function *Fn) {
-  vector<Parameter> Parameters;
-  for(auto& Arg : Fn->getArgumentList()) {
-    Parameters.emplace_back(Arg.getName(), Arg.getType());
-  }
-  return Parameters;
-}
+/// Something that can be used to log events, e.g., `printf` or `libxo`.
+class Logger {
+public:
+  /// Ways that we can log values.
+  enum class LogType {
+
+    /// The libc printf() function
+    Printf,
+
+    /// Juniper's libxo, which generates text or structured output
+    Libxo,
+  };
+
+  /// Create a new Logger of the specified type (`printf`, `libxo`, etc.).
+  static std::unique_ptr<Logger> Create(llvm::Module&,
+                                        LogType Log = LogType::Printf);
+
+  /// Get (or create) declaration for the logging function.
+  llvm::Function* GetFunction();
+
+  /// Get the type of the logging function, often `int (const char*, ...)`.
+  virtual llvm::FunctionType* GetType();
+
+  /// Create a format string that we can pass to the logging function.
+  virtual llvm::Value* CreateFormatString(llvm::IRBuilder<>&,
+                                          llvm::StringRef Prefix,
+                                          llvm::ArrayRef<Parameter>,
+                                          llvm::StringRef Suffix) = 0;
+
+protected:
+  Logger(llvm::Module& Mod) : Mod(Mod) {}
+
+  virtual llvm::StringRef FunctionName() const = 0;
+
+  llvm::Module& Mod;
+};
+
+} // namespace loom
+
+#endif // !LOOM_LOGGER_H

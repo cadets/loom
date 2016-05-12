@@ -50,10 +50,6 @@ llvm::BasicBlock* FindBlock(llvm::StringRef Name, llvm::Function&);
 /// Retrieve a function's parameter names and types.
 std::vector<Parameter> GetParameters(llvm::Function*);
 
-/// Find or declare a printf-like function, i.e., `int foobar(const char*, ...)`
-llvm::Function* GetPrintfLikeFunction(llvm::Module&,
-                                             llvm::StringRef Name = "printf");
-
 } // namespace loom
 
 #endif // LOOM_IRUTILS_H
