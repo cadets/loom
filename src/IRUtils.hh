@@ -44,11 +44,14 @@ namespace loom {
 /// Information about a (named) parameter to a function.
 typedef std::pair<std::string,llvm::Type*> Parameter;
 
+/// An ordered collection of Parameter objects.
+typedef std::vector<Parameter> ParamVec;
+
 /// Find a named BasicBlock within a function.
 llvm::BasicBlock* FindBlock(llvm::StringRef Name, llvm::Function&);
 
 /// Retrieve a function's parameter names and types.
-std::vector<Parameter> GetParameters(llvm::Function*);
+ParamVec GetParameters(llvm::Function*);
 
 } // namespace loom
 

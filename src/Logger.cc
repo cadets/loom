@@ -98,7 +98,7 @@ FunctionType* Logger::GetType() {
 
 Value* Logger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
                                   ArrayRef<Value*> Values, StringRef Suffix) {
-  std::vector<Parameter> NamedTypes;
+  ParamVec NamedTypes;
   for (Value *V : Values) {
     NamedTypes.emplace_back(V->getName(), V->getType());
   }

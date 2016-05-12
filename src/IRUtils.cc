@@ -51,8 +51,8 @@ BasicBlock* loom::FindBlock(StringRef Name, Function& Fn) {
 }
 
 
-vector<Parameter> loom::GetParameters(Function *Fn) {
-  vector<Parameter> Parameters;
+ParamVec loom::GetParameters(Function *Fn) {
+  ParamVec Parameters;
   for(auto& Arg : Fn->getArgumentList()) {
     Parameters.emplace_back(Arg.getName(), Arg.getType());
   }

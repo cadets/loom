@@ -77,7 +77,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   const string Description = Return ? "return" : "call";
 
   vector<string> InstrNameComponents;
-  vector<Parameter> Parameters = GetParameters(Target);
+  ParamVec Parameters = GetParameters(Target);
 
   if (Return and not voidFunction)
       Parameters.emplace(Parameters.begin(), "retval", Call->getType());
@@ -132,8 +132,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
 
 InstrumentationFn&
-Instrumenter::GetOrCreateInstrFn(StringRef Name,
-                                 const vector<Parameter>& P,
+Instrumenter::GetOrCreateInstrFn(StringRef Name, const ParamVec& P,
                                  GlobalValue::LinkageTypes Linkage,
                                  bool CreateDefinition)
 {
