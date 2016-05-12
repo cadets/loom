@@ -85,6 +85,26 @@ public:
                                   llvm::ArrayRef<llvm::Value*>,
                                   llvm::StringRef Suffix);
 
+  /**
+   * Adapt a set of values into a form that can be logged.
+   *
+   * Before values can be passed to a logging function, they may need to be
+   * adapted to a suitable form. For example, `float` values may need to be
+   * extended into `double` values or aggregates (e.g., `struct` values)
+   * may need to be expanded into their constituent parts.
+   *
+   * This function adapts values as necessary and returns a possibly-larger
+   * vector of possibly-adapted values. In the best case, nothing requires
+   * adaptation, the IRBuilder is not used and the original values are returned.
+   * In the worse case, everything requires adaptation and all of the values in
+   * the returned vector will be new, derived from the originals using the
+   * supplied IRBuilder.
+   *
+   * @returns  a vector of possibly-adapted values
+   */
+  virtual std::vector<llvm::Value*> AdaptArguments(llvm::ArrayRef<llvm::Value*>,
+                                                   llvm::IRBuilder<>&);
+
 protected:
   Logger(llvm::Module& Mod) : Mod(Mod) {}
 

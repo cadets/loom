@@ -41,6 +41,7 @@ using namespace llvm;
 using namespace loom;
 using std::string;
 using std::unique_ptr;
+using std::vector;
 
 
 namespace {
@@ -104,6 +105,22 @@ Value* Logger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
   }
 
   return CreateFormatString(Builder, Prefix, NamedTypes, Suffix);
+}
+
+
+vector<Value*> Logger::AdaptArguments(ArrayRef<Value*> Values,
+                                      IRBuilder<>& Builder) {
+  vector<Value*> Adapted;
+
+  for (Value *V : Values) {
+    if (V->getType()->isFloatTy()) {
+      V = Builder.CreateFPExt(V, Builder.getDoubleTy());
+    }
+
+    Adapted.push_back(V);
+  }
+
+  return Adapted;
 }
 
 
