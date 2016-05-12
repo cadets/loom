@@ -49,6 +49,16 @@ using std::vector;
 
 
 namespace {
+  cl::opt<Logger::LogType> LogType(
+    "loom-logging",
+    cl::desc("Logging performed automatically by LOOM instrumentation:"),
+    cl::values(
+      clEnumValN(Logger::LogType::None, "none", "No logging"),
+      clEnumValN(Logger::LogType::Printf, "printf", "printf()-based logging"),
+      clEnumValN(Logger::LogType::Libxo, "libxo", "libxo-based logging"),
+    clEnumValEnd),
+    cl::init(Logger::LogType::None));
+
   struct OptPass : public ModulePass {
     static char ID;
     OptPass() : ModulePass(ID), PolFile(PolicyFile::Open()) {}
@@ -56,8 +66,6 @@ namespace {
     bool runOnModule(Module&) override;
 
     llvm::ErrorOr<std::unique_ptr<PolicyFile>> PolFile;
-
-    const Logger::LogType LogType = Logger::LogType::Printf; // TODO: fix!
   };
 }
 
