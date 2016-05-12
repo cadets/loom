@@ -31,6 +31,8 @@ functions:
 
 #else
 
+#include <stdio.h>
+
 // CHECK: define [[FOO_TYPE:.*]] @foo(i32{{.*}}, float{{.*}}, double{{.*}})
 int	foo(int x, float y, double z)
 {
