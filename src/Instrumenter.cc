@@ -79,24 +79,23 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
       Parameters.emplace(Parameters.begin(), "retval", Call->getType());
 
   const string Description = Return ? "return" : "call";
+  const string FormatStringPrefix = Description + " " + TargetName + ":";
+
   vector<string> InstrNameComponents { Description, TargetName };
   const string InstrName = Name(InstrNameComponents);
 
   // Call instrumentation can be done entirely within a translation unit:
   // calls in other units can use their own instrumentation functions.
-  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName, Parameters,
+  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
+                                                  FormatStringPrefix,
+                                                  Parameters,
                                                   Function::InternalLinkage,
                                                   true);
 
-  IRBuilder<> Builder = InstrFn.GetPreambleBuilder();
-  std::unique_ptr<Logger> Log(Logger::Create(Mod, Logger::LogType::Printf));
-
-  string FormatStringPrefix = Description + " " + TargetName + ":";
-  Log->Call(Builder, FormatStringPrefix, InstrFn.GetParameters(), "\n");
-
   //
-  // Having found or created the instrumentation function itself,
-  // figure out what values we are going to pass to it.
+  // Having found the instrumentation function, call it, passing in
+  // the same values passed to the target by the CallInst of interest,
+  // augmenting with the returned value if appropriate.
   //
   vector<Value*> Arguments;
   if (Return and not voidFunction) {
@@ -107,9 +106,6 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
     Arguments.push_back(m->get());
   }
 
-  //
-  // Call the instrumentation.
-  //
   CallInst *InstrCall =
     Return
     ? InstrFn.CallAfter(Call, Arguments)
@@ -123,15 +119,27 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
 
 InstrumentationFn&
-Instrumenter::GetOrCreateInstrFn(StringRef Name, const ParamVec& P,
+Instrumenter::GetOrCreateInstrFn(StringRef Name, StringRef FormatPrefix,
+                                 const ParamVec& P,
                                  GlobalValue::LinkageTypes Linkage,
                                  bool CreateDefinition)
 {
+  // Does this function already exist?
   auto i = InstrFns.find(Name);
   if (i != InstrFns.end())
     return *i->second;
 
+  // The instrumentation function doesn't already exist, so create it.
   InstrFns[Name] = InstrumentationFn::Create(Name, P, Linkage, Mod,
                                              CreateDefinition);
-  return *InstrFns[Name];
+
+  assert(InstrFns[Name]);
+  InstrumentationFn& Fn = *InstrFns[Name];
+
+  IRBuilder<> Builder = Fn.GetPreambleBuilder();
+  std::unique_ptr<Logger> Log(Logger::Create(Mod, Logger::LogType::Printf));
+
+  Log->Call(Builder, FormatPrefix, Fn.GetParameters(), "\n");
+
+  return Fn;
 }

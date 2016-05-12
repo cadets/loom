@@ -62,7 +62,9 @@ public:
 
 
 private:
-  InstrumentationFn& GetOrCreateInstrFn(llvm::StringRef Name, const ParamVec&,
+  InstrumentationFn& GetOrCreateInstrFn(llvm::StringRef Name,
+                                        llvm::StringRef FormatStringPrefix,
+                                        const ParamVec&,
                                         llvm::GlobalValue::LinkageTypes,
                                         bool CreateDefinition);
 
