@@ -52,7 +52,7 @@ namespace {
   /// Name of the YAML-based instrumentation policy file.
   cl::opt<string>
   PolicyFilename("loom-file", cl::desc("instrumentation policy file"),
-                 cl::value_desc("filename"));
+                 cl::value_desc("filename"), cl::init("loom.policy"));
 
   cl::opt<Logger::LogType> LogType(
     "loom-logging",
