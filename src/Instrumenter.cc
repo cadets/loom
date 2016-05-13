@@ -86,9 +86,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   const string Description = Return ? "return" : "call";
   const string FormatStringPrefix = Description + " " + TargetName + ":";
-
-  vector<string> InstrNameComponents { Description, TargetName };
-  const string InstrName = Name(InstrNameComponents);
+  const string InstrName = Name({ Description, TargetName });
 
   // Call instrumentation can be done entirely within a translation unit:
   // calls in other units can use their own instrumentation functions.
@@ -147,9 +145,6 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   assert(FnType);
   const bool voidFunction = FnType->isVoidTy();
 
-  vector<string> InstrNameComponents { Description, FnName };
-  const string InstrName = Name(InstrNameComponents);
-
   vector<Value*> Arguments;
   vector<Parameter> InstrParameters;
 
@@ -161,7 +156,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
       InstrParameters.emplace_back(Arg.getName(), Arg.getType());
   }
 
-
+  const string InstrName = Name({ Description, FnName });
   string FormatStringPrefix = (Description + " " + FnName + ":").str();
 
   // Callee-side function instrumentation can have internal linkage.
