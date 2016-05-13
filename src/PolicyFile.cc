@@ -43,13 +43,6 @@ using std::unique_ptr;
 using std::vector;
 
 
-/// Command-line argument specifying the name of a instrumentation
-/// description file (in YAML format).
-cl::opt<string>
-Filename("loom-file", cl::desc("instrumentation policy file"),
-         cl::value_desc("filename"));
-
-
 //
 // Data that can be represented in an instrumentation description file:
 //
@@ -155,12 +148,6 @@ ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename)
   }
 
   return unique_ptr<PolicyFile> { new PolicyFile(policy) };
-}
-
-
-ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open()
-{
-  return Open(Filename);
 }
 
 

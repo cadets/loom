@@ -47,11 +47,8 @@ class PolicyFile : public Policy
 
   virtual ~PolicyFile();
 
-  /// Open a specific policy file.
+  /// Open a policy file.
   static llvm::ErrorOr<std::unique_ptr<PolicyFile>> Open(std::string Filename);
-
-  /// Open the policy file specified at the command line.
-  static llvm::ErrorOr<std::unique_ptr<PolicyFile>> Open();
 
   virtual std::vector<Direction>
     CallInstrumentation(const llvm::Function&) const override;

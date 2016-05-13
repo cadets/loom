@@ -49,6 +49,11 @@ using std::vector;
 
 
 namespace {
+  /// Name of the YAML-based instrumentation policy file.
+  cl::opt<string>
+  PolicyFilename("loom-file", cl::desc("instrumentation policy file"),
+                 cl::value_desc("filename"));
+
   cl::opt<Logger::LogType> LogType(
     "loom-logging",
     cl::desc("Logging performed automatically by LOOM instrumentation:"),
@@ -61,7 +66,7 @@ namespace {
 
   struct OptPass : public ModulePass {
     static char ID;
-    OptPass() : ModulePass(ID), PolFile(PolicyFile::Open()) {}
+    OptPass() : ModulePass(ID), PolFile(PolicyFile::Open(PolicyFilename)) {}
 
     bool runOnModule(Module&) override;
 
@@ -73,7 +78,9 @@ namespace {
 bool OptPass::runOnModule(Module &Mod)
 {
   if (std::error_code err = PolFile.getError()) {
-    errs() << "Error opening LOOM policy file: " << err.message() << "\n";
+    errs()
+      << "Error opening LOOM policy file '" << PolicyFilename
+      << "': " << err.message() << "\n";
     return false;
   }
 
