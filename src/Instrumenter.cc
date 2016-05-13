@@ -181,12 +181,6 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
         }
         InstrArgs.insert(InstrArgs.end(), Arguments.begin(), Arguments.end());
 
-        Terminator->dump();
-        for (auto& A : InstrArgs) {
-          A->dump();
-        }
-
-        InstrFn.getImplementation()->dump();
         InstrFn.CallBefore(Terminator, InstrArgs);
       }
     }
