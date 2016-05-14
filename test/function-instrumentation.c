@@ -41,10 +41,10 @@ int	foo(int x, float y, double z)
 	// CHECK-NEXT: ret [[FOO_TYPE]] [[RETVAL]]
 }
 
-// CHECK: define [[BAR_TYPE:.*]] @bar([[BAR_ARGS:.*]])
+// CHECK: define [[BAR_TYPE:.*]] @bar([[INT]]{{.*}}, i8*{{.*}})
 float	bar(unsigned int i, const char *s)
 {
-	// CHECK: call void @[[PREFIX]]_enter_bar([[BAR_ARGS]])
+	// CHECK: call void @[[PREFIX]]_enter_bar([[INT]] {{%.*}}, i8* {{%.*}})
 	printf("bar(%d, \"%s\")\n", i, s);
 	// CHECK-NOT: call void @[[PREFIX]]_leave_bar
 	return i;
