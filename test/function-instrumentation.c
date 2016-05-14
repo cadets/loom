@@ -31,10 +31,10 @@ functions:
 
 #include <stdio.h>
 
-// CHECK: define [[FOO_TYPE:.*]] @foo([[FOO_ARGS:.*]])
+// CHECK: define [[FOO_TYPE:.*]] @foo([[INT:i[0-9]+]]{{.*}}, float{{.*}}, double{{.*}})
 int	foo(int x, float y, double z)
 {
-	// CHECK: call void @[[PREFIX:__test_hook]]_enter_foo([[FOO_ARGS]])
+	// CHECK: call void @[[PREFIX:__test_hook]]_enter_foo([[FOO_ARGS:.*]])
 	printf("foo(%d, %g, %g)\n", x, y, z);
 	return x;
 	// CHECK: call void @[[PREFIX]]_leave_foo([[FOO_TYPE]] [[RETVAL:.*]], [[FOO_ARGS]])
