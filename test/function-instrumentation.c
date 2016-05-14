@@ -29,6 +29,8 @@ functions:
 
 #else
 
+#include <stdio.h>
+
 // CHECK: define [[FOO_TYPE:.*]] @foo([[FOO_ARGS:.*]])
 int	foo(int x, float y, double z)
 {
