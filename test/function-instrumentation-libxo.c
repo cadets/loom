@@ -34,20 +34,20 @@ functions:
 
 #include <libxo/xo.h>
 
-// CHECK: define [[FOO_TYPE:.*]] @foo([[FOO_ARGS:.*]])
+// CHECK: define [[FOO_TYPE:.*]] @foo([[INT:i[0-9]+]]{{.*}}, float{{.*}}, double{{.*}})
 int	foo(int x, float y, double z)
 {
-	// CHECK: call void @[[PREFIX:__test_hook]]_enter_foo([[FOO_ARGS]])
+	// CHECK: call void @[[PREFIX:__test_hook]]_enter_foo([[FOO_ARGS:.*]])
 	printf("foo(%d, %g, %g)\n", x, y, z);
 	return x;
 	// CHECK: call void @[[PREFIX]]_leave_foo([[FOO_TYPE]] [[RETVAL:.*]], [[FOO_ARGS]])
 	// CHECK-NEXT: ret [[FOO_TYPE]] [[RETVAL]]
 }
 
-// CHECK: define [[BAR_TYPE:.*]] @bar([[BAR_ARGS:.*]])
+// CHECK: define [[BAR_TYPE:.*]] @bar([[INT]]{{.*}}, i8*{{.*}})
 float	bar(unsigned int i, const char *s)
 {
-	// CHECK: call void @[[PREFIX]]_enter_bar([[BAR_ARGS]])
+	// CHECK: call void @[[PREFIX]]_enter_bar([[INT]] {{%.*}}, i8* {{%.*}})
 	printf("bar(%d, \"%s\")\n", i, s);
 	// CHECK-NOT: call void @[[PREFIX]]_leave_bar
 	return i;
