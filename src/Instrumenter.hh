@@ -68,6 +68,12 @@ public:
   /// Instrument a function entry or exit.
   bool Instrument(llvm::Function&, Policy::Direction);
 
+  /// Instrument a read from a structure field.
+  bool Instrument(llvm::GetElementPtrInst*, llvm::LoadInst*);
+
+  /// Instrument a write to a structure field.
+  bool Instrument(llvm::GetElementPtrInst*, llvm::StoreInst*);
+
 
 private:
   Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<Logger>);
@@ -77,6 +83,8 @@ private:
                                         const ParamVec&,
                                         llvm::GlobalValue::LinkageTypes,
                                         bool CreateDefinition);
+
+  uint32_t FieldNumber(llvm::GetElementPtrInst*);
 
   llvm::Module& Mod;
   llvm::StringMap<std::unique_ptr<InstrumentationFn>> InstrFns;

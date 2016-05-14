@@ -111,6 +111,28 @@ bool OptPass::runOnModule(Module &Mod)
     }
 
     for (auto& Inst : instructions(Fn)) {
+      if (auto *GEP = dyn_cast<GetElementPtrInst>(&Inst)) {
+        if (auto *ST = dyn_cast<StructType>(GEP->getSourceElementType())) {
+          if (not ST->hasName())
+            continue;
+
+          for (auto& Use : GEP->uses()) {
+            User *U = Use.getUser();
+
+            if (auto *Load = dyn_cast<LoadInst>(U)) {
+              ModifiedIR |= Instr->Instrument(GEP, Load);
+
+            } else if (auto *Store = dyn_cast<StoreInst>(U)) {
+              ModifiedIR |= Instr->Instrument(GEP, Store);
+
+            } else {
+              assert(false && "only loads and store supported with fields");
+
+            }
+          }
+        }
+      }
+
       // Is this a call to instrument?
       if (CallInst* Call = dyn_cast<CallInst>(&Inst)) {
         Function *Target = Call->getCalledFunction();

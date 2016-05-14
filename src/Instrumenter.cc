@@ -33,13 +33,13 @@
 #include "Instrumenter.hh"
 #include "Logger.hh"
 
+#include <llvm/Support/raw_ostream.h>
+
 #include <sstream>
 
 using namespace llvm;
 using namespace loom;
-using std::string;
-using std::vector;
-using std::unique_ptr;
+using namespace std;
 
 
 unique_ptr<Instrumenter>
@@ -188,6 +188,82 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   }
 
   return false;
+}
+
+
+bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load) {
+  StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
+  assert(SourceType);
+  assert(SourceType->getName().startswith("struct."));
+  const string StructName = SourceType->getName().substr(7);
+
+  ParamVec Parameters {
+    { "source", GEP->getPointerOperandType() },
+    { "value", Load->getType() },
+  };
+
+  vector<Value*> Arguments {
+    GEP->getPointerOperand(),
+    Load,
+  };
+
+  const string FieldName = "field" + to_string(FieldNumber(GEP));
+  const string InstrName = Name({ "load", StructName, FieldName });
+  const string FormatStringPrefix = StructName + "." + FieldName + " load:";
+
+  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
+                                                  FormatStringPrefix,
+                                                  Parameters,
+                                                  Function::InternalLinkage,
+                                                  true);
+
+  InstrFn.CallAfter(Load, Arguments);
+  return true;
+}
+
+
+bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store) {
+  StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
+  assert(SourceType);
+  assert(SourceType->getName().startswith("struct."));
+  const string StructName = SourceType->getName().substr(7);
+
+  ParamVec Parameters {
+    { "source", GEP->getPointerOperandType() },
+    { "value", Store->getValueOperand()->getType() },
+  };
+
+  vector<Value*> Arguments {
+    GEP->getPointerOperand(),
+    Store->getValueOperand(),
+  };
+
+  const string FieldName = "field" + to_string(FieldNumber(GEP));
+  const string InstrName = Name({ "store", StructName, FieldName });
+  const string FormatStringPrefix = StructName + "." + FieldName + " store:";
+
+  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
+                                                  FormatStringPrefix,
+                                                  Parameters,
+                                                  Function::InternalLinkage,
+                                                  true);
+
+  InstrFn.CallBefore(Store, Arguments);
+  return true;
+}
+
+
+uint32_t Instrumenter::FieldNumber(GetElementPtrInst *GEP) {
+  // A field access getelementptr should have two indices:
+  // a zero and the target field number (a constant integer).
+  Use *IdxZero = GEP->idx_begin();
+  Use *FieldIdx = IdxZero + 1;
+  assert(GEP->getNumIndices() == 2);
+  assert(dyn_cast<ConstantInt>(IdxZero->get())->isZero());
+  assert(isa<ConstantInt>(FieldIdx->get()));
+
+  ConstantInt *FieldNum = dyn_cast<ConstantInt>(FieldIdx->get());
+  return FieldNum->getZExtValue();
 }
 
 
