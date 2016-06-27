@@ -125,9 +125,6 @@ bool OptPass::runOnModule(Module &Mod)
             } else if (auto *Store = dyn_cast<StoreInst>(U)) {
               ModifiedIR |= Instr->Instrument(GEP, Store);
 
-            } else {
-              assert(false && "only loads and store supported with fields");
-
             }
           }
         }
