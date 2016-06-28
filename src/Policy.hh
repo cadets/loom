@@ -56,6 +56,7 @@ class Policy
   virtual std::vector<Direction>
     CallInstrumentation(const llvm::Function&) const = 0;
 
+  //! In which directions (preamble/return) should a function be instrumented?
   virtual std::vector<Direction>
     FunctionInstrumentation(const llvm::Function&) const = 0;
 
