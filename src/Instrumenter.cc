@@ -53,8 +53,7 @@ Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF, unique_ptr<Logger> Log)
   : Mod(Mod), Name(NF), Log(std::move(Log)) {}
 
 
-bool Instrumenter::Instrument(CallInst *Call,
-                              const std::vector<Policy::Direction>& D)
+bool Instrumenter::Instrument(CallInst *Call, const Policy::Directions& D)
 {
   bool ModifiedIR = false;
 
@@ -123,7 +122,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
 
 bool
-Instrumenter::Instrument(Function& Fn, const vector<Policy::Direction>& D) {
+Instrumenter::Instrument(Function& Fn, const Policy::Directions& D) {
   bool ModifiedIR = false;
 
   for (auto Dir : D) {

@@ -54,11 +54,11 @@ struct FnInstrumentation
   string Name;
 
   /// Instrumentation that should be applied to calls to this function.
-  vector<Policy::Direction> Call;
+  Policy::Directions Call;
 
   /// Instrumentation that should be applied to the body of this function
   /// (prologue and epilogue / return points).
-  vector<Policy::Direction> Body;
+  Policy::Directions Body;
 };
 
 /// Everything contained in an instrumentation description file.
@@ -151,7 +151,7 @@ ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename)
 }
 
 
-vector<Policy::Direction>
+Policy::Directions
 PolicyFile::CallInstrumentation(const llvm::Function& Fn) const
 {
   StringRef Name = Fn.getName();
@@ -164,11 +164,11 @@ PolicyFile::CallInstrumentation(const llvm::Function& Fn) const
     }
   }
 
-  return vector<Policy::Direction>();
+  return Policy::Directions();
 }
 
 
-vector<Policy::Direction>
+Policy::Directions
 PolicyFile::FunctionInstrumentation(const llvm::Function& Fn) const
 {
   StringRef Name = Fn.getName();
@@ -181,7 +181,7 @@ PolicyFile::FunctionInstrumentation(const llvm::Function& Fn) const
     }
   }
 
-  return vector<Policy::Direction>();
+  return Policy::Directions();
 }
 
 

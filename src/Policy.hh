@@ -1,6 +1,6 @@
 //! @file Policy.hh  Definition of @ref loom::Policy.
 /*
- * Copyright (c) 2015 Jonathan Anderson
+ * Copyright (c) 2015-2016 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed at Memorial University under the
@@ -51,14 +51,13 @@ class Policy
 {
   public:
   enum class Direction { In, Out };
+  typedef std::vector<Direction> Directions;
 
   //! In which directions should calls to a function be instrumented?
-  virtual std::vector<Direction>
-    CallInstrumentation(const llvm::Function&) const = 0;
+  virtual Directions CallInstrumentation(const llvm::Function&) const = 0;
 
   //! In which directions (preamble/return) should a function be instrumented?
-  virtual std::vector<Direction>
-    FunctionInstrumentation(const llvm::Function&) const = 0;
+  virtual Directions FunctionInstrumentation(const llvm::Function&) const = 0;
 
   //! Name an instrumentation function for a particular event type.
   virtual std::string

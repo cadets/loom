@@ -57,13 +57,13 @@ public:
     Create(llvm::Module&, NameFn NF, Logger::LogType L = Logger::LogType::None);
 
   /// Instrument a function call in the call and/or return direction.
-  bool Instrument(llvm::CallInst*, const std::vector<Policy::Direction>&);
+  bool Instrument(llvm::CallInst*, const Policy::Directions&);
 
   /// Instrument a function call (caller-side), either calling or returning.
   bool Instrument(llvm::CallInst *Call, Policy::Direction);
 
   /// Instrument a function entry and/or exit.
-  bool Instrument(llvm::Function&, const std::vector<Policy::Direction>&);
+  bool Instrument(llvm::Function&, const Policy::Directions&);
 
   /// Instrument a function entry or exit.
   bool Instrument(llvm::Function&, Policy::Direction);

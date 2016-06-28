@@ -101,11 +101,11 @@ bool OptPass::runOnModule(Module &Mod)
   // instrumentation, we need to decide on the instruction-oriented
   // instrumentation points like calls before we actually instrument them.
   //
-  std::unordered_map<CallInst*, std::vector<Policy::Direction>> Calls;
+  std::unordered_map<CallInst*, Policy::Directions> Calls;
 
   for (auto& Fn : Mod) {
     // Do we need to instrument this function?
-    vector<Policy::Direction> Directions = P.FunctionInstrumentation(Fn);
+    Policy::Directions Directions = P.FunctionInstrumentation(Fn);
     if (not Directions.empty()) {
       Instr->Instrument(Fn, Directions);
     }
@@ -136,7 +136,7 @@ bool OptPass::runOnModule(Module &Mod)
         if (not Target)
           continue; // TODO: support indirect targets
 
-        vector<Policy::Direction> Directions = P.CallInstrumentation(*Target);
+        Policy::Directions Directions = P.CallInstrumentation(*Target);
         if (not Directions.empty())
           Calls.emplace(Call, Directions);
       }

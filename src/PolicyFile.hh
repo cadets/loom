@@ -50,10 +50,10 @@ class PolicyFile : public Policy
   /// Open a policy file.
   static llvm::ErrorOr<std::unique_ptr<PolicyFile>> Open(std::string Filename);
 
-  virtual std::vector<Direction>
+  virtual Policy::Directions
     CallInstrumentation(const llvm::Function&) const override;
 
-  virtual std::vector<Direction>
+  virtual Policy::Directions
     FunctionInstrumentation(const llvm::Function&) const override;
 
   virtual std::string InstrName(const std::vector<std::string>&) const override;
