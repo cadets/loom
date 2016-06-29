@@ -94,20 +94,21 @@ bool OptPass::runOnModule(Module &Mod)
     };
   std::unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, LogType));
 
-  bool ModifiedIR = false;
-
   //
   // In order to keep from invalidating iterators or instrumenting our
   // instrumentation, we need to decide on the instruction-oriented
   // instrumentation points like calls before we actually instrument them.
   //
+  std::unordered_map<Function*, Policy::Directions> Functions;
   std::unordered_map<CallInst*, Policy::Directions> Calls;
+  std::unordered_map<LoadInst*, GetElementPtrInst*> FieldReads;
+  std::unordered_map<StoreInst*, GetElementPtrInst*> FieldWrites;
 
   for (auto& Fn : Mod) {
     // Do we need to instrument this function?
     Policy::Directions Directions = P.FnHooks(Fn);
     if (not Directions.empty()) {
-      Instr->Instrument(Fn, Directions);
+      Functions.emplace(&Fn, Directions);
     }
 
     for (auto& Inst : instructions(Fn)) {
@@ -120,10 +121,10 @@ bool OptPass::runOnModule(Module &Mod)
             User *U = Use.getUser();
 
             if (auto *Load = dyn_cast<LoadInst>(U)) {
-              ModifiedIR |= Instr->Instrument(GEP, Load);
+              FieldReads.emplace(Load, GEP);
 
             } else if (auto *Store = dyn_cast<StoreInst>(U)) {
-              ModifiedIR |= Instr->Instrument(GEP, Store);
+              FieldWrites.emplace(Store, GEP);
 
             }
           }
@@ -144,10 +145,24 @@ bool OptPass::runOnModule(Module &Mod)
   }
 
   //
-  // Instrument function calls:
+  // Now we actually perform the instrumentation:
   //
+  bool ModifiedIR = false;
+
+  for (auto& i : Functions) {
+    ModifiedIR |= Instr->Instrument(*i.first, i.second);
+  }
+
   for (auto& i : Calls) {
     ModifiedIR |= Instr->Instrument(i.first, i.second);
+  }
+
+  for (auto& i : FieldReads) {
+    ModifiedIR |= Instr->Instrument(i.second, i.first);
+  }
+
+  for (auto& i : FieldWrites) {
+    ModifiedIR |= Instr->Instrument(i.second, i.first);
   }
 
   return ModifiedIR;
