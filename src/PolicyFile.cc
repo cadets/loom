@@ -1,6 +1,6 @@
 //! @file PolicyFile.cc  Definition of @ref PolicyFile.
 /*
- * Copyright (c) 2015 Jonathan Anderson
+ * Copyright (c) 2015-2016 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed at Memorial University under the
@@ -42,6 +42,14 @@ using std::string;
 using std::unique_ptr;
 using std::vector;
 
+namespace {
+
+template<class T>
+bool vecContains(const std::vector<T>& V, const T& Val) {
+  return (std::find(V.begin(), V.end(), Val) != V.end());
+}
+
+}
 
 //
 // Data that can be represented in an instrumentation description file:
@@ -61,6 +69,34 @@ struct FnInstrumentation
   Policy::Directions Body;
 };
 
+/// An operation that can be performed on a structure field
+enum class FieldOperation
+{
+  Read,
+  Write,
+};
+
+/// A description of how to instrument a function.
+struct FieldInstrumentation
+{
+  /// Numeric ID of the field (as name may not be available).
+  unsigned int Id;
+
+  /// Operations (read/write) that should be instrumented.
+  vector<FieldOperation> Operations;
+};
+
+/// A description of how to instrument fields within a structure.
+struct StructInstrumentation
+{
+  /// Name of the structure containing the field (as named by LLVM, possibly mangled).
+  string Name;
+
+  /// Instrumentation that should be applied to calls to this function.
+  vector<FieldInstrumentation> Fields;
+};
+
+
 /// Everything contained in an instrumentation description file.
 struct PolicyFile::PolicyFileData
 {
@@ -69,6 +105,9 @@ struct PolicyFile::PolicyFileData
 
   /// Function instrumentation.
   vector<FnInstrumentation> Functions;
+
+  /// Structure field instrumentation.
+  vector<StructInstrumentation> Structures;
 };
 
 
@@ -107,12 +146,40 @@ struct yaml::MappingTraits<FnInstrumentation> {
   }
 };
 
+/// Converts a FieldOperation to/from YAML.
+template <>
+struct yaml::ScalarEnumerationTraits<FieldOperation> {
+  static void enumeration(yaml::IO &io, FieldOperation& Dir) {
+    io.enumCase(Dir, "read",  FieldOperation::Read);
+    io.enumCase(Dir, "write", FieldOperation::Write);
+  }
+};
+
+/// Converts FieldInstrumentation to/from YAML.
+template <>
+struct yaml::MappingTraits<FieldInstrumentation> {
+  static void mapping(yaml::IO &io, FieldInstrumentation &f) {
+    io.mapRequired("id",          f.Id);
+    io.mapRequired("operations",  f.Operations);
+  }
+};
+
+/// Converts StructInstrumentation to/from YAML.
+template <>
+struct yaml::MappingTraits<StructInstrumentation> {
+  static void mapping(yaml::IO &io, StructInstrumentation &s) {
+    io.mapRequired("name",        s.Name);
+    io.mapRequired("fields",      s.Fields);
+  }
+};
+
 /// Converts PolicyFileData to/from YAML.
 template <>
 struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
   static void mapping(yaml::IO &io, PolicyFile::PolicyFileData &policy) {
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("functions",   policy.Functions);
+    io.mapOptional("structures",  policy.Structures);
   }
 };
 
@@ -182,6 +249,49 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
   }
 
   return Policy::Directions();
+}
+
+bool
+PolicyFile::FieldReadHook(const llvm::StructType& T, unsigned int Id) const
+{
+  assert(T.getName().startswith("struct."));
+  StringRef Name = T.getName().substr(7);
+
+  for (StructInstrumentation& S : Policy->Structures) {
+    if (S.Name != Name) {
+      continue;
+    }
+
+    for (auto& Field : S.Fields) {
+      if (Field.Id != Id) {
+        return vecContains(Field.Operations, FieldOperation::Read);
+      }
+    }
+  }
+
+  return false;
+}
+
+
+bool
+PolicyFile::FieldWriteHook(const llvm::StructType& T, unsigned int Id) const
+{
+  assert(T.getName().startswith("struct."));
+  StringRef Name = T.getName().substr(7);
+
+  for (StructInstrumentation& S : Policy->Structures) {
+    if (S.Name != Name) {
+      continue;
+    }
+
+    for (auto& Field : S.Fields) {
+      if (Field.Id == Id) {
+        return vecContains(Field.Operations, FieldOperation::Write);
+      }
+    }
+  }
+
+  return false;
 }
 
 

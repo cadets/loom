@@ -38,6 +38,7 @@
 namespace llvm
 {
   class Function;
+  class StructType;
 }
 
 
@@ -58,6 +59,24 @@ class Policy
 
   //! In which directions (preamble/return) should a function be instrumented?
   virtual Directions FnHooks(const llvm::Function&) const = 0;
+
+  /**
+   * Should a read from a structure field be instrumented?
+   *
+   * @param   T     the type of the structure being read from
+   * @param   F     the field being read from within the structure
+   */
+  virtual bool
+    FieldReadHook(const llvm::StructType& T, unsigned int F) const = 0;
+
+  /**
+   * Should a write to a structure field be instrumented?
+   *
+   * @param   T     the type of the structure being written to
+   * @param   F     the field being written to within the structure
+   */
+  virtual bool
+    FieldWriteHook(const llvm::StructType& T, unsigned int F) const = 0;
 
   //! Name an instrumentation function for a particular event type.
   virtual std::string

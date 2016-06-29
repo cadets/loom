@@ -18,6 +18,25 @@
 
 hook_prefix: __test_hook
 
+structures:
+  - name: foo
+    fields:
+      - id: 0
+        operations: [ read, write ]
+      - id: 1
+        operations: [ read, write ]
+      - id: 2
+        operations: [ read, write ]
+      - id: 3
+        operations: [ read, write ]
+
+  - name: bar
+    fields:
+      - id: 0
+        operations: [ read, write ]
+      - id: 1
+        operations: [ read, write ]
+
 #else
 
 #include <stdio.h>
@@ -27,6 +46,7 @@ struct foo {
 	float		f_float;
 	double		f_double;
 	const char *	f_string;
+	int		f_ignored;
 };
 
 struct bar {
@@ -76,6 +96,11 @@ main(int argc, char *argv[])
 	// CHECK: store double -1{{.*}}, double* [[F_DOUBLE_PTR]]
 	// CHECK-OUTPUT: foo.[[F_DOUBLE:field[0-9]+]] store: [[FOO]] -1
 	f.f_double = -1;
+
+	// CHECK: [[F_IGNORED_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
+	// CHECK-NOT: call void @[[PREFIX]]_store_{{.*}}([[FOO]], i32 99
+	// CHECK: store i32 99, i32* [[F_IGNORED_PTR]]
+	f.f_ignored = 99;
 
 	// CHECK: [[MESSAGE_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
 	// CHECK: [[MESSAGE:%.+]] = load i8*, i8** [[MESSAGE_PTR]]

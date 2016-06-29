@@ -117,15 +117,24 @@ bool OptPass::runOnModule(Module &Mod)
           if (not ST->hasName())
             continue;
 
+          // A GEP used for structure field lookup should have indices
+          // 0 and i, where i is the field number (not byte index).
+          assert(GEP->getNumIndices() == 2);
+          assert(GEP->hasAllConstantIndices());
+          auto *FieldIdx = dyn_cast<ConstantInt>(GEP->getOperand(2));
+          uint64_t FieldNum = FieldIdx->getZExtValue();
+
           for (auto& Use : GEP->uses()) {
             User *U = Use.getUser();
 
             if (auto *Load = dyn_cast<LoadInst>(U)) {
-              FieldReads.emplace(Load, GEP);
-
+              if (P.FieldReadHook(*ST, FieldNum)) {
+                FieldReads.emplace(Load, GEP);
+              }
             } else if (auto *Store = dyn_cast<StoreInst>(U)) {
-              FieldWrites.emplace(Store, GEP);
-
+              if (P.FieldWriteHook(*ST, FieldNum)) {
+                FieldWrites.emplace(Store, GEP);
+              }
             }
           }
         }

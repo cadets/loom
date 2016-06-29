@@ -1,6 +1,6 @@
 //! @file PolicyFile.hh  Declaration of @ref loom::PolicyFile.
 /*
- * Copyright (c) 2015 Jonathan Anderson
+ * Copyright (c) 2015-2016 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed at Memorial University under the
@@ -55,6 +55,10 @@ class PolicyFile : public Policy
 
   Policy::Directions
     FnHooks(const llvm::Function&) const override;
+
+  bool FieldReadHook(const llvm::StructType&, unsigned int) const override;
+
+  bool FieldWriteHook(const llvm::StructType&, unsigned int) const override;
 
   std::string InstrName(const std::vector<std::string>&) const override;
 
