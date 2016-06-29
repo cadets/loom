@@ -54,10 +54,10 @@ class Policy
   typedef std::vector<Direction> Directions;
 
   //! In which directions should calls to a function be instrumented?
-  virtual Directions CallInstrumentation(const llvm::Function&) const = 0;
+  virtual Directions CallHooks(const llvm::Function&) const = 0;
 
   //! In which directions (preamble/return) should a function be instrumented?
-  virtual Directions FunctionInstrumentation(const llvm::Function&) const = 0;
+  virtual Directions FnHooks(const llvm::Function&) const = 0;
 
   //! Name an instrumentation function for a particular event type.
   virtual std::string

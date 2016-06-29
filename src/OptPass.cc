@@ -105,7 +105,7 @@ bool OptPass::runOnModule(Module &Mod)
 
   for (auto& Fn : Mod) {
     // Do we need to instrument this function?
-    Policy::Directions Directions = P.FunctionInstrumentation(Fn);
+    Policy::Directions Directions = P.FnHooks(Fn);
     if (not Directions.empty()) {
       Instr->Instrument(Fn, Directions);
     }
@@ -136,7 +136,7 @@ bool OptPass::runOnModule(Module &Mod)
         if (not Target)
           continue; // TODO: support indirect targets
 
-        Policy::Directions Directions = P.CallInstrumentation(*Target);
+        Policy::Directions Directions = P.CallHooks(*Target);
         if (not Directions.empty())
           Calls.emplace(Call, Directions);
       }

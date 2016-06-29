@@ -51,10 +51,10 @@ class PolicyFile : public Policy
   static llvm::ErrorOr<std::unique_ptr<PolicyFile>> Open(std::string Filename);
 
   Policy::Directions
-    CallInstrumentation(const llvm::Function&) const override;
+    CallHooks(const llvm::Function&) const override;
 
   Policy::Directions
-    FunctionInstrumentation(const llvm::Function&) const override;
+    FnHooks(const llvm::Function&) const override;
 
   std::string InstrName(const std::vector<std::string>&) const override;
 

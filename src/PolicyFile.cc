@@ -152,7 +152,7 @@ ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename)
 
 
 Policy::Directions
-PolicyFile::CallInstrumentation(const llvm::Function& Fn) const
+PolicyFile::CallHooks(const llvm::Function& Fn) const
 {
   StringRef Name = Fn.getName();
 
@@ -169,7 +169,7 @@ PolicyFile::CallInstrumentation(const llvm::Function& Fn) const
 
 
 Policy::Directions
-PolicyFile::FunctionInstrumentation(const llvm::Function& Fn) const
+PolicyFile::FnHooks(const llvm::Function& Fn) const
 {
   StringRef Name = Fn.getName();
 
