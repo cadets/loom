@@ -59,6 +59,7 @@ export CONFIGARGS="-i"
 
 # Set up an instrumentation policy for the kernel.
 KERNEL_OBJDIR="`make -V .OBJDIR`/sys/${KERNCONF}"
+mkdir -p ${KERNEL_OBJDIR}
 
 if [ -e "${KERNEL_INSTR_POLICY}" ]
 then
