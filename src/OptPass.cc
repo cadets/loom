@@ -119,8 +119,9 @@ bool OptPass::runOnModule(Module &Mod)
 
           // A GEP used for structure field lookup should have indices
           // 0 and i, where i is the field number (not byte index).
-          assert(GEP->getNumIndices() == 2);
-          assert(GEP->hasAllConstantIndices());
+          if (GEP->getNumIndices() != 2 or !GEP->hasAllConstantIndices())
+            continue;
+
           auto *FieldIdx = dyn_cast<ConstantInt>(GEP->getOperand(2));
           uint64_t FieldNum = FieldIdx->getZExtValue();
 
