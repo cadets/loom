@@ -95,12 +95,6 @@ public:
   /// Add a new link in the chain of actions for this instrumentation.
   llvm::IRBuilder<> AddAction(llvm::StringRef Name);
 
-  /// Retrieve the LLVM function that implements this instrumentation.
-  llvm::Function* getImplementation() { return InstrFn; }
-
-  /// The structure dereference operator returns the implentation function.
-  llvm::Function* operator -> () { return getImplementation(); }
-
 
 private:
   Instrumentation(llvm::Function *InstrFn, llvm::BasicBlock *Preamble,
