@@ -47,8 +47,7 @@ using std::vector;
 
 unique_ptr<Instrumentation>
 Instrumentation::Create(StringRef Name, ArrayRef<Parameter> Parameters,
-                          GlobalValue::LinkageTypes Linkage, Module& M,
-                          bool Define) {
+                        Module& M) {
 
   LLVMContext& Ctx = M.getContext();
 
@@ -59,7 +58,7 @@ Instrumentation::Create(StringRef Name, ArrayRef<Parameter> Parameters,
 
   FunctionType *T = FunctionType::get(Type::getVoidTy(Ctx), ParamTypes, false);
   auto *InstrFn = dyn_cast<Function>(M.getOrInsertFunction(Name, T));
-  InstrFn->setLinkage(Linkage);
+  InstrFn->setLinkage(Function::InternalLinkage);
 
   // Set instrumentation function's parameter names:
   SymbolTableList<Argument>& ArgList = InstrFn->getArgumentList();
@@ -80,7 +79,7 @@ Instrumentation::Create(StringRef Name, ArrayRef<Parameter> Parameters,
   //
   BasicBlock *Preamble, *EndBlock;
 
-  if (Define && InstrFn->empty()) {
+  if (InstrFn->empty()) {
     Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
     EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
 
@@ -128,14 +127,6 @@ IRBuilder<> Instrumentation::AddAction(StringRef Name)
   // Return an IRBuilder positioned immediately before the final branch
   // to the "end" block.
   return IRBuilder<>(Terminator);
-}
-
-
-bool Instrumentation::isDefined() const {
-  assert((Preamble == nullptr) == (End == nullptr)
-         == InstrFn->getBasicBlockList().empty());
-
-  return (Preamble != nullptr);
 }
 
 

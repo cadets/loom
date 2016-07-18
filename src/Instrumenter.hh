@@ -80,9 +80,7 @@ private:
 
   Instrumentation& GetOrCreateInstr(llvm::StringRef Name,
                                     llvm::StringRef FormatStringPrefix,
-                                    const ParamVec&,
-                                    llvm::GlobalValue::LinkageTypes,
-                                    bool CreateDefinition);
+                                    const ParamVec&);
 
   uint32_t FieldNumber(llvm::GetElementPtrInst*);
 

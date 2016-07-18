@@ -91,9 +91,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   // calls in other units can use their own instrumentation functions.
   Instrumentation& Instr = GetOrCreateInstr(InstrName,
                                             FormatStringPrefix,
-                                            Parameters,
-                                            Function::InternalLinkage,
-                                            true);
+                                            Parameters);
 
   //
   // Having found the instrumentation function, call it, passing in
@@ -161,9 +159,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   // Callee-side function instrumentation can have internal linkage.
   Instrumentation& Instr = GetOrCreateInstr(InstrName,
                                             FormatStringPrefix,
-                                            InstrParameters,
-                                            Function::InternalLinkage,
-                                            true);
+                                            InstrParameters);
 
   if (Return) {
     for (auto& Block : Fn) {
@@ -212,9 +208,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load) {
 
   Instrumentation& Instr = GetOrCreateInstr(InstrName,
                                             FormatStringPrefix,
-                                            Parameters,
-                                            Function::InternalLinkage,
-                                            true);
+                                            Parameters);
 
   Instr.CallAfter(Load, Arguments);
   return true;
@@ -243,9 +237,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store) {
 
   Instrumentation& Instr = GetOrCreateInstr(InstrName,
                                             FormatStringPrefix,
-                                            Parameters,
-                                            Function::InternalLinkage,
-                                            true);
+                                            Parameters);
 
   Instr.CallBefore(Store, Arguments);
   return true;
@@ -268,9 +260,7 @@ uint32_t Instrumenter::FieldNumber(GetElementPtrInst *GEP) {
 
 Instrumentation&
 Instrumenter::GetOrCreateInstr(StringRef Name, StringRef FormatPrefix,
-                               const ParamVec& P,
-                               GlobalValue::LinkageTypes Linkage,
-                               bool CreateDefinition)
+                               const ParamVec& P)
 {
   // Does this function already exist?
   auto i = Instr.find(Name);
@@ -278,8 +268,7 @@ Instrumenter::GetOrCreateInstr(StringRef Name, StringRef FormatPrefix,
     return *i->second;
 
   // The instrumentation function doesn't already exist, so create it.
-  Instr[Name] = Instrumentation::Create(Name, P, Linkage, Mod,
-                                        CreateDefinition);
+  Instr[Name] = Instrumentation::Create(Name, P, Mod);
 
   assert(Instr[Name]);
   Instrumentation& Fn = *Instr[Name];

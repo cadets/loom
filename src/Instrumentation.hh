@@ -58,11 +58,7 @@ class Instrumentation {
 public:
   static std::unique_ptr<Instrumentation>
     Create(llvm::StringRef Name, llvm::ArrayRef<Parameter> ParameterDetails,
-           llvm::GlobalValue::LinkageTypes, llvm::Module&,
-           bool Define = false);
-
-  /// Has this instrumentation been defined, or is it just a declaration?
-  bool isDefined() const;
+           llvm::Module&);
 
   /// Insert a call to this instrumentation just before the given Instruction.
   llvm::CallInst* CallBefore(llvm::Instruction*,
