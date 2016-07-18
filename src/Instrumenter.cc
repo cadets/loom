@@ -89,11 +89,11 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   // Call instrumentation can be done entirely within a translation unit:
   // calls in other units can use their own instrumentation functions.
-  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
-                                                  FormatStringPrefix,
-                                                  Parameters,
-                                                  Function::InternalLinkage,
-                                                  true);
+  Instrumentation& Instr = GetOrCreateInstr(InstrName,
+                                            FormatStringPrefix,
+                                            Parameters,
+                                            Function::InternalLinkage,
+                                            true);
 
   //
   // Having found the instrumentation function, call it, passing in
@@ -111,8 +111,8 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   CallInst *InstrCall =
     Return
-    ? InstrFn.CallAfter(Call, Arguments)
-    : InstrFn.CallBefore(Call, Arguments)
+    ? Instr.CallAfter(Call, Arguments)
+    : Instr.CallBefore(Call, Arguments)
     ;
 
   InstrCall->setAttributes(Target->getAttributes());
@@ -159,11 +159,11 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   string FormatStringPrefix = (Description + " " + FnName + ":").str();
 
   // Callee-side function instrumentation can have internal linkage.
-  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
-                                                  FormatStringPrefix,
-                                                  InstrParameters,
-                                                  Function::InternalLinkage,
-                                                  true);
+  Instrumentation& Instr = GetOrCreateInstr(InstrName,
+                                            FormatStringPrefix,
+                                            InstrParameters,
+                                            Function::InternalLinkage,
+                                            true);
 
   if (Return) {
     for (auto& Block : Fn) {
@@ -175,7 +175,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
         }
         InstrArgs.insert(InstrArgs.end(), Arguments.begin(), Arguments.end());
 
-        InstrFn.CallBefore(Terminator, InstrArgs);
+        Instr.CallBefore(Terminator, InstrArgs);
       }
     }
 
@@ -183,7 +183,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
     assert(not Fn.getBasicBlockList().empty());
     BasicBlock& Entry = Fn.getBasicBlockList().front();
 
-    InstrFn.CallBefore(&Entry.front(), Arguments);
+    Instr.CallBefore(&Entry.front(), Arguments);
   }
 
   return false;
@@ -210,13 +210,13 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load) {
   const string InstrName = Name({ "load", StructName, FieldName });
   const string FormatStringPrefix = StructName + "." + FieldName + " load:";
 
-  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
-                                                  FormatStringPrefix,
-                                                  Parameters,
-                                                  Function::InternalLinkage,
-                                                  true);
+  Instrumentation& Instr = GetOrCreateInstr(InstrName,
+                                            FormatStringPrefix,
+                                            Parameters,
+                                            Function::InternalLinkage,
+                                            true);
 
-  InstrFn.CallAfter(Load, Arguments);
+  Instr.CallAfter(Load, Arguments);
   return true;
 }
 
@@ -241,13 +241,13 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store) {
   const string InstrName = Name({ "store", StructName, FieldName });
   const string FormatStringPrefix = StructName + "." + FieldName + " store:";
 
-  InstrumentationFn& InstrFn = GetOrCreateInstrFn(InstrName,
-                                                  FormatStringPrefix,
-                                                  Parameters,
-                                                  Function::InternalLinkage,
-                                                  true);
+  Instrumentation& Instr = GetOrCreateInstr(InstrName,
+                                            FormatStringPrefix,
+                                            Parameters,
+                                            Function::InternalLinkage,
+                                            true);
 
-  InstrFn.CallBefore(Store, Arguments);
+  Instr.CallBefore(Store, Arguments);
   return true;
 }
 
@@ -266,23 +266,23 @@ uint32_t Instrumenter::FieldNumber(GetElementPtrInst *GEP) {
 }
 
 
-InstrumentationFn&
-Instrumenter::GetOrCreateInstrFn(StringRef Name, StringRef FormatPrefix,
-                                 const ParamVec& P,
-                                 GlobalValue::LinkageTypes Linkage,
-                                 bool CreateDefinition)
+Instrumentation&
+Instrumenter::GetOrCreateInstr(StringRef Name, StringRef FormatPrefix,
+                               const ParamVec& P,
+                               GlobalValue::LinkageTypes Linkage,
+                               bool CreateDefinition)
 {
   // Does this function already exist?
-  auto i = InstrFns.find(Name);
-  if (i != InstrFns.end())
+  auto i = Instr.find(Name);
+  if (i != Instr.end())
     return *i->second;
 
   // The instrumentation function doesn't already exist, so create it.
-  InstrFns[Name] = InstrumentationFn::Create(Name, P, Linkage, Mod,
-                                             CreateDefinition);
+  Instr[Name] = Instrumentation::Create(Name, P, Linkage, Mod,
+                                        CreateDefinition);
 
-  assert(InstrFns[Name]);
-  InstrumentationFn& Fn = *InstrFns[Name];
+  assert(Instr[Name]);
+  Instrumentation& Fn = *Instr[Name];
 
   if (Log) {
     IRBuilder<> Builder = Fn.GetPreambleBuilder();

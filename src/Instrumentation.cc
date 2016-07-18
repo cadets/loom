@@ -1,4 +1,4 @@
-//! @file InstrumentationFn.cpp  Definition of @ref loom::InstrumentationFn.
+//! @file Instrumentation.cpp  Definition of @ref loom::Instrumentation.
 /*
  * Copyright (c) 2013,2015-2016 Jonathan Anderson
  * Copyright (c) 2016 Cem Kilic
@@ -31,7 +31,7 @@
  * SUCH DAMAGE.
  */
 
-#include "InstrumentationFn.hh"
+#include "Instrumentation.hh"
 #include "llvm/IR/TypeBuilder.h"
 
 #include <llvm/IR/IRBuilder.h>
@@ -45,8 +45,8 @@ using std::unique_ptr;
 using std::vector;
 
 
-unique_ptr<InstrumentationFn>
-InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
+unique_ptr<Instrumentation>
+Instrumentation::Create(StringRef Name, ArrayRef<Parameter> Parameters,
                           GlobalValue::LinkageTypes Linkage, Module& M,
                           bool Define) {
 
@@ -92,20 +92,20 @@ InstrumentationFn::Create(StringRef Name, ArrayRef<Parameter> Parameters,
     EndBlock = FindBlock("exit", *InstrFn);
   }
 
-  return unique_ptr<InstrumentationFn> {
-    new InstrumentationFn(InstrFn, Preamble, EndBlock)
+  return unique_ptr<Instrumentation> {
+    new Instrumentation(InstrFn, Preamble, EndBlock)
   };
 }
 
 
-IRBuilder<> InstrumentationFn::GetPreambleBuilder()
+IRBuilder<> Instrumentation::GetPreambleBuilder()
 {
   assert(Preamble);
   return IRBuilder<>(Preamble->getTerminator());
 }
 
 
-IRBuilder<> InstrumentationFn::AddAction(StringRef Name)
+IRBuilder<> Instrumentation::AddAction(StringRef Name)
 {
   assert(Preamble && End);
 
@@ -131,7 +131,7 @@ IRBuilder<> InstrumentationFn::AddAction(StringRef Name)
 }
 
 
-bool InstrumentationFn::isDefined() const {
+bool Instrumentation::isDefined() const {
   assert((Preamble == nullptr) == (End == nullptr)
          == InstrFn->getBasicBlockList().empty());
 
@@ -139,19 +139,19 @@ bool InstrumentationFn::isDefined() const {
 }
 
 
-CallInst* InstrumentationFn::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
+CallInst* Instrumentation::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
   CallInst *C = CallInst::Create(InstrFn, Args);
   C->insertBefore(I);
   return C;
 }
 
-CallInst* InstrumentationFn::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
+CallInst* Instrumentation::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
   CallInst *C = CallInst::Create(InstrFn, Args);
   C->insertAfter(I);
   return C;
 }
 
 
-Function::ArgumentListType& InstrumentationFn::GetParameters() {
+Function::ArgumentListType& Instrumentation::GetParameters() {
   return InstrFn->getArgumentList();
 }

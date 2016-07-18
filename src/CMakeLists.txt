@@ -1,6 +1,6 @@
 add_llvm_loadable_module(LLVMLoom
+	Instrumentation.cc
 	Instrumenter.cc
-	InstrumentationFn.cc
 	IRUtils.cc
         Logger.cc
 	OptPass.cc

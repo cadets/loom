@@ -1,4 +1,4 @@
-//! @file InstrumentationFn.h  Declaration of @ref loom::InstrumentationFn.
+//! @file Instrumentation.h  Declaration of @ref loom::Instrumentation.
 /*
  * Copyright (c) 2012-2013,2015-2016 Jonathan Anderson
  * Copyright (c) 2016 Cem Kilic
@@ -54,9 +54,9 @@ namespace loom {
  * An instrumentation function that receives program events such as
  * "called foo(42,97)" and does something with them.
  */
-class InstrumentationFn {
+class Instrumentation {
 public:
-  static std::unique_ptr<InstrumentationFn>
+  static std::unique_ptr<Instrumentation>
     Create(llvm::StringRef Name, llvm::ArrayRef<Parameter> ParameterDetails,
            llvm::GlobalValue::LinkageTypes, llvm::Module&,
            bool Define = false);
@@ -103,8 +103,8 @@ public:
 
 
 private:
-  InstrumentationFn(llvm::Function *InstrFn, llvm::BasicBlock *Preamble,
-                    llvm::BasicBlock *End)
+  Instrumentation(llvm::Function *InstrFn, llvm::BasicBlock *Preamble,
+                  llvm::BasicBlock *End)
     : InstrFn(InstrFn), Preamble(Preamble), End(End)
   {
   }

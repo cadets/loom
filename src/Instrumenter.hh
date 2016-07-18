@@ -33,7 +33,7 @@
 #ifndef LOOM_INSTRUMENTER_H_
 #define LOOM_INSTRUMENTER_H_
 
-#include "InstrumentationFn.hh"
+#include "Instrumentation.hh"
 #include "Logger.hh"
 #include "Policy.hh"
 
@@ -78,16 +78,16 @@ public:
 private:
   Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<Logger>);
 
-  InstrumentationFn& GetOrCreateInstrFn(llvm::StringRef Name,
-                                        llvm::StringRef FormatStringPrefix,
-                                        const ParamVec&,
-                                        llvm::GlobalValue::LinkageTypes,
-                                        bool CreateDefinition);
+  Instrumentation& GetOrCreateInstr(llvm::StringRef Name,
+                                    llvm::StringRef FormatStringPrefix,
+                                    const ParamVec&,
+                                    llvm::GlobalValue::LinkageTypes,
+                                    bool CreateDefinition);
 
   uint32_t FieldNumber(llvm::GetElementPtrInst*);
 
   llvm::Module& Mod;
-  llvm::StringMap<std::unique_ptr<InstrumentationFn>> InstrFns;
+  llvm::StringMap<std::unique_ptr<Instrumentation>> Instr;
   NameFn Name;
   std::unique_ptr<Logger> Log;
 };
