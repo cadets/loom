@@ -3,7 +3,7 @@ add_llvm_loadable_module(LLVMLoom
 	Instrumenter.cc
 	InstrStrategy.cc
 	IRUtils.cc
-        Logger.cc
+	Logger.cc
 	OptPass.cc
 	PolicyFile.cc
 	Strings.cc
