@@ -58,14 +58,6 @@ public:
 
 } // anonymous namespace
 
-#if defined(__unreachable)
-  #define unreachable() __unreachable()
-#elif __has_builtin(__builtin_unreachable)
-  #define unreachable() __builtin_unreachable()
-#else
-  #define unreachable()
-#endif
-
 
 unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, unique_ptr<Logger> Log)
 {
@@ -73,8 +65,6 @@ unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, unique_ptr<Logger> Log)
   case InstrStrategy::Kind::Callout:
     return unique_ptr<InstrStrategy>(new CalloutStrategy(std::move(Log)));
   }
-
-  unreachable();
 }
 
 
