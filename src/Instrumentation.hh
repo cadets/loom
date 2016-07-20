@@ -58,6 +58,12 @@ namespace loom {
  * Instrumentation code (which could be a function or a set of inline blocks)
  * that receives program events such as "called foo(42,97)" and takes
  * policy-defined actions (e.g., logs events or updates counters).
+ *
+ * @invariant Instrumentation must have a preamble block, which contains
+ *            instructions to execute first for all instrumented events
+ *            (e.g., logging calls) and an "exit" block after all actions
+ *            required by the instrumentation have been taken.
+ *            New instrumentation actions are added in BasicBlocks in between.
  */
 class Instrumentation {
 public:

@@ -97,13 +97,9 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                  [](Argument &Arg) { return &Arg; });
 
   //
-  // Invariant: instrumentation functions, if defined, should have a
-  // "preamble" block, which contains instructions to execute first for
-  // all instrumented events (e.g., logging calls) and an "exit" block
-  // after all actions required by the instrumentation have been taken.
-  //
-  // The function starts out with the preamble branching to the exit block.
-  // Instrumentation is added in new BasicBlocks in between.
+  // Find (if the instrumentation function already exists) or create (if it
+  // does not) the "preamble" and "exit" blocks required by the invariant on
+  // Instrumentation.
   //
   BasicBlock *Preamble, *EndBlock;
 
