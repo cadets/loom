@@ -137,7 +137,6 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
 
   // Call the instrumentation function:
   CallInst *Call = CallInst::Create(InstrFn, Values);
-  Call->dump();
 
   if (AfterInst) {
     Call->insertAfter(I);
