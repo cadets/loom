@@ -1,0 +1,117 @@
+//! @file InstrStrategy.h  Declaration of @ref loom::InstrStrategy.
+/*
+ * Copyright (c) 2016 Jonathan Anderson
+ * All rights reserved.
+ *
+ * This software was developed by SRI International and the University of
+ * Cambridge Computer Laboratory under DARPA/AFRL contract (FA8750-10-C-0237)
+ * ("CTSRD"), as part of the DARPA CRASH research programme, as well as at
+ * Memorial University under the NSERC Discovery program (RGPIN-2015-06048).
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+#ifndef  LOOM_INSTR_STRATEGY_H
+#define  LOOM_INSTR_STRATEGY_H
+
+#include <memory>
+
+#include <llvm/ADT/ArrayRef.h>
+#include <llvm/ADT/StringRef.h>
+
+#include "IRUtils.hh"
+#include "Logger.hh"
+
+
+namespace llvm {
+  class Instruction;
+}
+
+
+namespace loom {
+
+class Instrumentation;
+
+//! An instrumentation strategy (inline, callout, etc.).
+class InstrStrategy {
+public:
+  //! Call out to a user-defined instrumentation function.
+  static std::unique_ptr<InstrStrategy> Callout(std::unique_ptr<Logger>);
+
+  //! Add instrumentation inline with the instrumented code.
+  static std::unique_ptr<InstrStrategy> Inline(std::unique_ptr<Logger>);
+
+  /**
+   * Instrument a particular instruction, returning an @ref Instrumentation
+   * object that can be used to create actions.
+   *
+   * @param  I            The instruction to instrument.
+   * @param  Name         The name of the instrumentation to create/find.
+   *                      This name will be incorporated in the name of the
+   *                      instrumentation function or inline BasicBlock(s),
+   *                      so it should be unique to the desired instrumentation
+   *                      (e.g., `"__loom_returnfrom_foo"`).
+   * @param  Description  A human-readable short description of the
+   *                      instrumentation for logging, etc., e.g., `"call foo"`.
+   * @param  Params       Static description (names and types) of the values
+   *                      that will be passed to the instrumentation.
+   * @param  Values       Dynamic values to pass to the instrumentation.
+   *                      Must agree in number and type with @b Params and
+   *                      @b VarArgs, but may be named differently (e.g., when
+   *                      instrumenting function calls, the parameters and
+   *                      arguments may have different names).
+   * @param  VarArgs      The instrumentation should accept varargs after the
+   *                      explicitly-defined @b Params.
+   * @param  AfterInst    If true, apply the instrumentation *after* the
+   *                      instruction rather than, as by default, before it.
+   *
+   * Example of simple Function Boundary Tracing (where the @b Params and
+   * @b Values come from the same place, the target function's parameters):
+   *
+   * ```cpp
+   * Function *Target = // the function you want to instrument
+   * vector<Parameter> Params = // get from Target->getArgumentList()
+   * vector<Value*> Values = // get from Target->getArgumentList()
+   * Instruction *Start = &Target->getBasicBlockList().front().front();
+   *
+   * Strategy->Instrument(Start, "__foo_hook_fn_" + Target->getName(),
+   *                      "calling " + Target->getName(), Params, Values,
+   *                      Target->isVarArg());
+   * ```
+   */
+  virtual Instrumentation Instrument(llvm::Instruction *I,
+                                     llvm::StringRef Name,
+                                     llvm::StringRef Description,
+                                     llvm::ArrayRef<Parameter> Params,
+                                     llvm::ArrayRef<llvm::Value*> Values,
+                                     bool VarArgs = false,
+                                     bool AfterInst = false) = 0;
+
+protected:
+  InstrStrategy(std::unique_ptr<Logger> L) : Log(std::move(L)) {}
+
+  std::unique_ptr<Logger> Log;
+};
+
+} // namespace loom
+
+#endif

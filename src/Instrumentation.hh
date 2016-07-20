@@ -34,6 +34,7 @@
 #ifndef  LOOM_INSTRUMENTATION_FN_H
 #define  LOOM_INSTRUMENTATION_FN_H
 
+#include "InstrStrategy.hh"
 #include "IRUtils.hh"
 #include "PolicyFile.hh"
 
@@ -51,31 +52,20 @@ namespace llvm {
 namespace loom {
 
 /**
- * An instrumentation function that receives program events such as
- * "called foo(42,97)" and does something with them.
+ * Instrumentation code (which could be a function or a set of inline blocks)
+ * that receives program events such as "called foo(42,97)" and takes
+ * policy-defined actions (e.g., logs events or updates counters).
  */
 class Instrumentation {
 public:
-  static std::unique_ptr<Instrumentation>
-    Create(llvm::StringRef Name, llvm::ArrayRef<Parameter> ParameterDetails,
-           llvm::Module&);
+  Instrumentation(llvm::SmallVector<llvm::Value*, 4> Values,
+                  llvm::BasicBlock *Preamble, llvm::BasicBlock *End)
+    : InstrValues(std::move(Values)), Preamble(Preamble), End(End)
+  {
+  }
 
-  /// Insert a call to this instrumentation just before the given Instruction.
-  llvm::CallInst* CallBefore(llvm::Instruction*,
-                             llvm::ArrayRef<llvm::Value*> Args);
-
-  /// Insert a call to this instrumentation just after the given Instruction.
-  llvm::CallInst* CallAfter(llvm::Instruction*,
-                            llvm::ArrayRef<llvm::Value*> Args);
-
-  /**
-   * Retrieve the instrumentation function's parameters.
-   *
-   * The mapping from instrumented values to instrumentation function parameters
-   * depends on the specifics of the instrumentation (e.g., call and return
-   * instrumentation may differ in that return may see a return value).
-   */
-  llvm::Function::ArgumentListType& GetParameters();
+  //! Retrieve the values passed into the instrumentation.
+  llvm::ArrayRef<llvm::Value*> Values() { return InstrValues; }
 
   /**
    * Get an IRBuilder that can be used to insert new instructions into the
@@ -93,13 +83,7 @@ public:
 
 
 private:
-  Instrumentation(llvm::Function *InstrFn, llvm::BasicBlock *Preamble,
-                  llvm::BasicBlock *End)
-    : InstrFn(InstrFn), Preamble(Preamble), End(End)
-  {
-  }
-
-  llvm::Function *InstrFn;      //!< The instrumentation function.
+  llvm::SmallVector<llvm::Value*, 4> InstrValues;  //!< Instrumented values
   llvm::BasicBlock *Preamble;   //!< Cross-instrumentation logging, etc.
   llvm::BasicBlock *End;        //!< End of the instrumentation chain.
 };

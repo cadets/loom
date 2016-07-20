@@ -92,7 +92,12 @@ bool OptPass::runOnModule(Module &Mod)
     {
       return P.InstrName(Components);
     };
-  std::unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, LogType));
+
+  std::unique_ptr<InstrStrategy> Strategy(
+    InstrStrategy::Callout(Logger::Create(Mod, LogType)));
+
+  std::unique_ptr<Instrumenter> Instr(
+    Instrumenter::Create(Mod, Name, std::move(Strategy)));
 
   //
   // In order to keep from invalidating iterators or instrumenting our

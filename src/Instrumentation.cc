@@ -45,58 +45,6 @@ using std::unique_ptr;
 using std::vector;
 
 
-unique_ptr<Instrumentation>
-Instrumentation::Create(StringRef Name, ArrayRef<Parameter> Parameters,
-                        Module& M) {
-
-  LLVMContext& Ctx = M.getContext();
-
-  vector<Type*> ParamTypes;
-  for (auto& P : Parameters) {
-    ParamTypes.push_back(P.second);
-  }
-
-  FunctionType *T = FunctionType::get(Type::getVoidTy(Ctx), ParamTypes, false);
-  auto *InstrFn = dyn_cast<Function>(M.getOrInsertFunction(Name, T));
-  InstrFn->setLinkage(Function::InternalLinkage);
-
-  // Set instrumentation function's parameter names:
-  SymbolTableList<Argument>& ArgList = InstrFn->getArgumentList();
-  size_t i = 0;
-  for (auto a = ArgList.begin(); a != ArgList.end(); a++) {
-    a->setName(Parameters[i].first);
-    i++;
-  }
-
-  //
-  // Invariant: instrumentation functions, if defined, should have a
-  // "preamble" block, which contains instructions to execute first for
-  // all instrumented events (e.g., logging calls) and an "exit" block
-  // after all actions required by the instrumentation have been taken.
-  //
-  // The function starts out with the preamble branching to the exit block.
-  // Instrumentation is added in new BasicBlocks in between.
-  //
-  BasicBlock *Preamble, *EndBlock;
-
-  if (InstrFn->empty()) {
-    Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
-    EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
-
-    IRBuilder<>(Preamble).CreateBr(EndBlock);
-    IRBuilder<>(EndBlock).CreateRetVoid();
-
-  } else {
-    Preamble = FindBlock("preamble", *InstrFn);
-    EndBlock = FindBlock("exit", *InstrFn);
-  }
-
-  return unique_ptr<Instrumentation> {
-    new Instrumentation(InstrFn, Preamble, EndBlock)
-  };
-}
-
-
 IRBuilder<> Instrumentation::GetPreambleBuilder()
 {
   assert(Preamble);
@@ -118,8 +66,9 @@ IRBuilder<> Instrumentation::AddAction(StringRef Name)
 
   // Create the new instrumentation block and insert it between the
   // old last-but-one block and the "end" block.
-  LLVMContext& Ctx = InstrFn->getContext();
-  BasicBlock *BB = BasicBlock::Create(Ctx, Name, InstrFn, End);
+  Function *Fn = Predecessor->getParent();
+  LLVMContext& Ctx = Fn->getContext();
+  BasicBlock *BB = BasicBlock::Create(Ctx, Name, Fn, End);
 
   IRBuilder<>(Predecessor).CreateBr(BB);
   BranchInst *Terminator = IRBuilder<>(BB).CreateBr(End);
@@ -127,22 +76,4 @@ IRBuilder<> Instrumentation::AddAction(StringRef Name)
   // Return an IRBuilder positioned immediately before the final branch
   // to the "end" block.
   return IRBuilder<>(Terminator);
-}
-
-
-CallInst* Instrumentation::CallBefore(Instruction *I, ArrayRef<Value*> Args) {
-  CallInst *C = CallInst::Create(InstrFn, Args);
-  C->insertBefore(I);
-  return C;
-}
-
-CallInst* Instrumentation::CallAfter(Instruction *I, ArrayRef<Value*> Args) {
-  CallInst *C = CallInst::Create(InstrFn, Args);
-  C->insertAfter(I);
-  return C;
-}
-
-
-Function::ArgumentListType& Instrumentation::GetParameters() {
-  return InstrFn->getArgumentList();
 }

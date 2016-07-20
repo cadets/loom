@@ -43,14 +43,17 @@ using namespace std;
 
 
 unique_ptr<Instrumenter>
-Instrumenter::Create(Module& Mod, NameFn NF, Logger::LogType L) {
-  unique_ptr<Logger> Log = Logger::Create(Mod, L);
-  return unique_ptr<Instrumenter>(new Instrumenter(Mod, NF, std::move(Log)));
+Instrumenter::Create(Module& Mod, NameFn NF, unique_ptr<InstrStrategy> S)
+{
+  return unique_ptr<Instrumenter>(new Instrumenter(Mod, NF, std::move(S)));
 }
 
 
-Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF, unique_ptr<Logger> Log)
-  : Mod(Mod), Name(NF), Log(std::move(Log)) {}
+Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF,
+                           unique_ptr<InstrStrategy> S)
+  : Mod(Mod), Strategy(std::move(S)), Name(NF)
+{
+}
 
 
 bool Instrumenter::Instrument(CallInst *Call, const Policy::Directions& D)
@@ -72,48 +75,29 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   // Get some relevant details about the call and the target function.
   const string TargetName = Target->getName();
+  const bool VarArgs = Target->isVarArg();
   Type *CallType = Call->getType();
   const bool voidFunction = CallType->isVoidTy();
   const bool Return = (Dir == Policy::Direction::Out);
-
-  //
-  // Find or create the instrumentation function.
-  //
-  ParamVec Parameters = GetParameters(Target);
-  if (Return and not voidFunction)
-      Parameters.emplace(Parameters.begin(), "retval", Call->getType());
 
   const string Description = Return ? "return" : "call";
   const string FormatStringPrefix = Description + " " + TargetName + ":";
   const string InstrName = Name({ Description, TargetName });
 
-  // Call instrumentation can be done entirely within a translation unit:
-  // calls in other units can use their own instrumentation functions.
-  Instrumentation& Instr = GetOrCreateInstr(InstrName,
-                                            FormatStringPrefix,
-                                            Parameters);
+  // Start by copying static and dynamic value details from the target function.
+  ParamVec Parameters = GetParameters(Target);
+  vector<Value*> Arguments(Call->getNumArgOperands());
+  std::copy(Call->arg_begin(), Call->arg_end(), Arguments.begin());
 
-  //
-  // Having found the instrumentation function, call it, passing in
-  // the same values passed to the target by the CallInst of interest,
-  // augmenting with the returned value if appropriate.
-  //
-  vector<Value*> Arguments;
+  // The return value, if present, comes first in the instrumentation.
   if (Return and not voidFunction) {
-    Arguments.push_back(Call);  // the return value, if present, comes first
+    Parameters.emplace(Parameters.begin(), "retval", Call->getType());
+    Arguments.emplace(Arguments.begin(), Call);
   }
 
-  for (Use *m = Call->arg_begin(), *n = Call->arg_end(); m != n; ++m) {
-    Arguments.push_back(m->get());
-  }
-
-  CallInst *InstrCall =
-    Return
-    ? Instr.CallAfter(Call, Arguments)
-    : Instr.CallBefore(Call, Arguments)
-    ;
-
-  InstrCall->setAttributes(Target->getAttributes());
+  bool InstrAfterCall = Return;
+  Strategy->Instrument(Call, InstrName, FormatStringPrefix,
+                       Parameters, Arguments, VarArgs, InstrAfterCall);
 
   return true;
 }
@@ -156,30 +140,29 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   const string InstrName = Name({ Description, FnName });
   string FormatStringPrefix = (Description + " " + FnName + ":").str();
 
-  // Callee-side function instrumentation can have internal linkage.
-  Instrumentation& Instr = GetOrCreateInstr(InstrName,
-                                            FormatStringPrefix,
-                                            InstrParameters);
-
   if (Return) {
+    // Instrument all returns from the function:
     for (auto& Block : Fn) {
       TerminatorInst *Terminator = Block.getTerminator();
       if (auto *Ret = dyn_cast<ReturnInst>(Terminator)) {
-        vector<Value*> InstrArgs;
+        vector<Value*> InstrArgs(InstrParameters.size());
         if (not voidFunction) {
-          InstrArgs.push_back(Ret->getReturnValue());
+          InstrArgs[0] = Ret->getReturnValue();
         }
-        InstrArgs.insert(InstrArgs.end(), Arguments.begin(), Arguments.end());
+        std::copy(Arguments.begin(), Arguments.end(), InstrArgs.begin() + 1);
 
-        Instr.CallBefore(Terminator, InstrArgs);
+        Strategy->Instrument(Ret, InstrName, FormatStringPrefix,
+                             InstrParameters, InstrArgs);
       }
     }
 
   } else {
+    // Instrument the function's preamble:
     assert(not Fn.getBasicBlockList().empty());
     BasicBlock& Entry = Fn.getBasicBlockList().front();
 
-    Instr.CallBefore(&Entry.front(), Arguments);
+    Strategy->Instrument(&Entry.front(), InstrName, FormatStringPrefix,
+                         InstrParameters, Arguments);
   }
 
   return false;
@@ -206,11 +189,9 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load) {
   const string InstrName = Name({ "load", StructName, FieldName });
   const string FormatStringPrefix = StructName + "." + FieldName + " load:";
 
-  Instrumentation& Instr = GetOrCreateInstr(InstrName,
-                                            FormatStringPrefix,
-                                            Parameters);
+  Strategy->Instrument(Load, InstrName, FormatStringPrefix,
+                       Parameters, Arguments, false, true);
 
-  Instr.CallAfter(Load, Arguments);
   return true;
 }
 
@@ -235,11 +216,9 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store) {
   const string InstrName = Name({ "store", StructName, FieldName });
   const string FormatStringPrefix = StructName + "." + FieldName + " store:";
 
-  Instrumentation& Instr = GetOrCreateInstr(InstrName,
-                                            FormatStringPrefix,
-                                            Parameters);
+  Strategy->Instrument(Store, InstrName, FormatStringPrefix,
+                       Parameters, Arguments);
 
-  Instr.CallBefore(Store, Arguments);
   return true;
 }
 
@@ -255,28 +234,4 @@ uint32_t Instrumenter::FieldNumber(GetElementPtrInst *GEP) {
 
   ConstantInt *FieldNum = dyn_cast<ConstantInt>(FieldIdx->get());
   return FieldNum->getZExtValue();
-}
-
-
-Instrumentation&
-Instrumenter::GetOrCreateInstr(StringRef Name, StringRef FormatPrefix,
-                               const ParamVec& P)
-{
-  // Does this function already exist?
-  auto i = Instr.find(Name);
-  if (i != Instr.end())
-    return *i->second;
-
-  // The instrumentation function doesn't already exist, so create it.
-  Instr[Name] = Instrumentation::Create(Name, P, Mod);
-
-  assert(Instr[Name]);
-  Instrumentation& Fn = *Instr[Name];
-
-  if (Log) {
-    IRBuilder<> Builder = Fn.GetPreambleBuilder();
-    Log->Call(Builder, FormatPrefix, Fn.GetParameters(), "\n");
-  }
-
-  return Fn;
 }

@@ -34,13 +34,14 @@
 #define LOOM_INSTRUMENTER_H_
 
 #include "Instrumentation.hh"
-#include "Logger.hh"
 #include "Policy.hh"
 
 #include <functional>
 
 
 namespace loom {
+
+class InstrStrategy;
 
 /// An object used for instrumenting code within a single LLVM module.
 class Instrumenter {
@@ -54,7 +55,7 @@ public:
    *                  (e.g., ["call","foo"] => "__loom_hook_call_foo")
    */
   static std::unique_ptr<Instrumenter>
-    Create(llvm::Module&, NameFn NF, Logger::LogType L = Logger::LogType::None);
+    Create(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy> S);
 
   /// Instrument a function call in the call and/or return direction.
   bool Instrument(llvm::CallInst*, const Policy::Directions&);
@@ -76,7 +77,7 @@ public:
 
 
 private:
-  Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<Logger>);
+  Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy>);
 
   Instrumentation& GetOrCreateInstr(llvm::StringRef Name,
                                     llvm::StringRef FormatStringPrefix,
@@ -85,9 +86,9 @@ private:
   uint32_t FieldNumber(llvm::GetElementPtrInst*);
 
   llvm::Module& Mod;
+  std::unique_ptr<InstrStrategy> Strategy;
   llvm::StringMap<std::unique_ptr<Instrumentation>> Instr;
   NameFn Name;
-  std::unique_ptr<Logger> Log;
 };
 
 } // namespace loom
