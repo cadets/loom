@@ -55,11 +55,14 @@ class Instrumentation;
 //! An instrumentation strategy (inline, callout, etc.).
 class InstrStrategy {
 public:
-  //! Call out to a user-defined instrumentation function.
-  static std::unique_ptr<InstrStrategy> Callout(std::unique_ptr<Logger>);
+  enum class Kind {
+    Callout,    //!< Call out to a user-defined instrumentation function.
+#if TODO
+    Inline,     //!< Add instrumentation inline with the instrumented code.
+#endif
+  };
 
-  //! Add instrumentation inline with the instrumented code.
-  static std::unique_ptr<InstrStrategy> Inline(std::unique_ptr<Logger>);
+  static std::unique_ptr<InstrStrategy> Create(Kind, std::unique_ptr<Logger>);
 
   /**
    * Instrument a particular instruction, returning an @ref Instrumentation

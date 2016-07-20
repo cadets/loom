@@ -64,6 +64,19 @@ namespace {
     clEnumValEnd),
     cl::init(Logger::LogType::None));
 
+  cl::opt<InstrStrategy::Kind> Strategy(
+    "loom-strategy",
+    cl::desc("Method of instrumentation used by LOOM:"),
+    cl::values(
+      clEnumValN(InstrStrategy::Kind::Callout, "callout",
+                 "call out to an instrumentation function"),
+#if TODO
+      clEnumValN(InstrStrategy::Kind::Inline, "inline",
+                 "add instrumentation inline"),
+#endif
+    clEnumValEnd),
+    cl::init(InstrStrategy::Kind::Callout));
+
   struct OptPass : public ModulePass {
     static char ID;
     OptPass() : ModulePass(ID), PolFile(PolicyFile::Open(PolicyFilename)) {}
@@ -93,11 +106,11 @@ bool OptPass::runOnModule(Module &Mod)
       return P.InstrName(Components);
     };
 
-  std::unique_ptr<InstrStrategy> Strategy(
-    InstrStrategy::Callout(Logger::Create(Mod, LogType)));
+  std::unique_ptr<InstrStrategy> S(
+    InstrStrategy::Create(Strategy, Logger::Create(Mod, LogType)));
 
   std::unique_ptr<Instrumenter> Instr(
-    Instrumenter::Create(Mod, Name, std::move(Strategy)));
+    Instrumenter::Create(Mod, Name, std::move(S)));
 
   //
   // In order to keep from invalidating iterators or instrumenting our
