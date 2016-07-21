@@ -129,8 +129,10 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   vector<Value*> Arguments;
   vector<Parameter> InstrParameters;
 
-  if (Return and not voidFunction)
+  if (Return and not voidFunction) {
+    Arguments.push_back(nullptr);
     InstrParameters.emplace_back("retval", FnType->getReturnType());
+  }
 
   for (auto& Arg : Fn.getArgumentList()) {
       Arguments.push_back(&Arg);
@@ -142,18 +144,24 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
 
   if (Return) {
     // Instrument all returns from the function:
+    SmallVector<ReturnInst*, 4> Returns;
+
     for (auto& Block : Fn) {
       TerminatorInst *Terminator = Block.getTerminator();
       if (auto *Ret = dyn_cast<ReturnInst>(Terminator)) {
-        vector<Value*> InstrArgs(InstrParameters.size());
-        if (not voidFunction) {
-          InstrArgs[0] = Ret->getReturnValue();
-        }
-        std::copy(Arguments.begin(), Arguments.end(), InstrArgs.begin() + 1);
-
-        Strategy->Instrument(Ret, InstrName, FormatStringPrefix,
-                             InstrParameters, InstrArgs);
+        Returns.push_back(Ret);
       }
+    }
+
+    for (ReturnInst *Ret : Returns) {
+      // This is a return: pass the return value and then the function's
+      // parameters to the instrumentation.
+      if (not voidFunction) {
+        Arguments[0] = Ret->getReturnValue();
+      }
+
+      Strategy->Instrument(Ret, InstrName, FormatStringPrefix,
+                           InstrParameters, Arguments);
     }
 
   } else {
