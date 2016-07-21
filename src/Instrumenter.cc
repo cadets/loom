@@ -135,8 +135,8 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   }
 
   for (auto& Arg : Fn.getArgumentList()) {
-      Arguments.push_back(&Arg);
-      InstrParameters.emplace_back(Arg.getName(), Arg.getType());
+    Arguments.push_back(&Arg);
+    InstrParameters.emplace_back(Arg.getName(), Arg.getType());
   }
 
   const string InstrName = Name({ Description, FnName });
