@@ -13,7 +13,7 @@ then
 	llvm_link=`which llvm-link`
 	if [ -e "${llvm_link}" ]
 	then
-		LLVM_PREFIX=`dirname ${llvm_link}`
+		LLVM_PREFIX=`dirname ${llvm_link} | xargs dirname`
 	else
 		echo "LLVM_PREFIX not set and no llvm-link in PATH"
 		exit 1
