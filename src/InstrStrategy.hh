@@ -57,9 +57,7 @@ class InstrStrategy {
 public:
   enum class Kind {
     Callout,    //!< Call out to a user-defined instrumentation function.
-#if TODO
     Inline,     //!< Add instrumentation inline with the instrumented code.
-#endif
   };
 
   static std::unique_ptr<InstrStrategy> Create(Kind, std::unique_ptr<Logger>);

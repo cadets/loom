@@ -56,6 +56,19 @@ public:
                              bool VarArgs, bool AfterInst) override;
 };
 
+class InlineStrategy : public InstrStrategy {
+public:
+  InlineStrategy(unique_ptr<Logger> Log)
+    : InstrStrategy(std::move(Log))
+  {
+  }
+
+  Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
+                             ArrayRef<Parameter> Params,
+                             ArrayRef<Value*> Values,
+                             bool VarArgs, bool AfterInst) override;
+};
+
 } // anonymous namespace
 
 
@@ -64,6 +77,9 @@ unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, unique_ptr<Logger> Log)
   switch (K) {
   case InstrStrategy::Kind::Callout:
     return unique_ptr<InstrStrategy>(new CalloutStrategy(std::move(Log)));
+
+  case InstrStrategy::Kind::Inline:
+    return unique_ptr<InstrStrategy>(new InlineStrategy(std::move(Log)));
   }
 }
 
@@ -147,4 +163,51 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   }
 
   return Instrumentation(InstrValues, Preamble, EndBlock);
+}
+
+
+Instrumentation
+InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
+                           ArrayRef<Parameter> Params, ArrayRef<Value*> Values,
+                           bool VarArgs, bool AfterInst) {
+
+  assert(Params.size() == Values.size());
+
+  BasicBlock *BB = I->getParent();
+  Function *F = BB->getParent();
+  Module *M = F->getParent();
+  LLVMContext& Ctx = M->getContext();
+
+  if (AfterInst) {
+    // Move to the next instruction.
+    BasicBlock::iterator Iter(I);
+    Iter++;
+
+    // It is illegal to create a degenerate BasicBlock, so we can't insert
+    // instrumentation after a BasicBlock's terminator. Callers should never
+    // attempt to, e.g., instrument a ReturnInst with AfterInst = true.
+    assert(Iter != BB->end() && "instrumenting after BB's final instruction");
+
+    I = &*Iter;
+  }
+
+  // Split the target instruction's BasicBlock and insert our instrumentation
+  // blocks (preamble and end) in the split.
+  BasicBlock *PostSplit = BB->splitBasicBlock(I);
+  BB->getTerminator()->eraseFromParent();
+
+  BasicBlock *EndBlock = BasicBlock::Create(Ctx, Name + ":end", F, PostSplit);
+  IRBuilder<>(EndBlock).CreateBr(PostSplit);
+
+  BasicBlock *Preamble = BasicBlock::Create(Ctx, Name + ":preamble", F, EndBlock);
+  IRBuilder<>(BB).CreateBr(Preamble);
+
+  IRBuilder<> PreambleBuilder(Preamble);
+  if (Log) {
+    Log->Call(PreambleBuilder, Descrip, Values, "\n");
+  }
+  PreambleBuilder.CreateBr(EndBlock);
+
+  SmallVector<Value*, 4> V(Values.begin(), Values.end());
+  return Instrumentation(V, Preamble, EndBlock);
 }

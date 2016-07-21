@@ -70,10 +70,8 @@ namespace {
     cl::values(
       clEnumValN(InstrStrategy::Kind::Callout, "callout",
                  "call out to an instrumentation function"),
-#if TODO
       clEnumValN(InstrStrategy::Kind::Inline, "inline",
                  "add instrumentation inline"),
-#endif
     clEnumValEnd),
     cl::init(InstrStrategy::Kind::Callout));
 
