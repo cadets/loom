@@ -50,6 +50,12 @@ fi
 
 export LLVM_INSTR_FLAGS="-load ${LOOM_LIB} -loom"
 
+# If building on FreeBSD 10, /usr/bin/ld doesn't support the
+# --no-fatal-warnings option, so we need to suppress its use.
+if [ `uname -U` -lt 1100000 ]
+then
+	export LD_NO_FATAL_WARNS=
+fi
 
 # Default to the LOOM kernel config, but allow this to be overridden.
 : ${KERNCONF:="LOOM"}
