@@ -106,8 +106,10 @@ bool OptPass::runOnModule(Module &Mod)
       return P.InstrName(Components);
     };
 
-  std::unique_ptr<InstrStrategy> S(
-    InstrStrategy::Create(Strategy, SimpleLogger::Create(Mod, LogType)));
+  unique_ptr<InstrStrategy> S(InstrStrategy::Create(Strategy));
+  if (LogType != SimpleLogger::LogType::None) {
+    S->AddLogger(SimpleLogger::Create(Mod, LogType));
+  }
 
   std::unique_ptr<Instrumenter> Instr(
     Instrumenter::Create(Mod, Name, std::move(S)));

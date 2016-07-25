@@ -60,7 +60,10 @@ public:
     Inline,     //!< Add instrumentation inline with the instrumented code.
   };
 
-  static std::unique_ptr<InstrStrategy> Create(Kind, std::unique_ptr<Logger>);
+  static std::unique_ptr<InstrStrategy> Create(Kind);
+
+  //! Add another @ref Logger to the instrumentation we generate.
+  void AddLogger(std::unique_ptr<Logger>);
 
   /**
    * Instrument a particular instruction, returning an @ref Instrumentation
@@ -109,9 +112,11 @@ public:
                                      bool AfterInst = false) = 0;
 
 protected:
-  InstrStrategy(std::unique_ptr<Logger> L) : Log(std::move(L)) {}
+  void AddLogging(llvm::IRBuilder<>&, llvm::ArrayRef<llvm::Value*>,
+                  llvm::StringRef Name, llvm::StringRef Description);
 
-  std::unique_ptr<Logger> Log;
+private:
+  std::vector<std::unique_ptr<Logger>> Loggers;
 };
 
 } // namespace loom

@@ -45,11 +45,6 @@ namespace {
 
 class CalloutStrategy : public InstrStrategy {
 public:
-  CalloutStrategy(unique_ptr<Logger> Log)
-    : InstrStrategy(std::move(Log))
-  {
-  }
-
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value*> Values,
@@ -58,11 +53,6 @@ public:
 
 class InlineStrategy : public InstrStrategy {
 public:
-  InlineStrategy(unique_ptr<Logger> Log)
-    : InstrStrategy(std::move(Log))
-  {
-  }
-
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value*> Values,
@@ -72,14 +62,29 @@ public:
 } // anonymous namespace
 
 
-unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, unique_ptr<Logger> Log)
+unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K)
 {
   switch (K) {
   case InstrStrategy::Kind::Callout:
-    return unique_ptr<InstrStrategy>(new CalloutStrategy(std::move(Log)));
+    return unique_ptr<InstrStrategy>(new CalloutStrategy());
 
   case InstrStrategy::Kind::Inline:
-    return unique_ptr<InstrStrategy>(new InlineStrategy(std::move(Log)));
+    return unique_ptr<InstrStrategy>(new InlineStrategy());
+  }
+}
+
+
+void InstrStrategy::AddLogger(unique_ptr<Logger> L) {
+  assert(L);
+  Loggers.emplace_back(std::move(L));
+}
+
+
+void InstrStrategy::AddLogging(IRBuilder<>& B, ArrayRef<Value*> Values,
+                               StringRef Name, StringRef Description) {
+  for (auto& L : Loggers) {
+    assert(L);
+    L->Log(B, Values, Name, Description);
   }
 }
 
@@ -126,10 +131,7 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
 
     IRBuilder<> PreambleBuilder(Preamble);
-
-    if (Log) {
-      Log->Log(PreambleBuilder, InstrValues, Name, Descrip);
-    }
+    AddLogging(PreambleBuilder, InstrValues, Name, Descrip);
 
     PreambleBuilder.CreateBr(EndBlock);
     IRBuilder<>(EndBlock).CreateRetVoid();
@@ -203,9 +205,7 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   IRBuilder<>(BB).CreateBr(Preamble);
 
   IRBuilder<> PreambleBuilder(Preamble);
-  if (Log) {
-    Log->Log(PreambleBuilder, Values, Name, Descrip);
-  }
+  AddLogging(PreambleBuilder, Values, Name, Descrip);
   PreambleBuilder.CreateBr(EndBlock);
 
   SmallVector<Value*, 4> V(Values.begin(), Values.end());
