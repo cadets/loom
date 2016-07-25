@@ -54,7 +54,9 @@ namespace {
   PolicyFilename("loom-file", cl::desc("instrumentation policy file"),
                  cl::value_desc("filename"), cl::init("loom.policy"));
 
+  /// Logging to automatically add to all instrumentation.
   cl::opt<Logger::LogType> LogType(
+  cl::opt<SimpleLogger::LogType> LogType(
     "loom-logging",
     cl::desc("Logging performed automatically by LOOM instrumentation:"),
     cl::values(
@@ -64,6 +66,7 @@ namespace {
     clEnumValEnd),
     cl::init(Logger::LogType::None));
 
+  /// Instrumentation strategy (callout vs inline).
   cl::opt<InstrStrategy::Kind> Strategy(
     "loom-strategy",
     cl::desc("Method of instrumentation used by LOOM:"),

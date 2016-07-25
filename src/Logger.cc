@@ -45,6 +45,7 @@ using std::vector;
 
 
 namespace {
+  //! A logger that calls libxo's `xo_emit()`.
   class LibxoLogger : public Logger {
   public:
     LibxoLogger(Module& Mod) : Logger(Mod) {}
@@ -55,6 +56,7 @@ namespace {
                               StringRef Suffix) override;
   };
 
+  //! A logger that calls `printf()`.
   class PrintfLogger : public Logger {
   public:
     PrintfLogger(Module& Mod) : Logger(Mod) {}
