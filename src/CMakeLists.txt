@@ -6,5 +6,6 @@ add_llvm_loadable_module(LLVMLoom
 	Logger.cc
 	OptPass.cc
 	PolicyFile.cc
+	Serializer.cc
 	Strings.cc
 )
