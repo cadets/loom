@@ -45,6 +45,7 @@
 using namespace llvm;
 using namespace loom;
 using std::string;
+using std::unique_ptr;
 using std::vector;
 
 
@@ -83,7 +84,7 @@ namespace {
 
     bool runOnModule(Module&) override;
 
-    llvm::ErrorOr<std::unique_ptr<PolicyFile>> PolFile;
+    llvm::ErrorOr<unique_ptr<PolicyFile>> PolFile;
   };
 }
 
@@ -111,8 +112,7 @@ bool OptPass::runOnModule(Module &Mod)
     S->AddLogger(SimpleLogger::Create(Mod, LogType));
   }
 
-  std::unique_ptr<Instrumenter> Instr(
-    Instrumenter::Create(Mod, Name, std::move(S)));
+  unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, std::move(S)));
 
   //
   // In order to keep from invalidating iterators or instrumenting our
