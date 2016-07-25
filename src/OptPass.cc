@@ -34,6 +34,8 @@
 #include "PolicyFile.hh"
 #include "Instrumenter.hh"
 #include "IRUtils.hh"
+#include "KTraceLogger.hh"
+#include "Serializer.hh"
 
 #include "llvm/Pass.h"
 #include "llvm/IR/Module.h"
@@ -78,6 +80,38 @@ namespace {
     clEnumValEnd),
     cl::init(InstrStrategy::Kind::Callout));
 
+  /// Serialization strategies we can use (libnv, MessagePack, null...).
+  enum class SerializationType {
+    Null,
+  };
+
+  /// Serialization strategy command-line argument.
+  cl::opt<SerializationType> SerializationStrategy(
+    "loom-serialization",
+    cl::desc("serialization strategy"),
+    cl::values(
+      clEnumValN(SerializationType::Null, "null", "no serialization"),
+    clEnumValEnd),
+    cl::init(SerializationType::Null));
+
+  /// Ways that we can use KTrace (or not).
+  enum class KTraceTarget {
+    Kernel,
+    Userspace,
+    None,
+  };
+
+  /// KTrace command-line argument.
+  cl::opt<KTraceTarget> KTrace(
+    "loom-ktrace",
+    cl::desc("KTrace instrumentation reporting"),
+    cl::values(
+      clEnumValN(KTraceTarget::Userspace, "utrace", "utrace(2) system call"),
+      clEnumValN(KTraceTarget::Kernel, "kernel", "kernel-mode ktrace"),
+      clEnumValN(KTraceTarget::None, "none", "no ktrace reporting"),
+    clEnumValEnd),
+    cl::init(KTraceTarget::None));
+
   struct OptPass : public ModulePass {
     static char ID;
     OptPass() : ModulePass(ID), PolFile(PolicyFile::Open(PolicyFilename)) {}
@@ -110,6 +144,28 @@ bool OptPass::runOnModule(Module &Mod)
   unique_ptr<InstrStrategy> S(InstrStrategy::Create(Strategy));
   if (LogType != SimpleLogger::LogType::None) {
     S->AddLogger(SimpleLogger::Create(Mod, LogType));
+  }
+
+  unique_ptr<Serializer> Serial;
+  switch (SerializationStrategy) {
+  case SerializationType::Null:
+    Serial.reset(new NullSerializer(Mod.getContext()));
+    break;
+  }
+
+  switch (KTrace) {
+  case KTraceTarget::Kernel:
+    S->AddLogger(
+      unique_ptr<Logger>(new KTraceLogger(Mod, std::move(Serial), true)));
+    break;
+
+  case KTraceTarget::Userspace:
+    S->AddLogger(
+      unique_ptr<Logger>(new KTraceLogger(Mod, std::move(Serial), false)));
+    break;
+
+  case KTraceTarget::None:
+    break;
   }
 
   unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, std::move(S)));
