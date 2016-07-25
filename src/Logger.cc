@@ -46,9 +46,9 @@ using std::vector;
 
 namespace {
   //! A logger that calls libxo's `xo_emit()`.
-  class LibxoLogger : public Logger {
+  class LibxoLogger : public SimpleLogger {
   public:
-    LibxoLogger(Module& Mod) : Logger(Mod) {}
+    LibxoLogger(Module& Mod) : SimpleLogger(Mod) {}
 
     StringRef FunctionName() const override { return "xo_emit"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
@@ -57,36 +57,56 @@ namespace {
   };
 
   //! A logger that calls `printf()`.
-  class PrintfLogger : public Logger {
+  class PrintfLogger : public SimpleLogger {
   public:
-    PrintfLogger(Module& Mod) : Logger(Mod) {}
+    PrintfLogger(Module& Mod) : SimpleLogger(Mod) {}
 
     StringRef FunctionName() const override { return "printf"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
                               ArrayRef<Parameter> Params,
                               StringRef Suffix) override;
   };
-}
+
+} // anonymous namespace
 
 
-unique_ptr<Logger> Logger::Create(Module& Mod, LogType Log) {
+unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
   switch (Log) {
   case LogType::Printf:
-    return unique_ptr<Logger>(new PrintfLogger(Mod));
+    return unique_ptr<SimpleLogger>(new PrintfLogger(Mod));
 
   case LogType::Libxo:
-    return unique_ptr<Logger>(new LibxoLogger(Mod));
+    return unique_ptr<SimpleLogger>(new LibxoLogger(Mod));
 
   case LogType::None:
-    return unique_ptr<Logger>();
+    return unique_ptr<SimpleLogger>();
   }
 }
 
 
-CallInst* Logger::Call(IRBuilder<>& Builder, StringRef Prefix,
-                       ArrayRef<Value*> Values, StringRef Suffix) {
+void Logger::Log(IRBuilder<>& B, Function::ArgumentListType& Args,
+                 StringRef Name, StringRef Description) {
 
-  vector<Value*> Args = AdaptArguments(Values, Builder);
+  vector<Value*> Values(Args.size());
+  std::transform(Args.begin(), Args.end(), Values.begin(),
+                 [&](Value& V) { return &V; });
+
+  Log(B, Values, Name, Description);
+}
+
+
+void SimpleLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
+                       StringRef /*Name*/, StringRef Description) {
+
+  // Call the printf-like logging function, ignoring the machine-readable name.
+  Call(B, Description, Values, "\n");
+}
+
+
+CallInst* SimpleLogger::Call(IRBuilder<>& Builder, StringRef Prefix,
+                             ArrayRef<Value*> Values, StringRef Suffix) {
+
+  vector<Value*> Args = Adapt(Values, Builder);
 
   Value *FormatString = CreateFormatString(Builder, Prefix, Args, Suffix);
   Args.emplace(Args.begin(), FormatString);
@@ -95,18 +115,7 @@ CallInst* Logger::Call(IRBuilder<>& Builder, StringRef Prefix,
 }
 
 
-CallInst* Logger::Call(IRBuilder<>& Builder, StringRef FormatStringPrefix,
-                       Function::ArgumentListType& Args, StringRef Suffix) {
-
-  vector<Value*> LogArgs(Args.size());
-  std::transform(Args.begin(), Args.end(), LogArgs.begin(),
-                 [&](Value& V) { return &V; });
-
-  return Call(Builder, FormatStringPrefix, LogArgs, Suffix);
-}
-
-
-Function* Logger::GetFunction() {
+Function* SimpleLogger::GetFunction() {
   const string Name = FunctionName();
 
   Function *Fn = Mod.getFunction(Name);
@@ -117,13 +126,15 @@ Function* Logger::GetFunction() {
 }
 
 
-FunctionType* Logger::GetType() {
+FunctionType* SimpleLogger::GetType() {
   return TypeBuilder<int(const char *, ...), false>::get(Mod.getContext());
 }
 
 
-Value* Logger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
-                                  ArrayRef<Value*> Values, StringRef Suffix) {
+Value* SimpleLogger::CreateFormatString(IRBuilder<>& Builder,
+                                        StringRef Prefix,
+                                        ArrayRef<Value*> Values,
+                                        StringRef Suffix) {
   ParamVec NamedTypes;
   for (Value *V : Values) {
     NamedTypes.emplace_back(V->getName(), V->getType());
@@ -133,13 +144,12 @@ Value* Logger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 }
 
 
-vector<Value*> Logger::AdaptArguments(ArrayRef<Value*> Values,
-                                      IRBuilder<>& Builder) {
+vector<Value*> SimpleLogger::Adapt(ArrayRef<Value*> Values, IRBuilder<>& B) {
   vector<Value*> Adapted;
 
   for (Value *V : Values) {
     if (V->getType()->isFloatTy()) {
-      V = Builder.CreateFPExt(V, Builder.getDoubleTy());
+      V = B.CreateFPExt(V, B.getDoubleTy());
     }
 
     Adapted.push_back(V);

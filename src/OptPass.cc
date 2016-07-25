@@ -55,16 +55,15 @@ namespace {
                  cl::value_desc("filename"), cl::init("loom.policy"));
 
   /// Logging to automatically add to all instrumentation.
-  cl::opt<Logger::LogType> LogType(
   cl::opt<SimpleLogger::LogType> LogType(
     "loom-logging",
     cl::desc("Logging performed automatically by LOOM instrumentation:"),
     cl::values(
-      clEnumValN(Logger::LogType::None, "none", "No logging"),
-      clEnumValN(Logger::LogType::Printf, "printf", "printf()-based logging"),
-      clEnumValN(Logger::LogType::Libxo, "libxo", "libxo-based logging"),
+      clEnumValN(SimpleLogger::LogType::None, "none", "No logging"),
+      clEnumValN(SimpleLogger::LogType::Printf, "printf", "printf()-based logging"),
+      clEnumValN(SimpleLogger::LogType::Libxo, "libxo", "libxo-based logging"),
     clEnumValEnd),
-    cl::init(Logger::LogType::None));
+    cl::init(SimpleLogger::LogType::None));
 
   /// Instrumentation strategy (callout vs inline).
   cl::opt<InstrStrategy::Kind> Strategy(
@@ -108,7 +107,7 @@ bool OptPass::runOnModule(Module &Mod)
     };
 
   std::unique_ptr<InstrStrategy> S(
-    InstrStrategy::Create(Strategy, Logger::Create(Mod, LogType)));
+    InstrStrategy::Create(Strategy, SimpleLogger::Create(Mod, LogType)));
 
   std::unique_ptr<Instrumenter> Instr(
     Instrumenter::Create(Mod, Name, std::move(S)));

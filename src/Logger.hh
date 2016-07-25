@@ -51,7 +51,42 @@ namespace loom {
 /// Something that can be used to log events, e.g., `printf` or `libxo`.
 class Logger {
 public:
-  /// Ways that we can log values.
+  /**
+   * Create code to log a set of values using the underlying mechanism.
+   *
+   * @param  B             IRBuilder for the location logging code should go
+   * @param  Values        Values to log
+   * @param  Name          Machine-readable name of the logged event
+   *                       (may not be used by all Logger types)
+   * @param  Description   Short, human-readable event description
+   *                       (may not be used by all Logger types)
+   */
+  virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
+                   llvm::StringRef Name, llvm::StringRef Description) = 0;
+
+  /**
+   * Create code to log function arguments using the underlying mechanism.
+   *
+   * @param  B             IRBuilder for the location logging code should go
+   * @param  Args          Arguments to log
+   * @param  Name          Machine-readable name of the logged event
+   *                       (may not be used by all Logger types)
+   * @param  Description   Short, human-readable event description
+   *                       (may not be used by all Logger types)
+   */
+  virtual void Log(llvm::IRBuilder<>& B, llvm::Function::ArgumentListType& Args,
+                   llvm::StringRef Name, llvm::StringRef Description);
+
+protected:
+  Logger(llvm::Module& Mod) : Mod(Mod) {}
+
+  llvm::Module& Mod;
+};
+
+/// A logging technique that requires a single call to a printf-like function
+class SimpleLogger : public Logger {
+public:
+  /// Types of simple loggers.
   enum class LogType {
 
     /// The libc printf() function
@@ -60,26 +95,30 @@ public:
     /// Juniper's libxo, which generates text or structured output
     Libxo,
 
-    /// Don't log things.
+    /// Do not log anything
     None,
   };
 
   /// Create a new Logger of the specified type (`printf`, `libxo`, etc.).
-  static std::unique_ptr<Logger> Create(llvm::Module&,
-                                        LogType Log = LogType::Printf);
+  static std::unique_ptr<SimpleLogger> Create(llvm::Module&,
+                                              LogType Log = LogType::Printf);
+
+  virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
+                   llvm::StringRef Name, llvm::StringRef Description) override;
 
   /// Log a set of values, with optional prefix and suffix text.
   llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
                        llvm::ArrayRef<llvm::Value*> Values,
-                       llvm::StringRef Suffix = "");
+                       llvm::StringRef Suffix);
 
-  /// Log a function's arguments, with optional prefix and suffix text.
-  llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
-                       llvm::Function::ArgumentListType&,
-                       llvm::StringRef Suffix = "");
+protected:
+  SimpleLogger(llvm::Module& Mod) : Logger(Mod) {}
 
   /// Get (or create) declaration for the logging function.
   llvm::Function* GetFunction();
+
+  /// Get the name of the logging function.
+  virtual llvm::StringRef FunctionName() const = 0;
 
   /// Get the type of the logging function, often `int (const char*, ...)`.
   virtual llvm::FunctionType* GetType();
@@ -101,26 +140,21 @@ public:
    * Before values can be passed to a logging function, they may need to be
    * adapted to a suitable form. For example, `float` values may need to be
    * extended into `double` values or aggregates (e.g., `struct` values)
-   * may need to be expanded into their constituent parts.
+   * may need to be expanded into their constituent parts. Some logging schemes
+   * may require that all values be bundled into an aggregate type, e.g., a
+   * structured key-value list.
    *
-   * This function adapts values as necessary and returns a possibly-larger
-   * vector of possibly-adapted values. In the best case, nothing requires
-   * adaptation, the IRBuilder is not used and the original values are returned.
+   * This function adapts values as necessary and returns a vector of
+   * possibly-adapted values. In the best case, nothing requires adaptation,
+   * the IRBuilder is not used and the original values are returned.
    * In the worse case, everything requires adaptation and all of the values in
    * the returned vector will be new, derived from the originals using the
    * supplied IRBuilder.
    *
    * @returns  a vector of possibly-adapted values
    */
-  virtual std::vector<llvm::Value*> AdaptArguments(llvm::ArrayRef<llvm::Value*>,
-                                                   llvm::IRBuilder<>&);
-
-protected:
-  Logger(llvm::Module& Mod) : Mod(Mod) {}
-
-  virtual llvm::StringRef FunctionName() const = 0;
-
-  llvm::Module& Mod;
+  virtual std::vector<llvm::Value*> Adapt(llvm::ArrayRef<llvm::Value*>,
+                                          llvm::IRBuilder<>&);
 };
 
 } // namespace loom

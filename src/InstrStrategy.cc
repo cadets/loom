@@ -128,7 +128,7 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     IRBuilder<> PreambleBuilder(Preamble);
 
     if (Log) {
-      Log->Call(PreambleBuilder, Descrip, InstrValues, "\n");
+      Log->Log(PreambleBuilder, InstrValues, Name, Descrip);
     }
 
     PreambleBuilder.CreateBr(EndBlock);
@@ -204,7 +204,7 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
 
   IRBuilder<> PreambleBuilder(Preamble);
   if (Log) {
-    Log->Call(PreambleBuilder, Descrip, Values, "\n");
+    Log->Log(PreambleBuilder, Values, Name, Descrip);
   }
   PreambleBuilder.CreateBr(EndBlock);
 
