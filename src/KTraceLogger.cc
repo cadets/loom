@@ -40,10 +40,6 @@ using namespace loom;
 using namespace llvm;
 using std::vector;
 
-namespace {
-
-} // anonymous namespace
-
 
 KTraceLogger::KTraceLogger(Module& Mod, std::unique_ptr<Serializer> S, bool K)
   : Logger(Mod), Serial(std::move(S)), KernelMode(K)
