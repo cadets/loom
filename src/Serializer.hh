@@ -42,7 +42,7 @@ namespace loom {
 class Serializer {
 public:
   //! A buffer can be described using a pointer and a length.
-  typedef std::pair<llvm::Value*, llvm::ConstantInt*> BufferInfo;
+  typedef std::pair<llvm::Value*, llvm::Value*> BufferInfo;
 
   /**
    * Generate the code to serialize a set of values, returning details of the
