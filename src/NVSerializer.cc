@@ -64,6 +64,15 @@ public:
   /// Add a named value to the NVList.
   void Add(Value *List, StringRef Name, Value *V, IRBuilder<>&);
 
+  /**
+   * Add a static string to the NVList.
+   *
+   * For the moment, this is the only way to serialize a string with LibNV:
+   * we can only trust that a string is a valid C-style string if we were able
+   * to inspect it at instrumentation time.
+   */
+  void Add(Value *List, StringRef Name, StringRef Value, IRBuilder<>&);
+
   Constant* Fn(StringRef Name, Type* Ret, ArrayRef<Type*> Params);
 
   Module &M;
@@ -194,6 +203,15 @@ void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<>& B) {
   Value *NameVal = B.CreateGlobalStringPtr(Name);
 
   B.CreateCall(F, { List, NameVal, V });
+}
+
+void LibNV::Add(Value *List, StringRef Name, StringRef Str, IRBuilder<>& B) {
+  Constant *F = Fn("nvlist_add_string", Void, { NVListPtr, BytePtr, BytePtr });
+
+  Value *NamePtr = B.CreateGlobalStringPtr(Name);
+  Value *V = B.CreateGlobalStringPtr(Str);
+
+  B.CreateCall(F, { List, NamePtr, V });
 }
 
 Constant* LibNV::Fn(StringRef Name, Type* Ret, ArrayRef<Type*> Params) {
