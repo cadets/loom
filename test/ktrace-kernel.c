@@ -2,6 +2,8 @@
  * \file  ktrace-kernel.c
  * \brief Tests kernel-mode ktrace instrumentation.
  *
+ * XFAIL: freebsd9, freebsd10
+ *
  * Commands for llvm-lit:
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %cflags %s > %t.c
