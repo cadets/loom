@@ -46,6 +46,8 @@ class NVSerializer : public Serializer {
 public:
   NVSerializer(llvm::Module&);
 
+  virtual llvm::StringRef SchemeName() const override { return "nvlist"; }
+
   virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
                                llvm::ArrayRef<llvm::Value*>,
                                llvm::IRBuilder<>&) override;

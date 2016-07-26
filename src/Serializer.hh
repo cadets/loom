@@ -44,6 +44,9 @@ public:
   //! A buffer can be described using a pointer and a length.
   typedef std::pair<llvm::Value*, llvm::Value*> BufferInfo;
 
+  //! A unique name that identifies the serialization scheme (e.g., `nvlist`).
+  virtual llvm::StringRef SchemeName() const = 0;
+
   /**
    * Generate the code to serialize a set of values, returning details of the
    * resulting buffer (pointer and length).
@@ -77,6 +80,8 @@ protected:
 class NullSerializer : public Serializer {
 public:
   NullSerializer(llvm::LLVMContext &Ctx) : Serializer(Ctx) {}
+
+  virtual llvm::StringRef SchemeName() const override { return "null"; }
 
   virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
                                llvm::ArrayRef<llvm::Value*>,
