@@ -2,6 +2,9 @@
  * \file  ktrace-userspace-libnv.c
  * \brief Tests userspace ktrace instrumentation with libnv serialization.
  *
+ * FreeBSD <11 doesn't provide the libnv we're looking for in base or ports:
+ * XFAIL: freebsd9, freebsd10
+ *
  * Commands for llvm-lit:
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %cflags %s > %t.c
