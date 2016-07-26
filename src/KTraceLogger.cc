@@ -64,6 +64,12 @@ void KTraceLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
     B.CreateCall(F, { Buffer.first, Buffer.second });
 
   } else {
+    // Send record to `ktrstruct`:
+    auto *FT = TypeBuilder<void(const char*, void*, size_t), false>::get(Ctx);
+    Constant *F = Mod.getOrInsertFunction("ktrstruct", FT);
+    Value *Name = B.CreateGlobalStringPtr(Serial->SchemeName(), "scheme");
+
+    B.CreateCall(F, { Name, Buffer.first, Buffer.second });
   }
 
   Serial->Cleanup(Buffer, B);
