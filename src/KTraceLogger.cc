@@ -54,24 +54,17 @@ void KTraceLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
   // Get pointer to serialized data buffer:
   Serializer::BufferInfo Buffer = Serial->Serialize(Name, Descrip, Values, B);
 
+  LLVMContext &Ctx = Mod.getContext();
+
   if (!KernelMode) {
-    // User-mode `utrace()` is simple:
-    vector<Value*> Args { Buffer.first, Buffer.second };
-    B.CreateCall(GetUTrace(), Args);
+    // Send record to `utrace`:
+    auto *FT = TypeBuilder<int(const void*, size_t), false>::get(Ctx);
+    Constant *F = Mod.getOrInsertFunction("utrace", FT);
+
+    B.CreateCall(F, { Buffer.first, Buffer.second });
 
   } else {
   }
 
   Serial->Cleanup(Buffer, B);
-}
-
-
-Function* KTraceLogger::GetUTrace() {
-  LLVMContext &Ctx = Mod.getContext();
-  FunctionType *FT = TypeBuilder<int(const void*, size_t), false>::get(Ctx);
-
-  Function *F = dyn_cast<Function>(Mod.getOrInsertFunction("utrace", FT));
-  assert(F);
-
-  return F;
 }

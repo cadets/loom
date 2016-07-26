@@ -53,9 +53,6 @@ public:
                    llvm::StringRef Name, llvm::StringRef Description) override;
 
 private:
-  //! Find the `utrace()` system call.
-  llvm::Function* GetUTrace();
-
   const std::unique_ptr<Serializer> Serial;
   const bool KernelMode;
 };
