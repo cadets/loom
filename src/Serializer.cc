@@ -44,7 +44,9 @@ Serializer::Serializer(llvm::LLVMContext &Ctx)
 
 
 Serializer::BufferInfo
-NullSerializer::Serialize(ArrayRef<Value*> V, IRBuilder<>& B) {
+NullSerializer::Serialize(StringRef /* Name */, StringRef /* Description */,
+                          ArrayRef<Value*> V, IRBuilder<>& B) {
+
   // As a "null" operation, simply copy zero bytes from nullptr.
   Value *NullPtr = ConstantPointerNull::get(BytePtr);
   ConstantInt *Zero = ConstantInt::get(SizeT, 0);

@@ -94,12 +94,20 @@ NVSerializer::NVSerializer(llvm::Module &M)
 
 
 Serializer::BufferInfo
-NVSerializer::Serialize(ArrayRef<Value*> Values, IRBuilder<>& B) {
+NVSerializer::Serialize(StringRef Name, StringRef Descrip,
+                        ArrayRef<Value*> Values, IRBuilder<>& B) {
+
   Value *NVList = NV->Create(B);
+  Value *SubList = NV->Create(B);
+
+  NV->Add(NVList, "name", Name, B);
+  NV->Add(NVList, "description", Descrip, B);
 
   for (Value *V : Values) {
-    NV->Add(NVList, V->getName(), V, B);
+    NV->Add(SubList, V->getName(), V, B);
   }
+
+  NV->Add(NVList, "values", SubList, B);
 
   if (NVDebug) {
     NV->Dump(NVList, ConstantInt::get(NV->Int, 2 /* stderr */), B);
@@ -108,8 +116,9 @@ NVSerializer::Serialize(ArrayRef<Value*> Values, IRBuilder<>& B) {
   Value *SizePtr = B.CreateAlloca(SizeT);
   Value *Buffer = NV->Pack(NVList, SizePtr, B);
 
-  // Destroy the nvlist_t: all we need now is the packed buffer
+  // Destroy the nvlist_t instances: all we is now in the packed buffer.
   NV->Destroy(NVList, B);
+  NV->Destroy(SubList, B);
 
   return { Buffer, B.CreateLoad(SizePtr) };
 }

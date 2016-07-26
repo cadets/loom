@@ -47,9 +47,15 @@ public:
   /**
    * Generate the code to serialize a set of values, returning details of the
    * resulting buffer (pointer and length).
+   *
+   * @param  Name         Machine-readable instrumentation name.
+   * @param  Description  Human-readable short description (may be ignored).
+   * @param  Values       Values actually being serialized
+   * @param  B            IRBuilder positioned within instrumentation code
    */
-  virtual BufferInfo Serialize(llvm::ArrayRef<llvm::Value*>,
-                               llvm::IRBuilder<>&) = 0;
+  virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
+                               llvm::ArrayRef<llvm::Value*> Values,
+                               llvm::IRBuilder<>& B) = 0;
 
   /**
    * Clean up a serialized data buffer using Serializer-specific cleanup code
@@ -72,7 +78,8 @@ class NullSerializer : public Serializer {
 public:
   NullSerializer(llvm::LLVMContext &Ctx) : Serializer(Ctx) {}
 
-  virtual BufferInfo Serialize(llvm::ArrayRef<llvm::Value*>,
+  virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
+                               llvm::ArrayRef<llvm::Value*>,
                                llvm::IRBuilder<>&) override;
 
   virtual void Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;

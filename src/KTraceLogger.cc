@@ -53,10 +53,10 @@ KTraceLogger::KTraceLogger(Module& Mod, std::unique_ptr<Serializer> S, bool K)
 
 
 void KTraceLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
-                       StringRef Name, StringRef Description) {
+                       StringRef Name, StringRef Descrip) {
 
   // Get pointer to serialized data buffer:
-  Serializer::BufferInfo Buffer = Serial->Serialize(Values, B);
+  Serializer::BufferInfo Buffer = Serial->Serialize(Name, Descrip, Values, B);
 
   if (!KernelMode) {
     // User-mode `utrace()` is simple:

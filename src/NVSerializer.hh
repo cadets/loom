@@ -46,7 +46,8 @@ class NVSerializer : public Serializer {
 public:
   NVSerializer(llvm::Module&);
 
-  virtual BufferInfo Serialize(llvm::ArrayRef<llvm::Value*>,
+  virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
+                               llvm::ArrayRef<llvm::Value*>,
                                llvm::IRBuilder<>&) override;
 
   virtual void Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;
