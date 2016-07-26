@@ -56,7 +56,8 @@ public:
 
   CallInst* Free(Value*, IRBuilder<>&);         //!< libc's free(void*)
 
-  CallInst* Create(IRBuilder<>&);               //!< _create(int flags = 0)
+  //! nvlist_create(int flags = NV_FLAG_NO_UNIQUE)
+  CallInst* Create(IRBuilder<>&);
   CallInst* Destroy(Value*, IRBuilder<>&);      //!< _destroy(nvlist_t*)
   CallInst* Pack(Value*, Value*, IRBuilder<>&); //!< _pack(nvlist_t*, size_t*)
   CallInst* Dump(Value*, Value*, IRBuilder<>&); //!< _dump(nvlist_t*, int fd)
@@ -149,8 +150,8 @@ CallInst* LibNV::Free(Value *V, IRBuilder<>& B) {
 CallInst* LibNV::Create(IRBuilder<>& B) {
   Constant *F = Fn("nvlist_create", NVListPtr, { Int });
 
-  ConstantInt *Zero = ConstantInt::get(Int, 0);
-  return B.CreateCall(F, Zero);
+  ConstantInt *NvFlagNoUnique = ConstantInt::get(Int, 2);
+  return B.CreateCall(F, NvFlagNoUnique);
 }
 
 CallInst* LibNV::Destroy(Value *NVList, IRBuilder<>& B) {
