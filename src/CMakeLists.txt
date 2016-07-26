@@ -5,6 +5,7 @@ add_llvm_loadable_module(LLVMLoom
 	IRUtils.cc
 	KTraceLogger.cc
 	Logger.cc
+	NVSerializer.cc
 	OptPass.cc
 	PolicyFile.cc
 	Serializer.cc

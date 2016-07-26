@@ -35,6 +35,7 @@
 #include "Instrumenter.hh"
 #include "IRUtils.hh"
 #include "KTraceLogger.hh"
+#include "NVSerializer.hh"
 #include "Serializer.hh"
 
 #include "llvm/Pass.h"
@@ -82,6 +83,7 @@ namespace {
 
   /// Serialization strategies we can use (libnv, MessagePack, null...).
   enum class SerializationType {
+    LibNV,
     Null,
   };
 
@@ -90,6 +92,7 @@ namespace {
     "loom-serialization",
     cl::desc("serialization strategy"),
     cl::values(
+      clEnumValN(SerializationType::LibNV, "nv", "libnv"),
       clEnumValN(SerializationType::Null, "null", "no serialization"),
     clEnumValEnd),
     cl::init(SerializationType::Null));
@@ -148,6 +151,9 @@ bool OptPass::runOnModule(Module &Mod)
 
   unique_ptr<Serializer> Serial;
   switch (SerializationStrategy) {
+  case SerializationType::LibNV:
+    Serial.reset(new NVSerializer(Mod));
+    break;
   case SerializationType::Null:
     Serial.reset(new NullSerializer(Mod.getContext()));
     break;
