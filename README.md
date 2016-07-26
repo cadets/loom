@@ -1,55 +1,102 @@
-﻿LOOM: LLVM instrumentation library
-====================================================================
+﻿# Loom: LLVM instrumentation library
 
-LOOM is a general-purpose library for adding instrumentation to software in
-the LLVM intermediate representation (IR) format. It is currently capable of
-generating static instrumentation points that expose values (e.g., function
-parameters and return values) to software-defined instrumentation functions.
+Loom is a general-purpose library for adding instrumentation to software in the LLVM intermediate representation (IR) format. It is currently capable of generating static instrumentation points that expose values (e.g., function parameters and return values) to software-defined instrumentation functions.
 
-LOOM is part of the
-[CADETS research project](https://www.cl.cam.ac.uk/research/security/cadets)
-(Causal, Adaptive, Distributed, and Efficient Tracing System).
+Loom is part of the [CADETS](https://www.cl.cam.ac.uk/research/security/cadets) (Causal, Adaptive, Distributed, and Efficient Tracing System) project as part of DARPA's [Transparent Computing](http://www.darpa.mil/program/transparent-computing) program.
 
-BUILDING INSTRUCTIONS
-=====================================================================
+## Get it
 
-1. Download llvm from github.
-git clone https://github.com/cadets/llvm llvmLoom
+Loom itself is entirely contained within this GitHub repository, but it requires that you build [LLVM](http://llvm.org) from source. In order to run Loom's test suite, you must also build a matching version of [Clang](http://clang.llvm.org).
 
-2. Checkout the loom branch of llvm.
-cd llvmLoom && git checkout remotes/origin/loom
-
-3. Run cmake in the build directory created in the llvm directory (llvmLoom).
-mkdir build && cd build && cmake -D LLVM_ENABLE_MODULES=ON -G Ninja ..
-
-4. Build it with ninja.
-ninja
-
-5. Set your environment variable PATH. One method for unix-like systems is adding the following line to the .profile file in your home directory. (If there is no .profile, create one.)
-PATH='PATH_TO_LLVM_DIRECTORY'/build/bin:$PATH
-
-6. Go up two directories.
-cd ../..
-
-7. Download loom.
-git clone https://github.com/cadets/loom loom
+```sh
+$ git clone https://github.com/cadets/llvm -b loom llvm
+$ git clone https://github.com/cadets/clang -b loom llvm/tools/clang
+$ git clone https://github.com/cadets/loom loom
+```
 
 
-8. Change 'src' to 'lib' in the following line in file 'PATH_TO_LOOM'/test/lit.cfg. 
-[ os.path.join(loom_build, 'src') ])
+## Build it
 
-9. Add the following lines before the line 'include(AddLLVM)' in the file 'loom/CMakeLists.txt'
-# Retrieved from 'http://stackoverflow.com/questions/27863706/llvm-out-of-source-pass-build-loadable-modules-not-supported-on-linux'
-# AddLLVM needs these in loom/CMakeLists.txt  
-# llvmLoom/build/share/llvm/cmake/AddLLVM.cmake
-set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin)
-set(LLVM_LIBRARY_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib)
-include(HandleLLVMOptions) # important: matches compiler flags to LLVM/Clang build
+### Building Clang/LLVM
 
-10. cd loom && mkdir build && cd build
+First, build LLVM using [CMake](https://cmake.org) and [Ninja](https://ninja-build.org). The directions below assume a `Release` build, but a `Debug` build is also possible.
 
-11. Run cmake.
-cmake -GNinja ..
+```sh
+$ mkdir llvm/Release
+$ cd llvm/Release
+$ cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
+$ ninja
+[go get some coffee]
+```
 
-12. Build it with ninja.
-ninja 
+### Building LOOM
+
+1. Set your PATH to include the version of LLVM you just built:
+
+    ```sh
+    $ export PATH=/path/to/LLVM/Release/bin:$PATH
+    ```
+    or:
+    ```csh
+    $ setenv PATH /path/to/LLVM/Release/bin:$PATH
+    ```
+
+1. Configure Loom build:
+    ```sh
+    $ cd /path/to/Loom
+    $ mkdir Release
+    $ cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
+    $ ninja
+    $ ninja check    # optional: run the test suite
+    ```
+
+
+## Use it
+
+### `opt` pass
+
+Loom is structured as a set of libraries for LLVM instrumentation, but can be run most straightforwardly as an LLVM [opt](http://llvm.org/docs/CommandGuide/opt.html) pass. This requires creating an instrumentation policy file such as:
+
+```yaml
+hook_prefix: __test_hook
+
+functions:
+    - name: foo
+      caller: [ entry, exit ]
+
+    - name: bar
+      caller: [ entry ]
+      callee: [ exit ]
+
+structures:
+  - name: baz
+    fields:
+      - id: 0
+        operations: [ read, write ]
+```
+
+and then running `opt`:
+
+```sh
+$ opt -load /path/to/LLVMLoom.so -loom -loom-file /path/to/instr.policy
+```
+
+Loom's `opt` pass has options that can be seen in the help/usage output:
+
+```sh
+$ opt -load /path/to/LLVMLoom.so -help | grep loom
+```
+
+
+### Instrumenting FreeBSD
+
+To build FreeBSD with Loom, you need to clone our [IR-augmented version of FreeBSD](https://github.com/cadets/freebsd/branches/loom). Then, you can use our `loom-fbsdmake` script as a drop-in wrapper around `make`:
+
+```sh
+$ git clone https://github.com/cadets/freebsd -b loom freebsd-loom
+$ cd freebsd-loom
+$ export LLVM_PREFIX=/path/to/LLVM/Release/bin
+$ export LOOM_LIB=/path/to/Loom/Release/lib/LLVMLoom.so
+$ /path/to/Loom/scripts/loom-fbsdmake buildworld buildkernel
+$ /path/to/Loom/scripts/loom-fbsdmake buildenv   # etc.
+```
