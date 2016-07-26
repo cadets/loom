@@ -197,8 +197,13 @@ void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<>& B) {
     }
 
   } else if (T->isPointerTy()) {
-    F = Fn("nvlist_add_number", Void, { NVListPtr, BytePtr, SizeT });
-    V = B.CreatePointerCast(V, SizeT);
+    if (T == NVListPtr) {
+      F = Fn("nvlist_add_nvlist", Void, { NVListPtr, BytePtr, NVListPtr });
+
+    } else {
+      F = Fn("nvlist_add_number", Void, { NVListPtr, BytePtr, SizeT });
+      V = B.CreatePointerCast(V, SizeT);
+    }
 
   } else {
     raw_ostream& err = llvm::errs();
