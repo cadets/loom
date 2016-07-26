@@ -99,16 +99,16 @@ NVSerializer::Serialize(StringRef Name, StringRef Descrip,
                         ArrayRef<Value*> Values, IRBuilder<>& B) {
 
   Value *NVList = NV->Create(B);
-  Value *SubList = NV->Create(B);
-
   NV->Add(NVList, "name", Name, B);
   NV->Add(NVList, "description", Descrip, B);
 
+  Value *SubList = NV->Create(B);
   for (Value *V : Values) {
     NV->Add(SubList, V->getName(), V, B);
   }
 
   NV->Add(NVList, "values", SubList, B);
+  NV->Destroy(SubList, B);
 
   if (NVDebug) {
     NV->Dump(NVList, ConstantInt::get(NV->Int, 2 /* stderr */), B);
@@ -119,7 +119,6 @@ NVSerializer::Serialize(StringRef Name, StringRef Descrip,
 
   // Destroy the nvlist_t instances: all we is now in the packed buffer.
   NV->Destroy(NVList, B);
-  NV->Destroy(SubList, B);
 
   return { Buffer, B.CreateLoad(SizePtr) };
 }
