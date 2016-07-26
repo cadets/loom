@@ -58,8 +58,6 @@ void KTraceLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
   // Get pointer to serialized data buffer:
   Serializer::BufferInfo Buffer = Serial->Serialize(Values, B);
 
-  GetUTrace()->dump();
-
   if (!KernelMode) {
     // User-mode `utrace()` is simple:
     vector<Value*> Args { Buffer.first, Buffer.second };
