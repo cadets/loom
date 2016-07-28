@@ -48,7 +48,10 @@ then
 	fi
 fi
 
-export LLVM_INSTR_FLAGS="-load ${LOOM_LIB} -loom"
+export LOOM_FILE="loom.policy"
+
+export LLVM_INSTR_DEPS="${LOOM_FILE}"
+export LLVM_INSTR_FLAGS="-load ${LOOM_LIB} -loom -loom-file ${LOOM_FILE}"
 
 # If building on FreeBSD 10, /usr/bin/ld doesn't support the
 # --no-fatal-warnings option, so we need to suppress its use.
