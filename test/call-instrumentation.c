@@ -41,10 +41,9 @@ int	foo(int x, float y, double z)
 }
 
 // CHECK: define [[BAR_TYPE:.*]] @bar(i32{{.*}}, i8*{{.*}})
-float	bar(unsigned int i, const char *s)
+void	bar(unsigned int i, const char *s)
 {
 	printf("bar(%d, \"%s\")\n", i, s);
-	return i;
 }
 
 // CHECK: define double @baz()

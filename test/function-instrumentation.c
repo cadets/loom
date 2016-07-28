@@ -26,6 +26,7 @@ functions:
       callee: [ entry ]
 
     - name: baz
+      callee: [ exit ]
 
 #else
 
@@ -55,7 +56,7 @@ double	baz(void)
 {
 	// CHECK-NOT: call void @[[PREFIX]]_enter_baz
 	printf("baz()\n");
-	// CHECK-NOT: call void @[[PREFIX]]_leave_baz
+	// CHECK: call void @[[PREFIX]]_leave_baz
 	return 0;
 }
 
@@ -80,7 +81,7 @@ main(int argc, char *argv[])
 	baz();
 	// CHECK-OUTPUT-NOT: enter baz
 	// CHECK-OUTPUT: baz
-	// CHECK-OUTPUT-NOT: leave baz
+	// CHECK-OUTPUT: leave baz
 
 
 	return 0;

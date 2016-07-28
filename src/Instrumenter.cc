@@ -124,7 +124,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
   assert(isa<PointerType>(Fn.getType()));
   FunctionType *FnType = dyn_cast<FunctionType>(Fn.getType()->getElementType());
   assert(FnType);
-  const bool voidFunction = FnType->isVoidTy();
+  const bool voidFunction = FnType->getReturnType()->isVoidTy();
 
   vector<Value*> Arguments;
   vector<Parameter> InstrParameters;
