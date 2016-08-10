@@ -78,7 +78,7 @@ else
 	echo "No KERNEL_INSTR_POLICY specified, defaulting to" \
 		"no kernel instrumentation"
 
-	touch ${KERNEL_OBJDIR}/loom.policy
+	touch ${KERNEL_OBJDIR}/${LOOM_FILE}
 fi
 
 # Disable -Werror in both buildworld (NO_WERROR) and buildkernel (WERROR).
