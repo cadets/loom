@@ -62,6 +62,7 @@ fi
 
 # Default to the LOOM kernel config, but allow this to be overridden.
 : ${KERNCONF:="LOOM"}
+export KERNCONF
 
 # Use instrumentation in the kernel config phase.
 export CONFIGARGS="-i"
