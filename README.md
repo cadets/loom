@@ -9,8 +9,8 @@ Loom is part of the [CADETS](https://www.cl.cam.ac.uk/research/security/cadets) 
 Loom itself is entirely contained within this GitHub repository, but it requires that you build [LLVM](http://llvm.org) from source. In order to run Loom's test suite, you must also build a matching version of [Clang](http://clang.llvm.org).
 
 ```sh
-$ git clone https://github.com/cadets/llvm -b loom llvm
-$ git clone https://github.com/cadets/clang -b loom llvm/tools/clang
+$ git clone https://github.com/cadets/llvm -b cadets llvm
+$ git clone https://github.com/cadets/clang -b cadets llvm/tools/clang
 $ git clone https://github.com/cadets/loom loom
 ```
 
