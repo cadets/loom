@@ -46,8 +46,19 @@ $ ninja
     $ cd /path/to/Loom
     $ mkdir Release
     $ cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
+    ```
+
+1. Build Loom:
+    ```sh
     $ ninja
-    $ ninja check    # optional: run the test suite
+    ```
+
+1. (optional) run test suite:
+    a. Install [libxo](https://github.com/Juniper/libxo), which is used by
+       Loom to emit structured
+    ```sh
+    $ pkg install libxo    # or whatever your package manager command is
+    $ ninja check
     ```
 
 
@@ -95,7 +106,7 @@ To build FreeBSD with Loom, you need to clone our [IR-augmented version of FreeB
 ```sh
 $ git clone https://github.com/cadets/freebsd -b loom freebsd-loom
 $ cd freebsd-loom
-$ export LLVM_PREFIX=/path/to/LLVM/Release/bin
+$ export LLVM_PREFIX=/path/to/LLVM/Release
 $ export LOOM_LIB=/path/to/Loom/Release/lib/LLVMLoom.so
 $ /path/to/Loom/scripts/loom-fbsdmake buildworld buildkernel
 $ /path/to/Loom/scripts/loom-fbsdmake buildenv   # etc.
