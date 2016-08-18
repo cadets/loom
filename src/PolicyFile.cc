@@ -109,6 +109,9 @@ struct PolicyFile::PolicyFileData
   /// Simple (non-serializing) logging strategy.
   SimpleLogger::LogType Logging;
 
+  /// KTrace-based logging.
+  Policy::KTraceTarget KTrace;
+
   /// Function instrumentation.
   vector<FnInstrumentation> Functions;
 
@@ -139,6 +142,16 @@ struct yaml::ScalarEnumerationTraits<InstrStrategy::Kind> {
   static void enumeration(yaml::IO &io, InstrStrategy::Kind& K) {
     io.enumCase(K, "callout",  InstrStrategy::Kind::Callout);
     io.enumCase(K, "inline", InstrStrategy::Kind::Inline);
+  }
+};
+
+/// Converts an KTraceTarget to/from YAML.
+template <>
+struct yaml::ScalarEnumerationTraits<Policy::KTraceTarget> {
+  static void enumeration(yaml::IO &io, Policy::KTraceTarget& T) {
+    io.enumCase(T, "kernel",  Policy::KTraceTarget::Kernel);
+    io.enumCase(T, "utrace", Policy::KTraceTarget::Userspace);
+    io.enumCase(T, "none", Policy::KTraceTarget::None);
   }
 };
 
@@ -204,6 +217,7 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
   static void mapping(yaml::IO &io, PolicyFile::PolicyFileData &policy) {
     io.mapOptional("strategy", policy.Strategy, InstrStrategy::Kind::Callout);
     io.mapOptional("logging", policy.Logging, SimpleLogger::LogType::None);
+    io.mapOptional("ktrace", policy.KTrace, Policy::KTraceTarget::None);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("functions",   policy.Functions);
     io.mapOptional("structures",  policy.Structures);
@@ -254,6 +268,12 @@ InstrStrategy::Kind PolicyFile::Strategy() const
 SimpleLogger::LogType PolicyFile::Logging() const
 {
   return Policy->Logging;
+}
+
+
+Policy::KTraceTarget PolicyFile::KTrace() const
+{
+  return Policy->KTrace;
 }
 
 

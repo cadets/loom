@@ -74,24 +74,6 @@ namespace {
     clEnumValEnd),
     cl::init(SerializationType::Null));
 
-  /// Ways that we can use KTrace (or not).
-  enum class KTraceTarget {
-    Kernel,
-    Userspace,
-    None,
-  };
-
-  /// KTrace command-line argument.
-  cl::opt<KTraceTarget> KTrace(
-    "loom-ktrace",
-    cl::desc("KTrace instrumentation reporting"),
-    cl::values(
-      clEnumValN(KTraceTarget::Userspace, "utrace", "utrace(2) system call"),
-      clEnumValN(KTraceTarget::Kernel, "kernel", "kernel-mode ktrace"),
-      clEnumValN(KTraceTarget::None, "none", "no ktrace reporting"),
-    clEnumValEnd),
-    cl::init(KTraceTarget::None));
-
   struct OptPass : public ModulePass {
     static char ID;
     OptPass() : ModulePass(ID), PolFile(PolicyFile::Open(PolicyFilename)) {}
@@ -138,18 +120,18 @@ bool OptPass::runOnModule(Module &Mod)
     break;
   }
 
-  switch (KTrace) {
-  case KTraceTarget::Kernel:
+  switch (P.KTrace()) {
+  case Policy::KTraceTarget::Kernel:
     S->AddLogger(
       unique_ptr<Logger>(new KTraceLogger(Mod, std::move(Serial), true)));
     break;
 
-  case KTraceTarget::Userspace:
+  case Policy::KTraceTarget::Userspace:
     S->AddLogger(
       unique_ptr<Logger>(new KTraceLogger(Mod, std::move(Serial), false)));
     break;
 
-  case KTraceTarget::None:
+  case Policy::KTraceTarget::None:
     break;
   }
 

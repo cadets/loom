@@ -9,7 +9,7 @@
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %cflags %s > %t.c
  * RUN: %clang %cflags -S -emit-llvm %cflags %t.c -o %t.ll
- * RUN: %loom -S %t.ll -loom-file %t.yaml -loom-ktrace=utrace -loom-serialization=nv -loom-nv-debug -o %t.instr.ll
+ * RUN: %loom -S %t.ll -loom-file %t.yaml -loom-serialization=nv -loom-nv-debug -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
  * RUN: %clang -lnv %t.instr.ll -o %t.instr
  * RUN: %t.instr 2> %t.instr.out
@@ -19,6 +19,8 @@
 #if defined (POLICY_FILE)
 
 hook_prefix: __ktrace_test
+
+ktrace: utrace
 
 functions:
     - name: foo

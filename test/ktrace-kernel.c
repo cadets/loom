@@ -6,13 +6,15 @@
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %cflags %s > %t.c
  * RUN: %clang %cflags -S -emit-llvm %cflags %t.c -o %t.ll
- * RUN: %loom -S %t.ll -loom-file %t.yaml -loom-ktrace=kernel -o %t.instr.ll
+ * RUN: %loom -S %t.ll -loom-file %t.yaml -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
  */
 
 #if defined (POLICY_FILE)
 
 hook_prefix: __ktrace_test
+
+ktrace: kernel
 
 functions:
     - name: foo

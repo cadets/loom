@@ -54,6 +54,8 @@ class PolicyFile : public Policy
 
   SimpleLogger::LogType Logging() const override;
 
+  KTraceTarget KTrace() const override;
+
   Policy::Directions
     CallHooks(const llvm::Function&) const override;
 

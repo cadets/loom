@@ -58,6 +58,12 @@ class Policy
   //! Simple (non-serializing) logging.
   virtual SimpleLogger::LogType Logging() const = 0;
 
+  //! Ways that we can use KTrace (or not).
+  enum class KTraceTarget { Kernel, Userspace, None };
+
+  //! Should we use ktrace logging?
+  virtual KTraceTarget KTrace() const = 0;
+
   enum class Direction { In, Out };
   typedef std::vector<Direction> Directions;
 
