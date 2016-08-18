@@ -293,7 +293,11 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
 bool
 PolicyFile::FieldReadHook(const llvm::StructType& T, unsigned int Id) const
 {
-  assert(T.getName().startswith("struct."));
+  if (not T.getName().startswith("struct.")) {
+    assert(T.getName().startswith("union."));
+    return false;
+  }
+
   StringRef Name = T.getName().substr(7);
 
   for (StructInstrumentation& S : Policy->Structures) {
@@ -315,7 +319,11 @@ PolicyFile::FieldReadHook(const llvm::StructType& T, unsigned int Id) const
 bool
 PolicyFile::FieldWriteHook(const llvm::StructType& T, unsigned int Id) const
 {
-  assert(T.getName().startswith("struct."));
+  if (not T.getName().startswith("struct.")) {
+    assert(T.getName().startswith("union."));
+    return false;
+  }
+
   StringRef Name = T.getName().substr(7);
 
   for (StructInstrumentation& S : Policy->Structures) {
