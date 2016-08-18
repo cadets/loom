@@ -69,12 +69,42 @@ $ ninja
 Loom is structured as a set of libraries for LLVM instrumentation, but can be run most straightforwardly as an LLVM [opt](http://llvm.org/docs/CommandGuide/opt.html) pass. This requires creating an instrumentation policy file such as:
 
 ```yaml
+#
+# There are two instrumentation strategies:
+#  * callout:  call an instrumentation function like __loom_called_foo
+#  * inline    inject instrumentation inline with instrumented events
+#
 strategy: callout
 
-logging: printf
-
+#
+# When using callout instrumentation, the generated instrumentation functions
+# are named __loom_{event-specific-name} by default. This configuration value
+# allows the `__loom` prefix to be overridden.
+#
 hook_prefix: __test_hook
 
+#
+# Loom can automatically log events and their immediate values (e.g., when
+# logging a call to foo(1, 2, 3.1415), emit "foo", 1, 2 and 3.1415) without
+# any processing. Strategies include:
+#
+#  * none      do not use the simple logger
+#  * printf    just print the event using printf()
+#  * xo        use libxo to emit a structured representation (e.g., json)
+#
+logging: printf
+
+#
+# Specify how/when functions should be instrumented.
+#
+# Functions can be instrumented on the caller side (before/after the call)
+# or the callee side (function prelude / return sites). The `functions`
+# configuration value should be a list of entries, each specifying:
+#
+#  * `name`: the name of the function being instrumented (language-mangled)
+#  * `caller`: (optional) list of directions to instrument calls (entry/exit)
+#  * `callee`: (optional) list of directions to instrument functions
+#
 functions:
     - name: foo
       caller: [ entry, exit ]
@@ -83,6 +113,18 @@ functions:
       caller: [ entry ]
       callee: [ exit ]
 
+#
+# Specify how/when structure fields should be instrumented.
+#
+# We can instrument both reads and writes to structure fields.
+# These fields must currently be identified by number rather than name.
+# The `structures` config value is a list of entries containing:
+#
+#  * `name`: the structure name
+#  * `fields`: a list of structure field descriptions:
+#    * `id`: field ID within the structure (e.g., field 0, field 1)
+#    * `operations`: list of operations to instrument (`read` or `write`)
+#
 structures:
   - name: baz
     fields:
