@@ -69,7 +69,7 @@ $ ninja
 Loom is structured as a set of libraries for LLVM instrumentation, but can be run most straightforwardly as an LLVM [opt](http://llvm.org/docs/CommandGuide/opt.html) pass. This requires creating an instrumentation policy file such as:
 
 ```yaml
-strategy: inline
+strategy: callout
 
 logging: printf
 
