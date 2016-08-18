@@ -36,6 +36,12 @@ using namespace llvm;
 using namespace loom;
 
 
+std::unique_ptr<Serializer> Serializer::None()
+{
+  return std::unique_ptr<Serializer>();
+}
+
+
 Serializer::Serializer(llvm::LLVMContext &Ctx)
   : Ctx(Ctx), Byte(IntegerType::get(Ctx, 8)),
     BytePtr(PointerType::getUnqual(Byte)), SizeT(IntegerType::get(Ctx, 64))

@@ -44,6 +44,9 @@ public:
   //! A buffer can be described using a pointer and a length.
   typedef std::pair<llvm::Value*, llvm::Value*> BufferInfo;
 
+  //! Create an empty Serializer unique_ptr.
+  static std::unique_ptr<Serializer> None();
+
   //! A unique name that identifies the serialization scheme (e.g., `nvlist`).
   virtual llvm::StringRef SchemeName() const = 0;
 
