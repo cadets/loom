@@ -50,6 +50,8 @@ class PolicyFile : public Policy
   /// Open a policy file.
   static llvm::ErrorOr<std::unique_ptr<PolicyFile>> Open(std::string Filename);
 
+  InstrStrategy::Kind Strategy() const override;
+
   Policy::Directions
     CallHooks(const llvm::Function&) const override;
 

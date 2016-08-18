@@ -69,18 +69,6 @@ namespace {
     clEnumValEnd),
     cl::init(SimpleLogger::LogType::None));
 
-  /// Instrumentation strategy (callout vs inline).
-  cl::opt<InstrStrategy::Kind> Strategy(
-    "loom-strategy",
-    cl::desc("Method of instrumentation used by LOOM:"),
-    cl::values(
-      clEnumValN(InstrStrategy::Kind::Callout, "callout",
-                 "call out to an instrumentation function"),
-      clEnumValN(InstrStrategy::Kind::Inline, "inline",
-                 "add instrumentation inline"),
-    clEnumValEnd),
-    cl::init(InstrStrategy::Kind::Callout));
-
   /// Serialization strategies we can use (libnv, MessagePack, null...).
   enum class SerializationType {
     LibNV,
@@ -144,7 +132,7 @@ bool OptPass::runOnModule(Module &Mod)
       return P.InstrName(Components);
     };
 
-  unique_ptr<InstrStrategy> S(InstrStrategy::Create(Strategy));
+  unique_ptr<InstrStrategy> S(InstrStrategy::Create(P.Strategy()));
   if (LogType != SimpleLogger::LogType::None) {
     S->AddLogger(SimpleLogger::Create(Mod, LogType));
   }

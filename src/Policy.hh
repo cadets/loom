@@ -31,6 +31,8 @@
 #ifndef LOOM_POLICY_H
 #define LOOM_POLICY_H
 
+#include "InstrStrategy.hh"
+
 #include <string>
 #include <vector>
 
@@ -51,6 +53,8 @@ namespace loom {
 class Policy
 {
   public:
+  virtual InstrStrategy::Kind Strategy() const = 0;
+
   enum class Direction { In, Out };
   typedef std::vector<Direction> Directions;
 

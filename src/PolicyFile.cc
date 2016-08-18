@@ -103,6 +103,9 @@ struct PolicyFile::PolicyFileData
   /// Prefix to prepend to all instrumentation hooks (e.g., "__loom").
   string HookPrefix;
 
+  /// How to instrument: inline, via callout function, etc.
+  InstrStrategy::Kind Strategy;
+
   /// Function instrumentation.
   vector<FnInstrumentation> Functions;
 
@@ -124,6 +127,15 @@ struct yaml::SequenceTraits<vector<T>> {
       V.resize(I + 1);
 
     return V[I];
+  }
+};
+
+/// Converts an InstrStrategy::Kind to/from YAML.
+template <>
+struct yaml::ScalarEnumerationTraits<InstrStrategy::Kind> {
+  static void enumeration(yaml::IO &io, InstrStrategy::Kind& K) {
+    io.enumCase(K, "callout",  InstrStrategy::Kind::Callout);
+    io.enumCase(K, "inline", InstrStrategy::Kind::Inline);
   }
 };
 
@@ -177,6 +189,7 @@ struct yaml::MappingTraits<StructInstrumentation> {
 template <>
 struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
   static void mapping(yaml::IO &io, PolicyFile::PolicyFileData &policy) {
+    io.mapOptional("strategy", policy.Strategy, InstrStrategy::Kind::Callout);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("functions",   policy.Functions);
     io.mapOptional("structures",  policy.Structures);
@@ -215,6 +228,12 @@ ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename)
   }
 
   return unique_ptr<PolicyFile> { new PolicyFile(policy) };
+}
+
+
+InstrStrategy::Kind PolicyFile::Strategy() const
+{
+  return Policy->Strategy;
 }
 
 
