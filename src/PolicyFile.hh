@@ -56,6 +56,8 @@ class PolicyFile : public Policy
 
   KTraceTarget KTrace() const override;
 
+  std::unique_ptr<Serializer> Serialization(llvm::Module&) const override;
+
   Policy::Directions
     CallHooks(const llvm::Function&) const override;
 

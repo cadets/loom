@@ -28,10 +28,12 @@
  * SUCH DAMAGE.
  */
 
+#include "NVSerializer.hh"
 #include "PolicyFile.hh"
 #include "Strings.hh"
 
 #include <llvm/IR/Function.h>
+#include <llvm/IR/Module.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/YAMLTraits.h>
@@ -86,6 +88,12 @@ struct FieldInstrumentation
   vector<FieldOperation> Operations;
 };
 
+/// Serialization strategies we can use (libnv, MessagePack, null...).
+enum class SerializationType {
+  LibNV,
+  None,
+};
+
 /// A description of how to instrument fields within a structure.
 struct StructInstrumentation
 {
@@ -111,6 +119,9 @@ struct PolicyFile::PolicyFileData
 
   /// KTrace-based logging.
   Policy::KTraceTarget KTrace;
+
+  /// Serialization.
+  SerializationType Serial;
 
   /// Function instrumentation.
   vector<FnInstrumentation> Functions;
@@ -161,6 +172,15 @@ struct yaml::ScalarEnumerationTraits<Policy::Direction> {
   static void enumeration(yaml::IO &io, Policy::Direction& Dir) {
     io.enumCase(Dir, "entry",  Policy::Direction::In);
     io.enumCase(Dir, "exit", Policy::Direction::Out);
+  }
+};
+
+/// Converts a SerializationType to/from YAML.
+template <>
+struct yaml::ScalarEnumerationTraits<SerializationType> {
+  static void enumeration(yaml::IO &io, SerializationType& S) {
+    io.enumCase(S, "nv", SerializationType::LibNV);
+    io.enumCase(S, "none", SerializationType::None);
   }
 };
 
@@ -218,6 +238,7 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("strategy", policy.Strategy, InstrStrategy::Kind::Callout);
     io.mapOptional("logging", policy.Logging, SimpleLogger::LogType::None);
     io.mapOptional("ktrace", policy.KTrace, Policy::KTraceTarget::None);
+    io.mapOptional("serialization", policy.Serial, SerializationType::None);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("functions",   policy.Functions);
     io.mapOptional("structures",  policy.Structures);
@@ -274,6 +295,17 @@ SimpleLogger::LogType PolicyFile::Logging() const
 Policy::KTraceTarget PolicyFile::KTrace() const
 {
   return Policy->KTrace;
+}
+
+
+unique_ptr<Serializer> PolicyFile::Serialization(Module& Mod) const
+{
+  switch (Policy->Serial) {
+  case SerializationType::LibNV:
+    return unique_ptr<Serializer>(new NVSerializer(Mod));
+  case SerializationType::None:
+    return unique_ptr<Serializer>(new NullSerializer(Mod.getContext()));
+  }
 }
 
 

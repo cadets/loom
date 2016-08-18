@@ -35,8 +35,6 @@
 #include "Instrumenter.hh"
 #include "IRUtils.hh"
 #include "KTraceLogger.hh"
-#include "NVSerializer.hh"
-#include "Serializer.hh"
 
 #include "llvm/Pass.h"
 #include "llvm/IR/Module.h"
@@ -57,22 +55,6 @@ namespace {
   cl::opt<string>
   PolicyFilename("loom-file", cl::desc("instrumentation policy file"),
                  cl::value_desc("filename"), cl::init("loom.policy"));
-
-  /// Serialization strategies we can use (libnv, MessagePack, null...).
-  enum class SerializationType {
-    LibNV,
-    Null,
-  };
-
-  /// Serialization strategy command-line argument.
-  cl::opt<SerializationType> SerializationStrategy(
-    "loom-serialization",
-    cl::desc("serialization strategy"),
-    cl::values(
-      clEnumValN(SerializationType::LibNV, "nv", "libnv"),
-      clEnumValN(SerializationType::Null, "null", "no serialization"),
-    clEnumValEnd),
-    cl::init(SerializationType::Null));
 
   struct OptPass : public ModulePass {
     static char ID;
@@ -110,15 +92,7 @@ bool OptPass::runOnModule(Module &Mod)
     S->AddLogger(SimpleLogger::Create(Mod, LogType));
   }
 
-  unique_ptr<Serializer> Serial;
-  switch (SerializationStrategy) {
-  case SerializationType::LibNV:
-    Serial.reset(new NVSerializer(Mod));
-    break;
-  case SerializationType::Null:
-    Serial.reset(new NullSerializer(Mod.getContext()));
-    break;
-  }
+  unique_ptr<Serializer> Serial = P.Serialization(Mod);
 
   switch (P.KTrace()) {
   case Policy::KTraceTarget::Kernel:

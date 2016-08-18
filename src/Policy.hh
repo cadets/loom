@@ -32,6 +32,7 @@
 #define LOOM_POLICY_H
 
 #include "InstrStrategy.hh"
+#include "Serializer.hh"
 
 #include <string>
 #include <vector>
@@ -63,6 +64,9 @@ class Policy
 
   //! Should we use ktrace logging?
   virtual KTraceTarget KTrace() const = 0;
+
+  //! How should we serialize data?
+  virtual std::unique_ptr<Serializer> Serialization(llvm::Module&) const = 0;
 
   enum class Direction { In, Out };
   typedef std::vector<Direction> Directions;
