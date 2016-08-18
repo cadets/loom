@@ -52,6 +52,8 @@ class PolicyFile : public Policy
 
   InstrStrategy::Kind Strategy() const override;
 
+  SimpleLogger::LogType Logging() const override;
+
   Policy::Directions
     CallHooks(const llvm::Function&) const override;
 

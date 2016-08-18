@@ -58,17 +58,6 @@ namespace {
   PolicyFilename("loom-file", cl::desc("instrumentation policy file"),
                  cl::value_desc("filename"), cl::init("loom.policy"));
 
-  /// Logging to automatically add to all instrumentation.
-  cl::opt<SimpleLogger::LogType> LogType(
-    "loom-logging",
-    cl::desc("Logging performed automatically by LOOM instrumentation:"),
-    cl::values(
-      clEnumValN(SimpleLogger::LogType::None, "none", "No logging"),
-      clEnumValN(SimpleLogger::LogType::Printf, "printf", "printf()-based logging"),
-      clEnumValN(SimpleLogger::LogType::Libxo, "libxo", "libxo-based logging"),
-    clEnumValEnd),
-    cl::init(SimpleLogger::LogType::None));
-
   /// Serialization strategies we can use (libnv, MessagePack, null...).
   enum class SerializationType {
     LibNV,
@@ -133,6 +122,8 @@ bool OptPass::runOnModule(Module &Mod)
     };
 
   unique_ptr<InstrStrategy> S(InstrStrategy::Create(P.Strategy()));
+
+  auto LogType = P.Logging();
   if (LogType != SimpleLogger::LogType::None) {
     S->AddLogger(SimpleLogger::Create(Mod, LogType));
   }

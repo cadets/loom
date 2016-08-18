@@ -6,7 +6,7 @@
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %cflags %s > %t.c
  * RUN: %clang %cflags -S -emit-llvm %cflags %t.c -o %t.ll
- * RUN: %loom -S %t.ll -loom-file %t.yaml -loom-logging=printf -o %t.instr.ll
+ * RUN: %loom -S %t.ll -loom-file %t.yaml -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
  * RUN: %llc -filetype=obj %t.instr.ll -o %t.instr.o
  * RUN: %clang %ldflags %t.instr.o -o %t.instr
@@ -17,6 +17,8 @@
 #if defined (POLICY_FILE)
 
 hook_prefix: __test_hook
+
+logging: printf
 
 structures:
   - name: foo

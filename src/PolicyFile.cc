@@ -106,6 +106,9 @@ struct PolicyFile::PolicyFileData
   /// How to instrument: inline, via callout function, etc.
   InstrStrategy::Kind Strategy;
 
+  /// Simple (non-serializing) logging strategy.
+  SimpleLogger::LogType Logging;
+
   /// Function instrumentation.
   vector<FnInstrumentation> Functions;
 
@@ -145,6 +148,16 @@ struct yaml::ScalarEnumerationTraits<Policy::Direction> {
   static void enumeration(yaml::IO &io, Policy::Direction& Dir) {
     io.enumCase(Dir, "entry",  Policy::Direction::In);
     io.enumCase(Dir, "exit", Policy::Direction::Out);
+  }
+};
+
+/// Converts a SimpleLogger::LogType to/from YAML.
+template <>
+struct yaml::ScalarEnumerationTraits<SimpleLogger::LogType> {
+  static void enumeration(yaml::IO &io, SimpleLogger::LogType& T) {
+    io.enumCase(T, "printf",  SimpleLogger::LogType::Printf);
+    io.enumCase(T, "xo", SimpleLogger::LogType::Libxo);
+    io.enumCase(T, "none", SimpleLogger::LogType::None);
   }
 };
 
@@ -190,6 +203,7 @@ template <>
 struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
   static void mapping(yaml::IO &io, PolicyFile::PolicyFileData &policy) {
     io.mapOptional("strategy", policy.Strategy, InstrStrategy::Kind::Callout);
+    io.mapOptional("logging", policy.Logging, SimpleLogger::LogType::None);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("functions",   policy.Functions);
     io.mapOptional("structures",  policy.Structures);
@@ -234,6 +248,12 @@ ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename)
 InstrStrategy::Kind PolicyFile::Strategy() const
 {
   return Policy->Strategy;
+}
+
+
+SimpleLogger::LogType PolicyFile::Logging() const
+{
+  return Policy->Logging;
 }
 
 

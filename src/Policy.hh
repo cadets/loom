@@ -55,6 +55,9 @@ class Policy
   public:
   virtual InstrStrategy::Kind Strategy() const = 0;
 
+  //! Simple (non-serializing) logging.
+  virtual SimpleLogger::LogType Logging() const = 0;
+
   enum class Direction { In, Out };
   typedef std::vector<Direction> Directions;
 

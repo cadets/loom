@@ -71,6 +71,8 @@ Loom is structured as a set of libraries for LLVM instrumentation, but can be ru
 ```yaml
 strategy: inline
 
+logging: printf
+
 hook_prefix: __test_hook
 
 functions:
