@@ -2,18 +2,12 @@
  * \file  ktrace-userspace-libnv.c
  * \brief Tests userspace ktrace instrumentation with libnv serialization.
  *
- * FreeBSD <11 doesn't provide the libnv we're looking for in base or ports:
- * XFAIL: freebsd9, freebsd10
- *
  * Commands for llvm-lit:
  * RUN: %cpp -DPOLICY_FILE %s > %t.yaml
  * RUN: %cpp %cflags %s > %t.c
- * RUN: %clang %cflags -S -emit-llvm %cflags %t.c -o %t.ll
+ * RUN: %clang -target x86_64-unknown-freebsd %cflags -S -emit-llvm %cflags %t.c -o %t.ll
  * RUN: %loom -S %t.ll -loom-file %t.yaml -loom-nv-debug -o %t.instr.ll
  * RUN: %filecheck -input-file %t.instr.ll %s
- * RUN: %clang -lnv %t.instr.ll -o %t.instr
- * RUN: %t.instr 2> %t.instr.out
- * RUN: %filecheck -input-file %t.instr.out -check-prefix=CHECK-OUTPUT %s
  */
 
 #if defined (POLICY_FILE)
@@ -45,12 +39,6 @@ int	foo(int x, float y, double z)
 // CHECK-DAG:   [[LEN:%.*]] = load i64, i64* [[LENPTR]]
 // CHECK-DAG:   call void @nvlist_destroy(%nvlist_t* [[LIST]])
 // CHECK:       call i32 @utrace(i8* [[BUFFER]], i64 [[LEN]])
-
-// CHECK-OUTPUT:      name (STRING): [__ktrace_test_return_foo]
-// CHECK-OUTPUT-NEXT: description (STRING): [return foo:]
-// CHECK-OUTPUT-NEXT: values (NVLIST):
-// CHECK-OUTPUT-NEXT:   (NUMBER): {{.*}} (1) (0x1)
-// CHECK-OUTPUT-NEXT:   (NUMBER): {{.*}} (1) (0x1)
 
 int
 main(int argc, char *argv[])
