@@ -78,6 +78,15 @@ class Policy
   virtual Directions FnHooks(const llvm::Function&) const = 0;
 
   /**
+   * A structure type is relevant in some way to instrumentation.
+   *
+   * Since the process of iterating over debug metadata can be expensive,
+   * this method allows a policy to express which structure types are to be
+   * instrumented in any way.
+   */
+  virtual bool StructTypeMatters(const llvm::StructType&) const = 0;
+
+  /**
    * Should a read from a structure field be instrumented?
    *
    * @param   T     the type of the structure being read from

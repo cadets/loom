@@ -64,6 +64,8 @@ class PolicyFile : public Policy
   Policy::Directions
     FnHooks(const llvm::Function&) const override;
 
+  bool StructTypeMatters(const llvm::StructType&) const override;
+
   bool FieldReadHook(const llvm::StructType&, unsigned int) const override;
 
   bool FieldWriteHook(const llvm::StructType&, unsigned int) const override;

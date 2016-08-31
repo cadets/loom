@@ -342,6 +342,24 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
   return Policy::Directions();
 }
 
+bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
+{
+  if (not T.getName().startswith("struct.")) {
+    assert(T.getName().startswith("union."));
+    return false;
+  }
+
+  StringRef Name = T.getName().substr(7);
+
+  for (StructInstrumentation& S : Policy->Structures) {
+    if (S.Name == Name) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool
 PolicyFile::FieldReadHook(const llvm::StructType& T, unsigned int Id) const
 {
