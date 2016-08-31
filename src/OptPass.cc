@@ -131,26 +131,31 @@ bool OptPass::runOnModule(Module &Mod)
     for (auto& Inst : instructions(Fn)) {
       if (auto *GEP = dyn_cast<GetElementPtrInst>(&Inst)) {
         if (auto *ST = dyn_cast<StructType>(GEP->getSourceElementType())) {
-          if (not ST->hasName())
-            continue;
-
           // A GEP used for structure field lookup should have indices
           // 0 and i, where i is the field number (not byte index).
           if (GEP->getNumIndices() != 2 or !GEP->hasAllConstantIndices())
             continue;
 
+          if (not P.StructTypeMatters(*ST))
+            continue;
+
           auto *FieldIdx = dyn_cast<ConstantInt>(GEP->getOperand(2));
           uint64_t FieldNum = FieldIdx->getZExtValue();
+
+          const bool HookReads = P.FieldReadHook(*ST, FieldNum);
+          const bool HookWrites = P.FieldWriteHook(*ST, FieldNum);
 
           for (auto& Use : GEP->uses()) {
             User *U = Use.getUser();
 
-            if (auto *Load = dyn_cast<LoadInst>(U)) {
-              if (P.FieldReadHook(*ST, FieldNum)) {
+            if (HookReads) {
+              if (auto *Load = dyn_cast<LoadInst>(U)) {
                 FieldReads.emplace(Load, GEP);
               }
-            } else if (auto *Store = dyn_cast<StoreInst>(U)) {
-              if (P.FieldWriteHook(*ST, FieldNum)) {
+            }
+
+            if (HookWrites) {
+              if (auto *Store = dyn_cast<StoreInst>(U)) {
                 FieldWrites.emplace(Store, GEP);
               }
             }
