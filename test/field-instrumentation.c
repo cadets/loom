@@ -69,32 +69,32 @@ main(int argc, char *argv[])
 		//.b_foo = f,
 
 		// CHECK: call void @[[PREFIX:__test_hook]]_store_struct_bar_field_b_fooptr([[BAR:.*]], [[FOO:.*]])
-		// CHECK-OUTPUT: bar.[[FOOPTR:.*]] store: [[BAR:.*]] [[FOO:.*]]
+		// CHECK-OUTPUT: bar.b_fooptr store: [[BAR:.*]] [[FOO:.*]]
 		.b_fooptr = &f,
 	};
 
 	// CHECK: [[F_INT_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
 	// CHECK: [[F_INT_NOW:%[0-9]+]] = load [[INT:i[0-9]+]], [[INT]]* [[F_INT_PTR]]
-	// CHECK: call void @[[PREFIX]]_load_foo_[[F_INT:.*]]([[FOO]], [[INT]] [[F_INT_NOW]]
+	// CHECK: call void @[[PREFIX]]_load_struct_foo_field_f_int([[FOO]], [[INT]] [[F_INT_NOW]]
 	// CHECK: [[INC:%.+]] = add {{.*}}[[INT]] [[F_INT_NOW]], 1
-	// CHECK: call void @[[PREFIX]]_store_foo_[[F_INT]]([[FOO]], [[INT]] [[INC]])
-	// CHECK-OUTPUT: foo.[[F_INT:.*]] load: [[FOO]] 42
-	// CHECK-OUTPUT: foo.[[F_INT]] store: [[FOO]] 43
+	// CHECK: call void @[[PREFIX]]_store_struct_foo_field_f_int([[FOO]], [[INT]] [[INC]])
+	// CHECK-OUTPUT: foo.f_int load: [[FOO]] 42
+	// CHECK-OUTPUT: foo.f_int store: [[FOO]] 43
 	f.f_int++;
 
 	// CHECK: [[F_FLOAT_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
 	// CHECK: [[F_FLOAT_NOW:%[0-9]+]] = load float, float* [[F_FLOAT_PTR]]
-	// CHECK: call void @[[PREFIX]]_load_foo_[[F_FLOAT:.*]]([[FOO]], float [[F_FLOAT_NOW]]
+	// CHECK: call void @[[PREFIX]]_load_struct_foo_field_f_float([[FOO]], float [[F_FLOAT_NOW]]
 	// CHECK: [[SUB:%.+]] = fsub {{.*}}float [[F_FLOAT_NOW]], 1
-	// CHECK: call void @[[PREFIX]]_store_foo_[[F_FLOAT]]([[FOO]], float [[SUB]])
-	// CHECK-OUTPUT: foo.[[F_FLOAT:.*]] load: [[FOO]] 3
-	// CHECK-OUTPUT: foo.[[F_FLOAT]] store: [[FOO]] 2
+	// CHECK: call void @[[PREFIX]]_store_struct_foo_field_f_float([[FOO]], float [[SUB]])
+	// CHECK-OUTPUT: foo.f_float load: [[FOO]] 3
+	// CHECK-OUTPUT: foo.f_float store: [[FOO]] 2
 	f.f_float -= 1;
 
 	// CHECK: [[F_DOUBLE_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
-	// CHECK: call void @[[PREFIX]]_store_foo_[[F_DOUBLE:field[0-9]+]]([[FOO]], double -1
+	// CHECK: call void @[[PREFIX]]_store_struct_foo_field_f_double([[FOO]], double -1
 	// CHECK: store double -1{{.*}}, double* [[F_DOUBLE_PTR]]
-	// CHECK-OUTPUT: foo.[[F_DOUBLE:field[0-9]+]] store: [[FOO]] -1
+	// CHECK-OUTPUT: foo.f_double store: [[FOO]] -1
 	f.f_double = -1;
 
 	// CHECK: [[F_IGNORED_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
@@ -104,8 +104,8 @@ main(int argc, char *argv[])
 
 	// CHECK: [[MESSAGE_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
 	// CHECK: [[MESSAGE:%.+]] = load i8*, i8** [[MESSAGE_PTR]]
-	// CHECK: call void @[[PREFIX]]_load_foo_field{{[0-9]+}}([[FOO]], i8* [[MESSAGE]])
-	// CHECK-OUTPUT: foo.field{{[0-9]+}} load: [[FOO]] "[[MESSAGE:.*]]"
+	// CHECK: call void @[[PREFIX]]_load_struct_foo_field_f_string([[FOO]], i8* [[MESSAGE]])
+	// CHECK-OUTPUT: foo.f_string load: [[FOO]] "[[MESSAGE:.*]]"
 	// CHECK-OUTPUT: message: '[[MESSAGE]]'
 	const char *message = f.f_string;
 	printf("message: '%s'\n", message);
@@ -114,12 +114,12 @@ main(int argc, char *argv[])
 
 	// CHECK: [[FOOPTR_PTR:%.+]] = getelementptr {{.*}}%struct.bar, [[BAR]]
 	// CHECK: [[FOOPTR_VAL:%.+]] = load %struct.foo*, %struct.foo** [[FOOPTR_PTR]]
-	// CHECK: call void @[[PREFIX]]_load_bar_[[FOOPTR]]([[BAR]], %struct.foo* [[FOOPTR_VAL]])
-	// CHECK-OUTPUT: bar.[[FOOPTR]] load: [[BAR]] [[FOO]]
+	// CHECK: call void @[[PREFIX]]_load_struct_bar_field_b_fooptr([[BAR]], %struct.foo* [[FOOPTR_VAL]])
+	// CHECK-OUTPUT: bar.b_fooptr load: [[BAR]] [[FOO]]
 
-	// CHECK: call void @[[PREFIX]]_store_foo_[[FOOPTR]](%struct.foo* [[FOOPTR_VAL]], [[INT]] 0)
-	// CHECK-OUTPUT: foo.field{{[0-9]+}} store: [[FOO]] 0
-	b.b_fooptr->f_int = 0;
+	// CHECK: call void @[[PREFIX]]_store_struct_foo_field_f_int(%struct.foo* [[FOOPTR_VAL]], [[INT]] 123)
+	// CHECK-OUTPUT: foo.f_int store: [[FOO]] 123
+	b.b_fooptr->f_int = 123;
 
 	return 0;
 }
