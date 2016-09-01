@@ -89,14 +89,22 @@ std::string DebugInfo::FieldName(GetElementPtrInst *GEP)
     return "";
   }
 
-  const DITypeRef &T = Var->getType();
-  const DICompositeType *CT = dyn_cast<DICompositeType>(T);
+  const DIType *T = dyn_cast<DIType>(Var->getType());
+  assert(T && "DIVariable::getType() should return a DIType");
 
-  while (CT) {
-    switch (CT->getTag()) {
-    case dwarf::DW_TAG_array_type:
-      CT = dyn_cast<DICompositeType>(CT->getBaseType());
+  do {
+    switch (T->getTag()) {
+    case dwarf::DW_TAG_array_type: {
+      auto *CT = dyn_cast<DICompositeType>(T);
+      T = dyn_cast<DIType>(CT->getBaseType());
       break;
+    }
+
+    case dwarf::DW_TAG_pointer_type: {
+      auto *DT = dyn_cast<DIDerivedType>(T);
+      T = dyn_cast<DIType>(DT->getBaseType());
+      break;
+    }
 
     case dwarf::DW_TAG_structure_type: {
       assert(not GEPOffsets.empty());
@@ -104,21 +112,24 @@ std::string DebugInfo::FieldName(GetElementPtrInst *GEP)
       size_t Index = GEPOffsets.back();
       GEPOffsets.pop_back();
 
+      auto *CT = dyn_cast<DICompositeType>(T);
       auto *Member = dyn_cast<DIDerivedType>(CT->getElements()[Index]);
 
       if (GEPOffsets.empty()) {
         return Member->getName();
       } else {
-        CT = dyn_cast<DICompositeType>(Member->getBaseType());
+        T = dyn_cast<DIType>(Member->getBaseType());
       }
 
       break;
     }
 
     default:
-      assert(false && "unexpected tag for DICompositeType");
+      errs() << "ERROR: unhandled debug info tag: " << T->getTag() << "\n";
+      return "";
     }
-  }
+
+  } while (T);
 
   return "";
 }
@@ -146,6 +157,13 @@ DebugInfo::Trace(GetElementPtrInst *GEP, SmallVectorImpl<size_t> &Offsets)
     Value *Ptr = GEP->getPointerOperand()->stripPointerCasts();
     if (auto *Var = Get<DIVariable>(Ptr)) {
       return Var;
+    }
+
+    if (auto *Load = dyn_cast<LoadInst>(Ptr)) {
+      while (Load != nullptr) {
+        Ptr = Load->getPointerOperand();
+        Load = dyn_cast<LoadInst>(Ptr);
+      }
     }
 
     GEP = dyn_cast<GetElementPtrInst>(Ptr);
