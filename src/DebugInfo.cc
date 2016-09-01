@@ -67,7 +67,7 @@ bool DebugInfo::ModuleHasFullDebugInfo() const
     return false;
 
   if (auto *DI = Get<DICompileUnit>(ModuleMetadata)) {
-    using DICompileUnit::DebugEmissionKind::FullDebug;
+    constexpr auto FullDebug = DICompileUnit::DebugEmissionKind::FullDebug;
 
     return DI->getEmissionKind() == FullDebug and not DI->isOptimized();
   }
