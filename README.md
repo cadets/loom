@@ -122,13 +122,13 @@ functions:
 #
 #  * `name`: the structure name
 #  * `fields`: a list of structure field descriptions:
-#    * `id`: field ID within the structure (e.g., field 0, field 1)
+#    * `name`: field name
 #    * `operations`: list of operations to instrument (`read` or `write`)
 #
 structures:
   - name: baz
     fields:
-      - id: 0
+      - name: refcount
         operations: [ read, write ]
 ```
 
