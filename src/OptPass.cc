@@ -31,6 +31,7 @@
  * SUCH DAMAGE.
  */
 
+#include "DebugInfo.hh"
 #include "PolicyFile.hh"
 #include "Instrumenter.hh"
 #include "IRUtils.hh"
@@ -76,6 +77,13 @@ bool OptPass::runOnModule(Module &Mod)
     return false;
   }
 
+  DebugInfo Debug(Mod);
+  if (not Debug.ModuleHasFullDebugInfo()) {
+    errs()
+      << "Warning: module missing metadata, instrumentation may be incomplete\n"
+      ;
+  }
+
   assert(*PolFile);
   Policy& P = **PolFile;
 
@@ -118,8 +126,10 @@ bool OptPass::runOnModule(Module &Mod)
   //
   std::unordered_map<Function*, Policy::Directions> Functions;
   std::unordered_map<CallInst*, Policy::Directions> Calls;
-  std::unordered_map<LoadInst*, GetElementPtrInst*> FieldReads;
-  std::unordered_map<StoreInst*, GetElementPtrInst*> FieldWrites;
+
+  typedef std::pair<GetElementPtrInst*, std::string> FieldGEP;
+  std::unordered_map<LoadInst*, FieldGEP> FieldReads;
+  std::unordered_map<StoreInst*, FieldGEP> FieldWrites;
 
   for (auto& Fn : Mod) {
     // Do we need to instrument this function?
@@ -139,24 +149,28 @@ bool OptPass::runOnModule(Module &Mod)
           if (not P.StructTypeMatters(*ST))
             continue;
 
-          auto *FieldIdx = dyn_cast<ConstantInt>(GEP->getOperand(2));
-          uint64_t FieldNum = FieldIdx->getZExtValue();
+          std::string FieldName = Debug.FieldName(GEP);
+          assert(not FieldName.empty());
 
-          const bool HookReads = P.FieldReadHook(*ST, FieldNum);
-          const bool HookWrites = P.FieldWriteHook(*ST, FieldNum);
+          const bool HookReads = P.FieldReadHook(*ST, FieldName);
+          const bool HookWrites = P.FieldWriteHook(*ST, FieldName);
+
+          if (not HookReads and not HookWrites) {
+            continue;
+          }
 
           for (auto& Use : GEP->uses()) {
             User *U = Use.getUser();
 
             if (HookReads) {
               if (auto *Load = dyn_cast<LoadInst>(U)) {
-                FieldReads.emplace(Load, GEP);
+                FieldReads[Load] = { GEP, FieldName };
               }
             }
 
             if (HookWrites) {
               if (auto *Store = dyn_cast<StoreInst>(U)) {
-                FieldWrites.emplace(Store, GEP);
+                FieldWrites[Store] = { GEP, FieldName };
               }
             }
           }
@@ -190,11 +204,19 @@ bool OptPass::runOnModule(Module &Mod)
   }
 
   for (auto& i : FieldReads) {
-    ModifiedIR |= Instr->Instrument(i.second, i.first);
+    LoadInst *Load = i.first;
+    GetElementPtrInst *GEP = i.second.first;
+    StringRef FieldName = i.second.second;
+
+    ModifiedIR |= Instr->Instrument(GEP, Load, FieldName);
   }
 
   for (auto& i : FieldWrites) {
-    ModifiedIR |= Instr->Instrument(i.second, i.first);
+    StoreInst *Store = i.first;
+    GetElementPtrInst *GEP = i.second.first;
+    StringRef FieldName = i.second.second;
+
+    ModifiedIR |= Instr->Instrument(GEP, Store, FieldName);
   }
 
   return ModifiedIR;

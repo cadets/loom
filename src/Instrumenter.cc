@@ -177,7 +177,8 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
 }
 
 
-bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load) {
+bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
+                              StringRef FieldName) {
   StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
   assert(SourceType);
   assert(SourceType->getName().startswith("struct."));
@@ -193,9 +194,12 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load) {
     Load,
   };
 
-  const string FieldName = "field" + to_string(FieldNumber(GEP));
-  const string InstrName = Name({ "load", StructName, FieldName });
-  const string FormatStringPrefix = StructName + "." + FieldName + " load:";
+  const string InstrName = Name(
+    { "load", "struct", StructName, "field", FieldName }
+  );
+
+  const string FormatStringPrefix =
+    (StructName + "." + FieldName + " load:").str();
 
   Strategy->Instrument(Load, InstrName, FormatStringPrefix,
                        Parameters, Arguments, false, true);
@@ -204,7 +208,8 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load) {
 }
 
 
-bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store) {
+bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
+                              StringRef FieldName) {
   StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
   assert(SourceType);
   assert(SourceType->getName().startswith("struct."));
@@ -220,9 +225,12 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store) {
     Store->getValueOperand(),
   };
 
-  const string FieldName = "field" + to_string(FieldNumber(GEP));
-  const string InstrName = Name({ "store", StructName, FieldName });
-  const string FormatStringPrefix = StructName + "." + FieldName + " store:";
+  const string InstrName = Name(
+    { "store", "struct", StructName, "field", FieldName }
+  );
+
+  const string FormatStringPrefix =
+    (StructName + "." + FieldName + " store:").str();
 
   Strategy->Instrument(Store, InstrName, FormatStringPrefix,
                        Parameters, Arguments);

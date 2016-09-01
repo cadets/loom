@@ -66,9 +66,9 @@ class PolicyFile : public Policy
 
   bool StructTypeMatters(const llvm::StructType&) const override;
 
-  bool FieldReadHook(const llvm::StructType&, unsigned int) const override;
+  bool FieldReadHook(const llvm::StructType&, llvm::StringRef) const override;
 
-  bool FieldWriteHook(const llvm::StructType&, unsigned int) const override;
+  bool FieldWriteHook(const llvm::StructType&, llvm::StringRef) const override;
 
   std::string InstrName(const std::vector<std::string>&) const override;
 

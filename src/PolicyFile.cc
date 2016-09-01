@@ -81,8 +81,8 @@ enum class FieldOperation
 /// A description of how to instrument a function.
 struct FieldInstrumentation
 {
-  /// Numeric ID of the field (as name may not be available).
-  unsigned int Id;
+  /// Field name.
+  string Name;
 
   /// Operations (read/write) that should be instrumented.
   vector<FieldOperation> Operations;
@@ -217,7 +217,7 @@ struct yaml::ScalarEnumerationTraits<FieldOperation> {
 template <>
 struct yaml::MappingTraits<FieldInstrumentation> {
   static void mapping(yaml::IO &io, FieldInstrumentation &f) {
-    io.mapRequired("id",          f.Id);
+    io.mapRequired("name",        f.Name);
     io.mapRequired("operations",  f.Operations);
   }
 };
@@ -361,7 +361,7 @@ bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
 }
 
 bool
-PolicyFile::FieldReadHook(const llvm::StructType& T, unsigned int Id) const
+PolicyFile::FieldReadHook(const llvm::StructType& T, StringRef Field) const
 {
   if (not T.getName().startswith("struct.")) {
     assert(T.getName().startswith("union."));
@@ -375,9 +375,9 @@ PolicyFile::FieldReadHook(const llvm::StructType& T, unsigned int Id) const
       continue;
     }
 
-    for (auto& Field : S.Fields) {
-      if (Field.Id != Id) {
-        return vecContains(Field.Operations, FieldOperation::Read);
+    for (auto& F : S.Fields) {
+      if (F.Name == Field) {
+        return vecContains(F.Operations, FieldOperation::Read);
       }
     }
   }
@@ -387,7 +387,7 @@ PolicyFile::FieldReadHook(const llvm::StructType& T, unsigned int Id) const
 
 
 bool
-PolicyFile::FieldWriteHook(const llvm::StructType& T, unsigned int Id) const
+PolicyFile::FieldWriteHook(const llvm::StructType& T, StringRef Field) const
 {
   if (not T.getName().startswith("struct.")) {
     assert(T.getName().startswith("union."));
@@ -401,9 +401,9 @@ PolicyFile::FieldWriteHook(const llvm::StructType& T, unsigned int Id) const
       continue;
     }
 
-    for (auto& Field : S.Fields) {
-      if (Field.Id == Id) {
-        return vecContains(Field.Operations, FieldOperation::Write);
+    for (auto& F : S.Fields) {
+      if (F.Name == Field) {
+        return vecContains(F.Operations, FieldOperation::Write);
       }
     }
   }

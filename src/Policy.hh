@@ -90,19 +90,19 @@ class Policy
    * Should a read from a structure field be instrumented?
    *
    * @param   T     the type of the structure being read from
-   * @param   F     the field being read from within the structure
+   * @param   Field the field being read from within the structure
    */
   virtual bool
-    FieldReadHook(const llvm::StructType& T, unsigned int F) const = 0;
+    FieldReadHook(const llvm::StructType& T, llvm::StringRef Field) const = 0;
 
   /**
    * Should a write to a structure field be instrumented?
    *
    * @param   T     the type of the structure being written to
-   * @param   F     the field being written to within the structure
+   * @param   Field the field being written to within the structure
    */
   virtual bool
-    FieldWriteHook(const llvm::StructType& T, unsigned int F) const = 0;
+    FieldWriteHook(const llvm::StructType& T, llvm::StringRef Field) const = 0;
 
   //! Name an instrumentation function for a particular event type.
   virtual std::string

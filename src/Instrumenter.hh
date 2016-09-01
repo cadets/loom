@@ -70,10 +70,12 @@ public:
   bool Instrument(llvm::Function&, Policy::Direction);
 
   /// Instrument a read from a structure field.
-  bool Instrument(llvm::GetElementPtrInst*, llvm::LoadInst*);
+  bool Instrument(llvm::GetElementPtrInst*, llvm::LoadInst*,
+                  llvm::StringRef FieldName);
 
   /// Instrument a write to a structure field.
-  bool Instrument(llvm::GetElementPtrInst*, llvm::StoreInst*);
+  bool Instrument(llvm::GetElementPtrInst*, llvm::StoreInst*,
+                  llvm::StringRef FieldName);
 
 
 private:

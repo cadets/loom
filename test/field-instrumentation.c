@@ -23,20 +23,18 @@ logging: printf
 structures:
   - name: foo
     fields:
-      - id: 0
+      - name: f_int
         operations: [ read, write ]
-      - id: 1
+      - name: f_float
         operations: [ read, write ]
-      - id: 2
+      - name: f_double
         operations: [ read, write ]
-      - id: 3
+      - name: f_string
         operations: [ read, write ]
 
   - name: bar
     fields:
-      - id: 0
-        operations: [ read, write ]
-      - id: 1
+      - name: b_fooptr
         operations: [ read, write ]
 
 #else
@@ -70,7 +68,7 @@ main(int argc, char *argv[])
 	struct bar b = {
 		//.b_foo = f,
 
-		// CHECK: call void @[[PREFIX:__test_hook]]_store_bar_[[FOOPTR:.*]]([[BAR:.*]], [[FOO:.*]])
+		// CHECK: call void @[[PREFIX:__test_hook]]_store_struct_bar_field_b_fooptr([[BAR:.*]], [[FOO:.*]])
 		// CHECK-OUTPUT: bar.[[FOOPTR:.*]] store: [[BAR:.*]] [[FOO:.*]]
 		.b_fooptr = &f,
 	};
