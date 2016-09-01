@@ -1,4 +1,5 @@
 add_llvm_loadable_module(LLVMLoom
+	DebugInfo.cc
 	Instrumentation.cc
 	Instrumenter.cc
 	InstrStrategy.cc
