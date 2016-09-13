@@ -45,6 +45,7 @@ $ ninja
     ```sh
     $ cd /path/to/Loom
     $ mkdir Release
+    $ cd Release
     $ cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
     ```
 
