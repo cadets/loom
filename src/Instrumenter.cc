@@ -122,7 +122,7 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
   const string Name = NameBuilder.str();
 
   Strategy->Instrument(I, Name, Name, ValueDescriptions, Values,
-                       Varargs, AfterInst);
+                       Varargs, AfterInst, true);
 
   return true;
 }

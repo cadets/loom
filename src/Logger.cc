@@ -53,7 +53,7 @@ namespace {
     StringRef FunctionName() const override { return "xo_emit"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
                               ArrayRef<Parameter> Params,
-                              StringRef Suffix) override;
+                              StringRef Suffix, bool SuppressUniq) override;
   };
 
   //! A logger that calls `printf()`.
@@ -64,7 +64,7 @@ namespace {
     StringRef FunctionName() const override { return "printf"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
                               ArrayRef<Parameter> Params,
-                              StringRef Suffix) override;
+                              StringRef Suffix, bool SuppressUniq) override;
   };
 
 } // anonymous namespace
@@ -85,30 +85,33 @@ unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
 
 
 void Logger::Log(IRBuilder<>& B, Function::ArgumentListType& Args,
-                 StringRef Name, StringRef Description) {
+                 StringRef Name, StringRef Description, bool SuppressUniq) {
 
   vector<Value*> Values(Args.size());
   std::transform(Args.begin(), Args.end(), Values.begin(),
                  [&](Value& V) { return &V; });
 
-  Log(B, Values, Name, Description);
+  Log(B, Values, Name, Description, SuppressUniq);
 }
 
 
 void SimpleLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
-                       StringRef /*Name*/, StringRef Description) {
+                       StringRef /*Name*/, StringRef Description,
+                       bool SuppressUniqueness) {
 
   // Call the printf-like logging function, ignoring the machine-readable name.
-  Call(B, Description, Values, "\n");
+  Call(B, Description, Values, "\n", SuppressUniqueness);
 }
 
 
 CallInst* SimpleLogger::Call(IRBuilder<>& Builder, StringRef Prefix,
-                             ArrayRef<Value*> Values, StringRef Suffix) {
+                             ArrayRef<Value*> Values, StringRef Suffix,
+                             bool SuppressUniqueness) {
 
   vector<Value*> Args = Adapt(Values, Builder);
 
-  Value *FormatString = CreateFormatString(Builder, Prefix, Args, Suffix);
+  Value *FormatString = CreateFormatString(Builder, Prefix, Args, Suffix,
+                                           SuppressUniqueness);
   Args.emplace(Args.begin(), FormatString);
 
   return Builder.CreateCall(GetFunction(), Args);
@@ -134,13 +137,15 @@ FunctionType* SimpleLogger::GetType() {
 Value* SimpleLogger::CreateFormatString(IRBuilder<>& Builder,
                                         StringRef Prefix,
                                         ArrayRef<Value*> Values,
-                                        StringRef Suffix) {
+                                        StringRef Suffix,
+                                        bool SuppressUniqueness) {
   ParamVec NamedTypes;
   for (Value *V : Values) {
     NamedTypes.emplace_back(V->getName(), V->getType());
   }
 
-  return CreateFormatString(Builder, Prefix, NamedTypes, Suffix);
+  return CreateFormatString(Builder, Prefix, NamedTypes, Suffix,
+                            SuppressUniqueness);
 }
 
 
@@ -161,7 +166,8 @@ vector<Value*> SimpleLogger::Adapt(ArrayRef<Value*> Values, IRBuilder<>& B) {
 
 Value*
 LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
-                                ArrayRef<Parameter> Params, StringRef Suffix) {
+                                ArrayRef<Parameter> Params, StringRef Suffix,
+                                bool SuppressUniqueness) {
 
   std::stringstream FormatString;
 
@@ -180,7 +186,9 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
       << "{P: }"                 // padding
       << "{"
       << (Humanize ? "h" : "")
-      << ":" << Name << "/"
+      << ":"
+      << (SuppressUniqueness ? "" : Name)
+      << "/"
       ;
 
     if (T->isIntegerTy(32)) {
@@ -226,7 +234,8 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 
 Value*
 PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
-                                 ArrayRef<Parameter> Params, StringRef Suffix) {
+                                 ArrayRef<Parameter> Params, StringRef Suffix,
+                                 bool /*SuppressUniqueness*/) {
 
   std::stringstream FormatString;
 

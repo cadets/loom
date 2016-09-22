@@ -50,7 +50,8 @@ public:
   KTraceLogger(llvm::Module& Mod, std::unique_ptr<Serializer>, bool KernelMode);
 
   virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
-                   llvm::StringRef Name, llvm::StringRef Description) override;
+                   llvm::StringRef Name, llvm::StringRef Description,
+                   bool SuppressUniqueness) override;
 
 private:
   const std::unique_ptr<Serializer> Serial;

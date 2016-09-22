@@ -88,6 +88,13 @@ public:
    *                      explicitly-defined @b Params.
    * @param  AfterInst    If true, apply the instrumentation *after* the
    *                      instruction rather than, as by default, before it.
+   * @param  SuppressUniqueness  Suppress, to the extent possible, uniqueness
+   *                      among constants (e.g., format strings) generated in
+   *                      support of instrumentation instances. For example,
+   *                      libxo format strings can be generated with names for
+   *                      each argument: this flag suppresses such detail.
+   *                      This may be necessary when generating great quantities
+   *                      of instrumentation (e.g., using `everything`).
    *
    * Example of simple Function Boundary Tracing (where the @b Params and
    * @b Values come from the same place, the target function's parameters):
@@ -109,11 +116,13 @@ public:
                                      llvm::ArrayRef<Parameter> Params,
                                      llvm::ArrayRef<llvm::Value*> Values,
                                      bool VarArgs = false,
-                                     bool AfterInst = false) = 0;
+                                     bool AfterInst = false,
+                                     bool SuppressUniqueness = false) = 0;
 
 protected:
   void AddLogging(llvm::IRBuilder<>&, llvm::ArrayRef<llvm::Value*>,
-                  llvm::StringRef Name, llvm::StringRef Description);
+                  llvm::StringRef Name, llvm::StringRef Description,
+                  bool SuppressUniqueness);
 
 private:
   std::vector<std::unique_ptr<Logger>> Loggers;

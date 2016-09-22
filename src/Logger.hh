@@ -60,9 +60,13 @@ public:
    *                       (may not be used by all Logger types)
    * @param  Description   Short, human-readable event description
    *                       (may not be used by all Logger types)
+   * @param  SuppressUniqueness  Suppress uniqueness among format strings
+   *                       to the extent possible (e.g., for libxo, which allows
+   *                       values' names to be specified as well as types).
    */
   virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
-                   llvm::StringRef Name, llvm::StringRef Description) = 0;
+                   llvm::StringRef Name, llvm::StringRef Description,
+                   bool SuppressUniqueness) = 0;
 
   /**
    * Create code to log function arguments using the underlying mechanism.
@@ -73,9 +77,13 @@ public:
    *                       (may not be used by all Logger types)
    * @param  Description   Short, human-readable event description
    *                       (may not be used by all Logger types)
+   * @param  SuppressUniqueness  Suppress uniqueness among format strings
+   *                       to the extent possible (e.g., for libxo, which allows
+   *                       values' names to be specified as well as types).
    */
   virtual void Log(llvm::IRBuilder<>& B, llvm::Function::ArgumentListType& Args,
-                   llvm::StringRef Name, llvm::StringRef Description);
+                   llvm::StringRef Name, llvm::StringRef Description,
+                   bool SuppressUniqueness);
 
 protected:
   Logger(llvm::Module& Mod) : Mod(Mod) {}
@@ -104,12 +112,14 @@ public:
                                               LogType Log = LogType::Printf);
 
   virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
-                   llvm::StringRef Name, llvm::StringRef Description) override;
+                   llvm::StringRef Name, llvm::StringRef Description,
+                   bool SuppressUniqueness) override;
 
   /// Log a set of values, with optional prefix and suffix text.
   llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
                        llvm::ArrayRef<llvm::Value*> Values,
-                       llvm::StringRef Suffix);
+                       llvm::StringRef Suffix,
+                       bool SuppressUniqueness = false);
 
 protected:
   SimpleLogger(llvm::Module& Mod) : Logger(Mod) {}
@@ -127,12 +137,14 @@ protected:
   virtual llvm::Value* CreateFormatString(llvm::IRBuilder<>&,
                                           llvm::StringRef Prefix,
                                           llvm::ArrayRef<Parameter>,
-                                          llvm::StringRef Suffix) = 0;
+                                          llvm::StringRef Suffix,
+                                          bool SuppressUniqueness) = 0;
 
   /// Create a format string that we can pass to the logging function.
   llvm::Value* CreateFormatString(llvm::IRBuilder<>&, llvm::StringRef Prefix,
                                   llvm::ArrayRef<llvm::Value*>,
-                                  llvm::StringRef Suffix);
+                                  llvm::StringRef Suffix,
+                                  bool SuppressUniqueness);
 
   /**
    * Adapt a set of values into a form that can be logged.

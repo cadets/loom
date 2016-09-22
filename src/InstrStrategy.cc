@@ -48,7 +48,7 @@ public:
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value*> Values,
-                             bool VarArgs, bool AfterInst) override;
+                             bool VarArgs, bool AfterInst, bool) override;
 };
 
 class InlineStrategy : public InstrStrategy {
@@ -56,7 +56,8 @@ public:
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value*> Values,
-                             bool VarArgs, bool AfterInst) override;
+                             bool VarArgs, bool AfterInst,
+                             bool SuppressInstrumentation) override;
 };
 
 } // anonymous namespace
@@ -81,10 +82,11 @@ void InstrStrategy::AddLogger(unique_ptr<Logger> L) {
 
 
 void InstrStrategy::AddLogging(IRBuilder<>& B, ArrayRef<Value*> Values,
-                               StringRef Name, StringRef Description) {
+                               StringRef Name, StringRef Description,
+                               bool SuppressUniqueness) {
   for (auto& L : Loggers) {
     assert(L);
-    L->Log(B, Values, Name, Description);
+    L->Log(B, Values, Name, Description, SuppressUniqueness);
   }
 }
 
@@ -92,7 +94,7 @@ void InstrStrategy::AddLogging(IRBuilder<>& B, ArrayRef<Value*> Values,
 Instrumentation
 CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                             ArrayRef<Parameter> Params, ArrayRef<Value*> Values,
-                            bool VarArgs, bool AfterInst) {
+                            bool VarArgs, bool AfterInst, bool SuppressUniq) {
 
   assert(Params.size() == Values.size());
 
@@ -131,7 +133,7 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
 
     IRBuilder<> PreambleBuilder(Preamble);
-    AddLogging(PreambleBuilder, InstrValues, Name, Descrip);
+    AddLogging(PreambleBuilder, InstrValues, Name, Descrip, SuppressUniq);
 
     PreambleBuilder.CreateBr(EndBlock);
     IRBuilder<>(EndBlock).CreateRetVoid();
@@ -171,7 +173,7 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
 Instrumentation
 InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                            ArrayRef<Parameter> Params, ArrayRef<Value*> Values,
-                           bool VarArgs, bool AfterInst) {
+                           bool VarArgs, bool AfterInst, bool SuppressUniq) {
 
   assert(Params.size() == Values.size());
 
@@ -205,7 +207,7 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   IRBuilder<>(BB).CreateBr(Preamble);
 
   IRBuilder<> PreambleBuilder(Preamble);
-  AddLogging(PreambleBuilder, Values, Name, Descrip);
+  AddLogging(PreambleBuilder, Values, Name, Descrip, SuppressUniq);
   PreambleBuilder.CreateBr(EndBlock);
 
   SmallVector<Value*, 4> V(Values.begin(), Values.end());
