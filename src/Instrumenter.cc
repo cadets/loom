@@ -80,8 +80,15 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
 
   for (Use& U : I->operands()) {
     Value *V = U.get();
-    Type *T = V->getType();
 
+    // Don't use the address of an LLVM intrinsic: report its name instead.
+    if (Function *F = dyn_cast<Function>(V)) {
+      if (F->hasLLVMReservedName()) {
+        V = IRBuilder<>(I).CreateGlobalStringPtr(F->getName(), "fn_name");
+      }
+    }
+
+    Type *T = V->getType();
     if (T->isMetadataTy()) {
       // Ignore metadata-consuming instructions such as calls to
       // @llvm.dbg.declare().
