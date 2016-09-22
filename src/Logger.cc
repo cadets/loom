@@ -206,7 +206,21 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 
   FormatString << Suffix.str();
 
-  return Builder.CreateGlobalStringPtr(FormatString.str());
+  const string Str = FormatString.str();
+
+  auto i = FormatStrings.find(Str);
+  if (i != FormatStrings.end()) {
+    return i->second;
+  }
+
+  Value *Ptr = Builder.CreateGlobalStringPtr(Str);
+  auto *GV = dyn_cast<GlobalVariable>(Ptr->stripInBoundsConstantOffsets());
+  GV->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
+  GV->setAlignment(1);
+
+  FormatStrings[Str] = Ptr;
+
+  return Ptr;
 }
 
 

@@ -155,6 +155,8 @@ protected:
    */
   virtual std::vector<llvm::Value*> Adapt(llvm::ArrayRef<llvm::Value*>,
                                           llvm::IRBuilder<>&);
+
+  llvm::StringMap<llvm::Value*> FormatStrings;
 };
 
 } // namespace loom
