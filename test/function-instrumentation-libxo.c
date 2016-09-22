@@ -73,8 +73,8 @@ main(int argc, char *argv[])
 
 	printf("First, we will call foo():\n");
 	foo(1, 2, 3);
-	// CHECK-OUTPUT: enter foo: 1 2 3
-	// CHECK-OUTPUT: leave foo: 1 1 2 3
+	// CHECK-OUTPUT: enter foo: 1 2{{(.0+)?}} 3{{(.0+)?}}
+	// CHECK-OUTPUT: leave foo: 1 1 2{{(.0+)?}} 3{{(.0+)?}}
 
 	printf("Then bar():\n");
 	bar(4, "5");
