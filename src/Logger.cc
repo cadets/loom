@@ -187,7 +187,7 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
       FormatString << "%d";
 
     } else if (T->isFloatTy() || T->isDoubleTy()) {
-      FormatString << "%.0f";
+      FormatString << "%f";
 
     } else if (T->isIntegerTy(8)) {
       FormatString << "%c";
