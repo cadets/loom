@@ -171,9 +171,16 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
     const string Name = P.first;
     Type *T = P.second;
 
+    // xo can humanize values (e.g., 41025981 -> 41M), but we don't want to
+    // do this with pointer values (e.g., 0x7fff01... -> 128T) or
+    // floating-point numbers (13.415235 -> 13).
+    const bool Humanize = T->isIntegerTy();
+
     FormatString
       << "{P: }"                 // padding
-      << "{h:" << Name << "/"    // humanize values (e.g., "44M")
+      << "{"
+      << (Humanize ? "h" : "")
+      << ":" << Name << "/"
       ;
 
     if (T->isIntegerTy(32)) {
