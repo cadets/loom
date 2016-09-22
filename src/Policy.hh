@@ -56,6 +56,9 @@ class Policy
   public:
   virtual InstrStrategy::Kind Strategy() const = 0;
 
+  //! Create all loggers required by the policy.
+  virtual std::vector<std::unique_ptr<Logger>> Loggers(llvm::Module&) const;
+
   //! Simple (non-serializing) logging.
   virtual SimpleLogger::LogType Logging() const = 0;
 

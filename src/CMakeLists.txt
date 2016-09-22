@@ -8,6 +8,7 @@ add_llvm_loadable_module(LLVMLoom
 	Logger.cc
 	NVSerializer.cc
 	OptPass.cc
+	Policy.cc
 	PolicyFile.cc
 	Serializer.cc
 	Strings.cc

@@ -35,7 +35,6 @@
 #include "PolicyFile.hh"
 #include "Instrumenter.hh"
 #include "IRUtils.hh"
-#include "KTraceLogger.hh"
 
 #include "llvm/Pass.h"
 #include "llvm/IR/Module.h"
@@ -94,27 +93,8 @@ bool OptPass::runOnModule(Module &Mod)
     };
 
   unique_ptr<InstrStrategy> S(InstrStrategy::Create(P.Strategy()));
-
-  auto LogType = P.Logging();
-  if (LogType != SimpleLogger::LogType::None) {
-    S->AddLogger(SimpleLogger::Create(Mod, LogType));
-  }
-
-  unique_ptr<Serializer> Serial = P.Serialization(Mod);
-
-  switch (P.KTrace()) {
-  case Policy::KTraceTarget::Kernel:
-    S->AddLogger(
-      unique_ptr<Logger>(new KTraceLogger(Mod, std::move(Serial), true)));
-    break;
-
-  case Policy::KTraceTarget::Userspace:
-    S->AddLogger(
-      unique_ptr<Logger>(new KTraceLogger(Mod, std::move(Serial), false)));
-    break;
-
-  case Policy::KTraceTarget::None:
-    break;
+  for (auto& L : P.Loggers(Mod)) {
+    S->AddLogger(std::move(L));
   }
 
   unique_ptr<Instrumenter> Instr(Instrumenter::Create(Mod, Name, std::move(S)));
