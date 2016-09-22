@@ -58,6 +58,8 @@ class PolicyFile : public Policy
 
   std::unique_ptr<Serializer> Serialization(llvm::Module&) const override;
 
+  bool InstrumentAll() const override;
+
   Policy::Directions
     CallHooks(const llvm::Function&) const override;
 

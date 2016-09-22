@@ -57,6 +57,9 @@ public:
   static std::unique_ptr<Instrumenter>
     Create(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy> S);
 
+  /// Instrument an instruction generically: instruction name and values.
+  bool Instrument(llvm::Instruction*);
+
   /// Instrument a function call in the call and/or return direction.
   bool Instrument(llvm::CallInst*, const Policy::Directions&);
 

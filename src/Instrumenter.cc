@@ -33,6 +33,7 @@
 #include "Instrumenter.hh"
 #include "Logger.hh"
 
+#include <llvm/IR/Module.h>
 #include <llvm/Support/raw_ostream.h>
 
 #include <sstream>
@@ -55,6 +56,56 @@ Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF,
 {
 }
 
+
+bool Instrumenter::Instrument(llvm::Instruction *I)
+{
+  // If this instruction terminates a block, we need to treat it a bit
+  // differently, placing instrumentation before it rather than after.
+  const bool Terminator = I->isTerminator();
+
+  // If this instruction is a terminator *or* is of void type, it doesn't
+  // have a value for us to log.
+  const bool Void = Terminator or I->getType()->isVoidTy();
+
+  auto *OpcodeTy = IntegerType::get(Mod.getContext(), 32);
+  unsigned Opcode = I->getOpcode();
+
+  ParamVec ValueDescriptions = { { "opcode", OpcodeTy } };
+  vector<Value*> Values = { ConstantInt::get(OpcodeTy, Opcode) };
+
+  if (not Void)
+  {
+    ValueDescriptions.emplace_back(I->getName(), I->getType());
+    Values.push_back(I);
+  }
+
+  for (Use& U : I->operands()) {
+    Value *V = U.get();
+    Type *T = V->getType();
+
+    if (T->isMetadataTy()) {
+      // Ignore metadata-consuming instructions such as calls to
+      // @llvm.dbg.declare().
+      return false;
+    }
+
+    ValueDescriptions.emplace_back(V->getName(), T);
+    Values.push_back(V);
+  }
+
+  // We don't handle varargs generically: that needs to be done by
+  // function- or call-specific instrumentation.
+  constexpr bool Varargs = false;
+
+  // Instrument all non-terminators after the instructor, so that we can
+  // capture the instruction's value (if non-void).
+  const bool AfterInst = not Terminator;
+
+  Strategy->Instrument(I, "instruction", "instruction",
+                       ValueDescriptions, Values, Varargs, AfterInst);
+
+  return true;
+}
 
 bool Instrumenter::Instrument(CallInst *Call, const Policy::Directions& D)
 {

@@ -123,6 +123,9 @@ struct PolicyFile::PolicyFileData
   /// Serialization.
   SerializationType Serial;
 
+  /// Just instrument every instruction.
+  bool InstrumentEverything;
+
   /// Function instrumentation.
   vector<FnInstrumentation> Functions;
 
@@ -240,6 +243,7 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("ktrace", policy.KTrace, Policy::KTraceTarget::None);
     io.mapOptional("serialization", policy.Serial, SerializationType::None);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
+    io.mapOptional("everything", policy.InstrumentEverything, false);
     io.mapOptional("functions",   policy.Functions);
     io.mapOptional("structures",  policy.Structures);
   }
@@ -306,6 +310,13 @@ unique_ptr<Serializer> PolicyFile::Serialization(Module& Mod) const
   case SerializationType::None:
     return unique_ptr<Serializer>(new NullSerializer(Mod.getContext()));
   }
+}
+
+
+bool
+PolicyFile::InstrumentAll() const
+{
+  return Policy->InstrumentEverything;
 }
 
 

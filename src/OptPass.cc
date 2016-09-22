@@ -104,6 +104,8 @@ bool OptPass::runOnModule(Module &Mod)
   // instrumentation, we need to decide on the instruction-oriented
   // instrumentation points like calls before we actually instrument them.
   //
+  std::vector<Instruction*> AllInstructions;
+
   std::unordered_map<Function*, Policy::Directions> Functions;
   std::unordered_map<CallInst*, Policy::Directions> Calls;
 
@@ -119,6 +121,10 @@ bool OptPass::runOnModule(Module &Mod)
     }
 
     for (auto& Inst : instructions(Fn)) {
+      if (P.InstrumentAll()) {
+        AllInstructions.push_back(&Inst);
+      }
+
       if (auto *GEP = dyn_cast<GetElementPtrInst>(&Inst)) {
         if (auto *ST = dyn_cast<StructType>(GEP->getSourceElementType())) {
           // A GEP used for structure field lookup should have indices
@@ -174,6 +180,10 @@ bool OptPass::runOnModule(Module &Mod)
   // Now we actually perform the instrumentation:
   //
   bool ModifiedIR = false;
+
+  for (auto *I : AllInstructions) {
+    Instr->Instrument(I);
+  }
 
   for (auto& i : Functions) {
     ModifiedIR |= Instr->Instrument(*i.first, i.second);
