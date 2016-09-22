@@ -1,5 +1,5 @@
-; \file  call-instrumentation-inline.c
-; \brief Tests caller-context function instrumentation using InlineStrategy.
+; \file  instrument-everything.ll
+; \brief Tests generic instrumentation of all instructions
 ;
 ; Commands for llvm-lit:
 ; RUN: %loom -S %s -loom-file %s.policy -o %t.instr.ll
