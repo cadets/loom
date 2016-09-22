@@ -23,46 +23,46 @@ entry:
   ; CHECK: %retval = alloca i32, align 4
   %retval = alloca i32, align 4
   ; CHECK: xo_emit({{.*}} %retval
-  ; CHECK-OUTPUT: instruction [[ALLOCA:[0-9]+]] [[RETVAL:0x[0-f]+]]
+  ; CHECK-OUTPUT: [[INSTR:instrumentation:instruction]]:0x{{[0-f]+}} [[ALLOCA:[0-9]+]] [[RETVAL:0x[0-f]+]]
 
   ; CHECK: %argc.addr = alloca i32, align 4
   %argc.addr = alloca i32, align 4
   ; CHECK: xo_emit({{.*}} %argc.addr
-  ; CHECK-OUTPUT: instruction [[ALLOCA]] [[ARGC_ADDR:0x[0-f]+]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[ALLOCA]] [[ARGC_ADDR:0x[0-f]+]]
 
   ; CHECK: %argv.addr = alloca i8**, align 8
   %argv.addr = alloca i8**, align 8
   ; CHECK: xo_emit({{.*}} %argv.addr
-  ; CHECK-OUTPUT: instruction [[ALLOCA]] [[ARGV_ADDR:0x[0-f]+]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[ALLOCA]] [[ARGV_ADDR:0x[0-f]+]]
 
   ; CHECK: %x = alloca double, align 8
   %x = alloca double, align 8
   ; CHECK: xo_emit({{.*}} %x
-  ; CHECK-OUTPUT: instruction [[ALLOCA]] [[XPTR:0x[0-f]+]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[ALLOCA]] [[XPTR:0x[0-f]+]]
 
   ; CHECK: store i32 0, i32* %retval, align 4
   store i32 0, i32* %retval, align 4
   ; CHECK: xo_emit({{.*}}i32* %retval
-  ; CHECK-OUTPUT: instruction [[STORE:[0-9]+]] 0 [[RETVAL]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[STORE:[0-9]+]] 0 [[RETVAL]]
 
   ; CHECK: store i32 %argc, i32* %argc.addr, align 4
   store i32 %argc, i32* %argc.addr, align 4
   ; CHECK: xo_emit({{.*}}i32* %argc.addr
-  ; CHECK-OUTPUT: instruction [[STORE]] {{[0-9]+}} [[ARGC_ADDR]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[STORE]] {{[0-9]+}} [[ARGC_ADDR]]
 
   call void @llvm.dbg.declare(metadata i32* %argc.addr, metadata !13, metadata !14), !dbg !15
 
   ; CHECK: store i8** %argv, i8*** %argv.addr, align 8
   store i8** %argv, i8*** %argv.addr, align 8
   ; CHECK: xo_emit({{.*}}i8*** %argv.addr
-  ; CHECK-OUTPUT: instruction [[STORE]] {{0x[0-f]+}} [[ARGV_ADDR]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[STORE]] {{0x[0-f]+}} [[ARGV_ADDR]]
 
   call void @llvm.dbg.declare(metadata i8*** %argv.addr, metadata !16, metadata !14), !dbg !17
 
   ; CHECK: %call = call i32 (i8*, ...) @printf
   %call = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str, i32 0, i32 0)), !dbg !18
   ; CHECK: xo_emit({{.*}} %call
-  ; CHECK-OUTPUT: instruction [[CALL:[0-9]+]] [[LEN:14]] "Hello, world!
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[CALL:[0-9]+]] [[LEN:14]] "Hello, world!
   ; CHECK-OUTPUT-NEXT: " [[PRINTF:0x[0-f]+]]
 
   call void @llvm.dbg.declare(metadata double* %x, metadata !19, metadata !14), !dbg !21
@@ -70,7 +70,7 @@ entry:
   ; CHECK: store double 0x402ABCEF97BFC839, double* %x, align 8, !dbg !21
   store double 0x402ABCEF97BFC839, double* %x, align 8, !dbg !21
   ; CHECK: xo_emit({{.*}}double* %x
-  ; CHECK-OUTPUT: instruction [[STORE]] [[X:[0-9.]+]] [[XPTR:0x[0-f]+]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[STORE]] [[X:[0-9.]+]] [[XPTR:0x[0-f]+]]
 
 
   ; Note: Unnamed values like this one can be renumbered arbitrarily once we
@@ -82,12 +82,12 @@ entry:
   ; CHECK: %[[ZERO:[0-9]+]] = load double, double* %x, align 8, !dbg !22
   %0 = load double, double* %x, align 8, !dbg !22
   ; CHECK: xo_emit({{.*}} %[[ZERO]]
-  ; CHECK-OUTPUT: instruction [[LOAD:[0-9]+]] [[X]] [[XPTR]]
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[LOAD:[0-9]+]] [[X]] [[XPTR]]
 
   ; CHECK: %call1 = call i32 (i8*, ...) @printf
   %call1 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1, i32 0, i32 0), double %0), !dbg !23
   ; CHECK: xo_emit({{.*}} %call1
-  ; CHECK-OUTPUT: instruction [[CALL:[0-9]+]] {{[0-9]+}} "The value of x is:
+  ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[CALL:[0-9]+]] {{[0-9]+}} "The value of x is:
   ; CHECK-OUTPUT-NEXT: " [[X]] [[PRINTF]]
 
   %call2 = call i32 @xo_finish(), !dbg !24

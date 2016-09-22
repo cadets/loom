@@ -113,8 +113,16 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
   // capture the instruction's value (if non-void).
   const bool AfterInst = not Terminator;
 
-  Strategy->Instrument(I, "instruction", "instruction",
-                       ValueDescriptions, Values, Varargs, AfterInst);
+  // Every instrumentation point needs a unique name. Eventually we should do
+  // something clever with debug information, but for now we'll use a more...
+  // simplistic approach.
+  std::ostringstream NameBuilder;
+  NameBuilder << "instrumentation:instruction:";
+  NameBuilder << static_cast<const void*>(I);
+  const string Name = NameBuilder.str();
+
+  Strategy->Instrument(I, Name, Name, ValueDescriptions, Values,
+                       Varargs, AfterInst);
 
   return true;
 }
