@@ -79,6 +79,12 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
   }
 
   for (Use& U : I->operands()) {
+    // If this is a phi node, ignore the operands (values that *could* exist)
+    // and stick to the phi value (that value that *does* exist).
+    if (isa<PHINode>(I)) {
+      break;
+    }
+
     Value *V = U.get();
 
     // Don't use the address of an LLVM intrinsic: report its name instead.
