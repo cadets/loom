@@ -20,6 +20,5 @@ a:
   br label %b
 
 b:
-  %cond = phi i8* [ %0, %a ], [ undef, %entry ]
   ret void
 }
