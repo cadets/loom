@@ -87,6 +87,11 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
 
     Value *V = U.get();
 
+    // Don't try to pass a BasicBlock around by value (e.g., in a BranchInst).
+    if (isa<BasicBlock>(V)) {
+      continue;
+    }
+
     // Don't use the address of an LLVM intrinsic: report its name instead.
     if (Function *F = dyn_cast<Function>(V)) {
       if (F->hasLLVMReservedName()) {

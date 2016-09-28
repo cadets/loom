@@ -90,6 +90,11 @@ entry:
   ; CHECK-OUTPUT: [[INSTR]]:0x{{[0-f]+}} [[CALL:[0-9]+]] {{[0-9]+}} "The value of x is:
   ; CHECK-OUTPUT-NEXT: " [[X]] [[PRINTF]]
 
+  ; CHECK: xo_emit({{.*}}, i32 [[BRANCH:2]])
+  ; CHECK: br label %foo
+  br label %foo
+
+foo:
   %call2 = call i32 @xo_finish(), !dbg !24
 
   ret i32 0, !dbg !25

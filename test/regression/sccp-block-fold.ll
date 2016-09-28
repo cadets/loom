@@ -5,8 +5,6 @@
 ;
 ; This test was derived from bsdgrep.full.bc using LLVM's bugpoint.
 ;
-; XFAIL: *
-;
 ; Commands for llvm-lit:
 ; RUN: %loom -O2 -S %s -loom-file %s.policy -o %t.instr.ll
 
