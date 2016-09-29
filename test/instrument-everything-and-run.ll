@@ -1,10 +1,16 @@
 ; \file  instrument-everything.ll
 ; \brief Tests generic instrumentation of all instructions
 ;
+; Since we're building something with a FreeBSD target triple, this will
+; only work on FreeBSD:
+; REQUIRES: freebsd
+;
 ; Commands for llvm-lit:
 ; RUN: %loom -S %s -loom-file %s.policy -o %t.instr.ll
-; RUN: %filecheck -input-file %t.instr.ll %s
 ; RUN: %llc -filetype=obj %t.instr.ll -o %t.instr.o
+; RUN: %clang %ldflags %t.instr.o -o %t.instr
+; RUN: %t.instr > %t.output
+; RUN: %filecheck -input-file %t.output %s
 
 ; ModuleID = 'tmp.c'
 source_filename = "tmp.c"
@@ -17,47 +23,38 @@ target triple = "x86_64-unknown-freebsd12.0"
 ; Function Attrs: nounwind uwtable
 define i32 @main(i32 %argc, i8** %argv) #0 !dbg !6 {
 entry:
-  ; CHECK: %retval = alloca i32, align 4
   %retval = alloca i32, align 4
-  ; CHECK: xo_emit({{.*}} %retval
+  ; CHECK: [[INSTR:instrumentation:instruction]]:0x{{[0-f]+}} [[ALLOCA:[0-9]+]] [[RETVAL:0x[0-f]+]]
 
-  ; CHECK: %argc.addr = alloca i32, align 4
   %argc.addr = alloca i32, align 4
-  ; CHECK: xo_emit({{.*}} %argc.addr
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[ALLOCA]] [[ARGC_ADDR:0x[0-f]+]]
 
-  ; CHECK: %argv.addr = alloca i8**, align 8
   %argv.addr = alloca i8**, align 8
-  ; CHECK: xo_emit({{.*}} %argv.addr
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[ALLOCA]] [[ARGV_ADDR:0x[0-f]+]]
 
-  ; CHECK: %x = alloca double, align 8
   %x = alloca double, align 8
-  ; CHECK: xo_emit({{.*}} %x
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[ALLOCA]] [[XPTR:0x[0-f]+]]
 
-  ; CHECK: store i32 0, i32* %retval, align 4
   store i32 0, i32* %retval, align 4
-  ; CHECK: xo_emit({{.*}}i32* %retval
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[STORE:[0-9]+]] 0 [[RETVAL]]
 
-  ; CHECK: store i32 %argc, i32* %argc.addr, align 4
   store i32 %argc, i32* %argc.addr, align 4
-  ; CHECK: xo_emit({{.*}}i32* %argc.addr
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[STORE]] {{[0-9]+}} [[ARGC_ADDR]]
 
   call void @llvm.dbg.declare(metadata i32* %argc.addr, metadata !13, metadata !14), !dbg !15
 
-  ; CHECK: store i8** %argv, i8*** %argv.addr, align 8
   store i8** %argv, i8*** %argv.addr, align 8
-  ; CHECK: xo_emit({{.*}}i8*** %argv.addr
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[STORE]] {{0x[0-f]+}} [[ARGV_ADDR]]
 
   call void @llvm.dbg.declare(metadata i8*** %argv.addr, metadata !16, metadata !14), !dbg !17
 
-  ; CHECK: %call = call i32 (i8*, ...) @printf
   %call = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str, i32 0, i32 0)), !dbg !18
-  ; CHECK: xo_emit({{.*}} %call
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[CALL:[0-9]+]] [[LEN:14]] "Hello, world!
 
   call void @llvm.dbg.declare(metadata double* %x, metadata !19, metadata !14), !dbg !21
 
-  ; CHECK: store double 0x402ABCEF97BFC839, double* %x, align 8, !dbg !21
   store double 0x402ABCEF97BFC839, double* %x, align 8, !dbg !21
-  ; CHECK: xo_emit({{.*}}double* %x
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[STORE]] [[X:[0-9.]+]] [[XPTR:0x[0-f]+]]
 
 
   ; Note: Unnamed values like this one can be renumbered arbitrarily once we
@@ -66,16 +63,12 @@ entry:
   ;       consistency between the value name and what we pass to
   ;       instrumentation.
 
-  ; CHECK: %[[ZERO:[0-9]+]] = load double, double* %x, align 8, !dbg !22
   %0 = load double, double* %x, align 8, !dbg !22
-  ; CHECK: xo_emit({{.*}} %[[ZERO]]
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[LOAD:[0-9]+]] [[X]] [[XPTR]]
 
-  ; CHECK: %call1 = call i32 (i8*, ...) @printf
   %call1 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str.1, i32 0, i32 0), double %0), !dbg !23
-  ; CHECK: xo_emit({{.*}} %call1
+  ; CHECK: [[INSTR]]:0x{{[0-f]+}} [[CALL:[0-9]+]] {{[0-9]+}} "The value of x is:
 
-  ; CHECK: xo_emit({{.*}}, i32 [[BRANCH:2]])
-  ; CHECK: br label %foo
   br label %foo
 
 foo:
