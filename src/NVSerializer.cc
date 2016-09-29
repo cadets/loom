@@ -124,8 +124,8 @@ NVSerializer::Serialize(StringRef Name, StringRef Descrip,
 }
 
 
-void NVSerializer::Cleanup(BufferInfo& Buffer, IRBuilder<>& B) {
-  NV->Free(Buffer.first, B);
+Instruction* NVSerializer::Cleanup(BufferInfo& Buffer, IRBuilder<>& B) {
+  return NV->Free(Buffer.first, B);
 }
 
 

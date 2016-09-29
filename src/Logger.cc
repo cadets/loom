@@ -84,23 +84,24 @@ unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
 }
 
 
-void Logger::Log(IRBuilder<>& B, Function::ArgumentListType& Args,
-                 StringRef Name, StringRef Description, bool SuppressUniq) {
+Value* Logger::Log(Instruction *I, Function::ArgumentListType& Args,
+                   StringRef Name, StringRef Descrip, bool SuppressUniq) {
 
   vector<Value*> Values(Args.size());
   std::transform(Args.begin(), Args.end(), Values.begin(),
                  [&](Value& V) { return &V; });
 
-  Log(B, Values, Name, Description, SuppressUniq);
+  return Log(I, Values, Name, Descrip, SuppressUniq);
 }
 
 
-void SimpleLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
-                       StringRef /*Name*/, StringRef Description,
-                       bool SuppressUniqueness) {
+Value* SimpleLogger::Log(Instruction *I, ArrayRef<Value*> Values,
+                         StringRef /*Name*/, StringRef Description,
+                         bool SuppressUniqueness) {
 
   // Call the printf-like logging function, ignoring the machine-readable name.
-  Call(B, Description, Values, "\n", SuppressUniqueness);
+  IRBuilder<> B(I);
+  return Call(B, Description, Values, "\n", SuppressUniqueness);
 }
 
 

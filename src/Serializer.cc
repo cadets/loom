@@ -61,6 +61,12 @@ NullSerializer::Serialize(StringRef /* Name */, StringRef /* Description */,
 }
 
 
-void NullSerializer::Cleanup(BufferInfo&, IRBuilder<>&) {
+Value* NullSerializer::Cleanup(BufferInfo&, IRBuilder<>& B) {
   // No cleanup is required, as no memory has been allocated.
+  return Nop(B);
+}
+
+Value* NullSerializer::Nop(IRBuilder<>& B) {
+  auto *False = ConstantInt::getFalse(Ctx);
+  return B.CreateXor(False, False);
 }

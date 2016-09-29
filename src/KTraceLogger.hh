@@ -49,9 +49,9 @@ class KTraceLogger : public loom::Logger {
 public:
   KTraceLogger(llvm::Module& Mod, std::unique_ptr<Serializer>, bool KernelMode);
 
-  virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
-                   llvm::StringRef Name, llvm::StringRef Description,
-                   bool SuppressUniqueness) override;
+  virtual llvm::Value* Log(llvm::Instruction*, llvm::ArrayRef<llvm::Value*>,
+                           llvm::StringRef Name, llvm::StringRef Descrip,
+                           bool SuppressUniqueness) override;
 
 private:
   const std::unique_ptr<Serializer> Serial;

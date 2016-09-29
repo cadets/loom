@@ -120,9 +120,19 @@ public:
                                      bool SuppressUniqueness = false) = 0;
 
 protected:
-  void AddLogging(llvm::IRBuilder<>&, llvm::ArrayRef<llvm::Value*>,
-                  llvm::StringRef Name, llvm::StringRef Description,
-                  bool SuppressUniqueness);
+  /**
+   * Add code to instrumentation preamble that will log the instrumented values
+   * via all of our Logger objects.
+   *
+   * @param     I      the instruction to insert logging code before
+   *
+   * @returns   the last instruction of the added logging code (or I if none)
+   */
+  llvm::Value* AddLogging(llvm::Instruction *I,
+                          llvm::ArrayRef<llvm::Value*>,
+                          llvm::StringRef Name,
+                          llvm::StringRef Description,
+                          bool SuppressUniqueness);
 
 private:
   std::vector<std::unique_ptr<Logger>> Loggers;

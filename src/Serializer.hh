@@ -67,7 +67,7 @@ public:
    * Clean up a serialized data buffer using Serializer-specific cleanup code
    * (e.g., `free()` or `nvlist_destroy`).
    */
-  virtual void Cleanup(BufferInfo&, llvm::IRBuilder<>&) = 0;
+  virtual llvm::Value* Cleanup(BufferInfo&, llvm::IRBuilder<>&) = 0;
 
 protected:
   Serializer(llvm::LLVMContext &Ctx);
@@ -90,7 +90,10 @@ public:
                                llvm::ArrayRef<llvm::Value*>,
                                llvm::IRBuilder<>&) override;
 
-  virtual void Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;
+  virtual llvm::Value* Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;
+
+private:
+  llvm::Value* Nop(llvm::IRBuilder<>&);
 };
 
 } // namespace loom

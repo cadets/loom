@@ -52,7 +52,7 @@ public:
                                llvm::ArrayRef<llvm::Value*>,
                                llvm::IRBuilder<>&) override;
 
-  virtual void Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;
+  virtual llvm::Instruction* Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;
 
 private:
   const std::unique_ptr<LibNV> NV;

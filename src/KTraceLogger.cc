@@ -48,9 +48,11 @@ KTraceLogger::KTraceLogger(Module& Mod, std::unique_ptr<Serializer> S, bool K)
 }
 
 
-void KTraceLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
-                       StringRef Name, StringRef Descrip,
-                       bool /* SuppressUniqueness */) {
+Value* KTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
+                         StringRef Name, StringRef Descrip,
+                         bool /* SuppressUniqueness */) {
+
+  IRBuilder<> B(I);
 
   // Get pointer to serialized data buffer:
   Serializer::BufferInfo Buffer = Serial->Serialize(Name, Descrip, Values, B);
@@ -73,5 +75,5 @@ void KTraceLogger::Log(IRBuilder<>& B, ArrayRef<Value*> Values,
     B.CreateCall(F, { Name, Buffer.first, Buffer.second });
   }
 
-  Serial->Cleanup(Buffer, B);
+  return Serial->Cleanup(Buffer, B);
 }

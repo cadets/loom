@@ -81,13 +81,18 @@ void InstrStrategy::AddLogger(unique_ptr<Logger> L) {
 }
 
 
-void InstrStrategy::AddLogging(IRBuilder<>& B, ArrayRef<Value*> Values,
-                               StringRef Name, StringRef Description,
-                               bool SuppressUniqueness) {
+Value*
+InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value*> Values,
+                          StringRef Name, StringRef Description,
+                          bool SuppressUniqueness) {
+  Value *End = nullptr;
+
   for (auto& L : Loggers) {
     assert(L);
-    L->Log(B, Values, Name, Description, SuppressUniqueness);
+    End = L->Log(I, Values, Name, Description, SuppressUniqueness);
   }
+
+  return End;
 }
 
 
@@ -132,10 +137,9 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
     EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
 
-    IRBuilder<> PreambleBuilder(Preamble);
-    AddLogging(PreambleBuilder, InstrValues, Name, Descrip, SuppressUniq);
+    AddLogging(IRBuilder<>(Preamble).CreateBr(EndBlock),
+               InstrValues, Name, Descrip, SuppressUniq);
 
-    PreambleBuilder.CreateBr(EndBlock);
     IRBuilder<>(EndBlock).CreateRetVoid();
 
     // Also set instrumentation function's parameter names:
@@ -206,9 +210,8 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   BasicBlock *Preamble = BasicBlock::Create(Ctx, Name + ":preamble", F, EndBlock);
   IRBuilder<>(BB).CreateBr(Preamble);
 
-  IRBuilder<> PreambleBuilder(Preamble);
-  AddLogging(PreambleBuilder, Values, Name, Descrip, SuppressUniq);
-  PreambleBuilder.CreateBr(EndBlock);
+  AddLogging(IRBuilder<>(Preamble).CreateBr(EndBlock),
+             Values, Name, Descrip, SuppressUniq);
 
   SmallVector<Value*, 4> V(Values.begin(), Values.end());
   return Instrumentation(V, Preamble, EndBlock);

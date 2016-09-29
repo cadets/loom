@@ -54,7 +54,7 @@ public:
   /**
    * Create code to log a set of values using the underlying mechanism.
    *
-   * @param  B             IRBuilder for the location logging code should go
+   * @param  I             Insertion point for the logging code
    * @param  Values        Values to log
    * @param  Name          Machine-readable name of the logged event
    *                       (may not be used by all Logger types)
@@ -63,15 +63,19 @@ public:
    * @param  SuppressUniqueness  Suppress uniqueness among format strings
    *                       to the extent possible (e.g., for libxo, which allows
    *                       values' names to be specified as well as types).
+   *
+   * @returns the last instruction (if any) in the generated instrumentation
    */
-  virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
-                   llvm::StringRef Name, llvm::StringRef Description,
-                   bool SuppressUniqueness) = 0;
+  virtual llvm::Value* Log(llvm::Instruction* I,
+                                 llvm::ArrayRef<llvm::Value*> Values,
+                                 llvm::StringRef Name,
+                                 llvm::StringRef Description,
+                                 bool SuppressUniqueness) = 0;
 
   /**
    * Create code to log function arguments using the underlying mechanism.
    *
-   * @param  B             IRBuilder for the location logging code should go
+   * @param  I             Insertion point for the instrumentation
    * @param  Args          Arguments to log
    * @param  Name          Machine-readable name of the logged event
    *                       (may not be used by all Logger types)
@@ -80,10 +84,14 @@ public:
    * @param  SuppressUniqueness  Suppress uniqueness among format strings
    *                       to the extent possible (e.g., for libxo, which allows
    *                       values' names to be specified as well as types).
+   *
+   * @returns the last instruction (if any) in the generated instrumentation
    */
-  virtual void Log(llvm::IRBuilder<>& B, llvm::Function::ArgumentListType& Args,
-                   llvm::StringRef Name, llvm::StringRef Description,
-                   bool SuppressUniqueness);
+  virtual llvm::Value* Log(llvm::Instruction *I,
+                                 llvm::Function::ArgumentListType& Args,
+                                 llvm::StringRef Name,
+                                 llvm::StringRef Description,
+                                 bool SuppressUniqueness);
 
 protected:
   Logger(llvm::Module& Mod) : Mod(Mod) {}
@@ -111,9 +119,11 @@ public:
   static std::unique_ptr<SimpleLogger> Create(llvm::Module&,
                                               LogType Log = LogType::Printf);
 
-  virtual void Log(llvm::IRBuilder<>& B, llvm::ArrayRef<llvm::Value*> Values,
-                   llvm::StringRef Name, llvm::StringRef Description,
-                   bool SuppressUniqueness) override;
+  virtual llvm::Value* Log(llvm::Instruction *I,
+                           llvm::ArrayRef<llvm::Value*> Values,
+                           llvm::StringRef Name,
+                           llvm::StringRef Description,
+                           bool SuppressUniqueness) override;
 
   /// Log a set of values, with optional prefix and suffix text.
   llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
