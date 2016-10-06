@@ -48,33 +48,63 @@ using std::unique_ptr;
 using std::vector;
 
 
-IRBuilder<> Instrumentation::GetPreambleBuilder()
+Instrumentation::Instrumentation(SmallVector<Value*, 4> Values,
+                                 BasicBlock *Preamble, BasicBlock *EndBlock,
+                                 Instruction *Begin, Instruction *End)
+  : InstrValues(std::move(Values)), Preamble(Preamble), EndBlock(EndBlock),
+    PreambleEnd(Begin), End(End)
 {
-  assert(Preamble);
-  return IRBuilder<>(Preamble->getTerminator());
+  assert(not Preamble->empty());
+  assert(not EndBlock->empty());
+}
+
+
+Instrumentation::Instrumentation(SmallVector<Value*, 4> Values,
+                                 Instruction *Begin, Instruction *End)
+  : InstrValues(std::move(Values)),
+    Preamble(nullptr), EndBlock(nullptr),
+    PreambleEnd(Begin), End(End)
+{
+}
+
+
+IRBuilder<> Instrumentation::GetBuilder()
+{
+  assert(End);
+  return IRBuilder<>(End);
 }
 
 
 IRBuilder<> Instrumentation::AddAction(StringRef Name)
 {
-  assert(Preamble && End);
+  assert(PreambleEnd && End);
+
+  if (not Preamble) {
+    // If we don't have a preamble block, we are doing direct inline
+    // instrumentation and we should not have an end block either.
+    // Return an IRBuilder positioned just before the end instruction.
+    assert(not EndBlock);
+    return IRBuilder<>(End);
+  }
+
+  assert(EndBlock);
 
   // Get the last block in the instrumentation chain before "end"
   // and unhook it from "end": we need to insert the new block in between.
-  BasicBlock *Predecessor = End->getSinglePredecessor();
+  BasicBlock *Predecessor = EndBlock->getSinglePredecessor();
   assert(Predecessor);
 
-  End->removePredecessor(Predecessor);
+  EndBlock->removePredecessor(Predecessor);
   Predecessor->getTerminator()->eraseFromParent();
 
   // Create the new instrumentation block and insert it between the
   // old last-but-one block and the "end" block.
   Function *Fn = Predecessor->getParent();
   LLVMContext& Ctx = Fn->getContext();
-  BasicBlock *BB = BasicBlock::Create(Ctx, Name, Fn, End);
+  BasicBlock *BB = BasicBlock::Create(Ctx, Name, Fn, EndBlock);
 
   IRBuilder<>(Predecessor).CreateBr(BB);
-  BranchInst *Terminator = IRBuilder<>(BB).CreateBr(End);
+  BranchInst *Terminator = IRBuilder<>(BB).CreateBr(EndBlock);
 
   // Return an IRBuilder positioned immediately before the final branch
   // to the "end" block.

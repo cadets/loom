@@ -45,6 +45,11 @@ namespace {
 
 class CalloutStrategy : public InstrStrategy {
 public:
+  CalloutStrategy(bool UseBlocks)
+    : InstrStrategy(UseBlocks)
+  {
+  }
+
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value*> Values,
@@ -53,6 +58,11 @@ public:
 
 class InlineStrategy : public InstrStrategy {
 public:
+  InlineStrategy(bool UseBlocks)
+    : InstrStrategy(UseBlocks)
+  {
+  }
+
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value*> Values,
@@ -63,14 +73,14 @@ public:
 } // anonymous namespace
 
 
-unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K)
+unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, bool UseBlocks)
 {
   switch (K) {
   case InstrStrategy::Kind::Callout:
-    return unique_ptr<InstrStrategy>(new CalloutStrategy());
+    return unique_ptr<InstrStrategy>(new CalloutStrategy(UseBlocks));
 
   case InstrStrategy::Kind::Inline:
-    return unique_ptr<InstrStrategy>(new InlineStrategy());
+    return unique_ptr<InstrStrategy>(new InlineStrategy(UseBlocks));
   }
 }
 
@@ -130,17 +140,27 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   // Instrumentation.
   //
   BasicBlock *Preamble, *EndBlock;
+  Instruction *PreambleEnd, *End;
 
   if (InstrFn->empty()) {
     InstrFn->setLinkage(Function::InternalLinkage);
 
-    Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
-    EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
+    if (UseBlockStructure) {
+      Preamble = BasicBlock::Create(Ctx, "preamble", InstrFn);
+      EndBlock = BasicBlock::Create(T->getContext(), "exit", InstrFn);
 
-    AddLogging(IRBuilder<>(Preamble).CreateBr(EndBlock),
-               InstrValues, Name, Descrip, SuppressUniq);
+      PreambleEnd = IRBuilder<>(Preamble).CreateBr(EndBlock);
+      End = IRBuilder<>(EndBlock).CreateRetVoid();
 
-    IRBuilder<>(EndBlock).CreateRetVoid();
+    } else {
+      Preamble = BasicBlock::Create(Ctx, "entry", InstrFn);;
+      EndBlock = nullptr;
+
+      PreambleEnd = IRBuilder<>(Preamble).CreateRetVoid();
+      End = PreambleEnd;
+    }
+
+    AddLogging(PreambleEnd, InstrValues, Name, Descrip, SuppressUniq);
 
     // Also set instrumentation function's parameter names:
     SymbolTableList<Argument>& ArgList = InstrFn->getArgumentList();
@@ -154,6 +174,8 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     Preamble = FindBlock("preamble", *InstrFn);
     EndBlock = FindBlock("exit", *InstrFn);
   }
+
+  InstrFn->dump();
 
   // Call the instrumentation function:
   CallInst *Call = CallInst::Create(InstrFn, Values);
@@ -170,7 +192,11 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     }
   }
 
-  return Instrumentation(InstrValues, Preamble, EndBlock);
+  if (UseBlockStructure) {
+    return Instrumentation(InstrValues, Preamble, EndBlock, PreambleEnd, End);
+  } else {
+    return Instrumentation(InstrValues, PreambleEnd, End);
+  }
 }
 
 
@@ -199,20 +225,38 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     I = &*Iter;
   }
 
-  // Split the target instruction's BasicBlock and insert our instrumentation
-  // blocks (preamble and end) in the split.
-  BasicBlock *PostSplit = BB->splitBasicBlock(I);
-  BB->getTerminator()->eraseFromParent();
+  BasicBlock *Preamble, *EndBlock;
+  Instruction *PreambleEnd, *End;
 
-  BasicBlock *EndBlock = BasicBlock::Create(Ctx, Name + ":end", F, PostSplit);
-  IRBuilder<>(EndBlock).CreateBr(PostSplit);
+  if (UseBlockStructure) {
+    // Split the target instruction's BasicBlock and insert our instrumentation
+    // blocks (preamble and end) in the split.
+    BasicBlock *PostSplit = BB->splitBasicBlock(I);
+    BB->getTerminator()->eraseFromParent();
 
-  BasicBlock *Preamble = BasicBlock::Create(Ctx, Name + ":preamble", F, EndBlock);
-  IRBuilder<>(BB).CreateBr(Preamble);
+    EndBlock = BasicBlock::Create(Ctx, Name + ":end", F, PostSplit);
+    End = IRBuilder<>(EndBlock).CreateBr(PostSplit);
 
-  AddLogging(IRBuilder<>(Preamble).CreateBr(EndBlock),
-             Values, Name, Descrip, SuppressUniq);
+    Preamble = BasicBlock::Create(Ctx, Name + ":preamble", F, EndBlock);
+    PreambleEnd = IRBuilder<>(Preamble).CreateBr(EndBlock);
+
+    IRBuilder<>(BB).CreateBr(Preamble);
+
+  } else {
+    Preamble = nullptr;
+    EndBlock = nullptr;
+
+    PreambleEnd = I;
+    End = I;
+  }
+
+  AddLogging(PreambleEnd, Values, Name, Descrip, SuppressUniq);
 
   SmallVector<Value*, 4> V(Values.begin(), Values.end());
-  return Instrumentation(V, Preamble, EndBlock);
+
+  if (Preamble and EndBlock) {
+    return Instrumentation(V, Preamble, EndBlock, PreambleEnd, End);
+  } else {
+    return Instrumentation(V, PreambleEnd, End);
+  }
 }

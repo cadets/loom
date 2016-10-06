@@ -55,37 +55,39 @@ namespace llvm {
 namespace loom {
 
 /**
- * Instrumentation code (which could be a function or a set of inline blocks)
+ * Instrumentation code (which could be a function or inline instructions)
  * that receives program events such as "called foo(42,97)" and takes
  * policy-defined actions (e.g., logs events or updates counters).
- *
- * @invariant Instrumentation must have a preamble block, which contains
- *            instructions to execute first for all instrumented events
- *            (e.g., logging calls) and an "exit" block after all actions
- *            required by the instrumentation have been taken.
- *            New instrumentation actions are added in BasicBlocks in between.
  */
 class Instrumentation {
 public:
+  /**
+   * Construct some instrumentation that puts all actions into BasicBlocks
+   * injected between the specified preamble and end blocks.
+   */
   Instrumentation(llvm::SmallVector<llvm::Value*, 4> Values,
-                  llvm::BasicBlock *Preamble, llvm::BasicBlock *End)
-    : InstrValues(std::move(Values)), Preamble(Preamble), End(End)
-  {
-  }
+                  llvm::BasicBlock *Preamble, llvm::BasicBlock *EndBlock,
+                  llvm::Instruction *PreambleEnd, llvm::Instruction *End);
+
+  /**
+   * Construct some instrumentation that directly injects actions as inline
+   * instructions rather than using BasicBlocks.
+   */
+  Instrumentation(llvm::SmallVector<llvm::Value*, 4> Values,
+                  llvm::Instruction *PreambleEnd, llvm::Instruction *End);
 
   //! Retrieve the values passed into the instrumentation.
   llvm::ArrayRef<llvm::Value*> Values() { return InstrValues; }
 
   /**
-   * Get an IRBuilder that can be used to insert new instructions into the
-   * instrumentation's preamble block.
+   * Get an IRBuilder to insert instructions into the instrumentation preamble.
    *
    * The preamble is a block where we can put instructions that should run
    * whenever the instrumentation is called, regardless of the values that
    * are passed into it. This could be used to implement gprof-style counting
    * or simple logging.
    */
-  llvm::IRBuilder<> GetPreambleBuilder();
+  llvm::IRBuilder<> GetBuilder();
 
   /// Add a new link in the chain of actions for this instrumentation.
   llvm::IRBuilder<> AddAction(llvm::StringRef Name);
@@ -94,7 +96,9 @@ public:
 private:
   llvm::SmallVector<llvm::Value*, 4> InstrValues;  //!< Instrumented values
   llvm::BasicBlock *Preamble;   //!< Cross-instrumentation logging, etc.
-  llvm::BasicBlock *End;        //!< End of the instrumentation chain.
+  llvm::BasicBlock *EndBlock;   //!< End of the instrumentation block chain.
+  llvm::Instruction *PreambleEnd; //!< Terminator of the preamble.
+  llvm::Instruction *End;       //!< Final instruction in the instrumentation.
 };
 
 }

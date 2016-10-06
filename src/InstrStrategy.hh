@@ -60,7 +60,18 @@ public:
     Inline,     //!< Add instrumentation inline with the instrumented code.
   };
 
-  static std::unique_ptr<InstrStrategy> Create(Kind);
+  /**
+   * Create a new instrumentation strategy (callout, inline, etc.).
+   *
+   * @param   K         Which instrumentation approach to take.
+   * @param   UseBlocks Use BasicBlock-based internal structure for
+   *                    instrumentation in order to expose the control flow
+   *                    among [potentially] different instrumentation actions
+   *                    very explicit. This is the old behaviour from TESLA.
+   *                    The alternative (if UseBlocks is false) is to generate
+   *                    a stream of instructions.
+   */
+  static std::unique_ptr<InstrStrategy> Create(Kind K, bool UseBlocks);
 
   //! Add another @ref Logger to the instrumentation we generate.
   void AddLogger(std::unique_ptr<Logger>);
@@ -120,6 +131,8 @@ public:
                                      bool SuppressUniqueness = false) = 0;
 
 protected:
+  InstrStrategy(bool UseBlocks) : UseBlockStructure(UseBlocks) {}
+
   /**
    * Add code to instrumentation preamble that will log the instrumented values
    * via all of our Logger objects.
@@ -133,6 +146,8 @@ protected:
                           llvm::StringRef Name,
                           llvm::StringRef Description,
                           bool SuppressUniqueness);
+
+  const bool UseBlockStructure;
 
 private:
   std::vector<std::unique_ptr<Logger>> Loggers;
