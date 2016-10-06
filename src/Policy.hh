@@ -73,6 +73,12 @@ class Policy
   //! How should we serialize data?
   virtual std::unique_ptr<Serializer> Serialization(llvm::Module&) const = 0;
 
+  /**
+   * Create instrumentation within BasicBlocks, making the structure of the
+   * instrumentation clearer but more complex.
+   */
+  virtual bool UseBlockStructure() const = 0;
+
   //! Special case: instrument every single function.
   virtual bool InstrumentAll() const = 0;
 

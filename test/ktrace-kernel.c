@@ -16,6 +16,8 @@ hook_prefix: __ktrace_test
 
 ktrace: kernel
 
+block_structure: true
+
 functions:
     - name: foo
       caller: [ entry ]

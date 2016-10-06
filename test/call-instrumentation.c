@@ -20,6 +20,8 @@ hook_prefix: __test_hook
 
 logging: printf
 
+block_structure: true
+
 functions:
     - name: foo
       caller: [ entry, exit ]

@@ -20,6 +20,8 @@ hook_prefix: __test_hook
 
 logging: xo
 
+block_structure: true
+
 functions:
     - name: foo
       caller: [ entry, exit ]

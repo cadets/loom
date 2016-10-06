@@ -17,6 +17,8 @@ hook_prefix: TEST
 
 logging: printf
 
+block_structure: true
+
 structures:
   - name: foo
     fields:

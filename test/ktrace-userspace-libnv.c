@@ -18,6 +18,8 @@ ktrace: utrace
 
 serialization: nv
 
+block_structure: true
+
 functions:
     - name: foo
       caller: [ exit ]

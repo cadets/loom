@@ -1,3 +1,4 @@
 strategy: inline
 logging: xo
+block_structure: true
 everything: true

@@ -123,6 +123,9 @@ struct PolicyFile::PolicyFileData
   /// Serialization.
   SerializationType Serial;
 
+  /// Whether or not to put instrumentation in an explicit block structure.
+  bool UseBlockStructure;
+
   /// Just instrument every instruction.
   bool InstrumentEverything;
 
@@ -242,6 +245,7 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("logging", policy.Logging, SimpleLogger::LogType::None);
     io.mapOptional("ktrace", policy.KTrace, Policy::KTraceTarget::None);
     io.mapOptional("serialization", policy.Serial, SerializationType::None);
+    io.mapOptional("block_structure", policy.UseBlockStructure, false);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("everything", policy.InstrumentEverything, false);
     io.mapOptional("functions",   policy.Functions);
@@ -310,6 +314,12 @@ unique_ptr<Serializer> PolicyFile::Serialization(Module& Mod) const
   case SerializationType::None:
     return unique_ptr<Serializer>(new NullSerializer(Mod.getContext()));
   }
+}
+
+
+bool PolicyFile::UseBlockStructure() const
+{
+  return Policy->UseBlockStructure;
 }
 
 

@@ -92,7 +92,8 @@ bool OptPass::runOnModule(Module &Mod)
       return P.InstrName(Components);
     };
 
-  unique_ptr<InstrStrategy> S(InstrStrategy::Create(P.Strategy(), true));
+  auto S = InstrStrategy::Create(P.Strategy(), P.UseBlockStructure());
+
   for (auto& L : P.Loggers(Mod)) {
     S->AddLogger(std::move(L));
   }
