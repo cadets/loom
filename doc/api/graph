@@ -1,0 +1,15 @@
+#!/bin/sh
+
+: ${umlgraph:="/usr/local/share/java/classes/UmlGraph.jar"}
+: ${tools:="/usr/local/openjdk8/lib/tools.jar"}
+
+classpath="-classpath ${umlgraph}:${tools}"
+
+find . -name '*.java' \
+	| xargs \
+		java ${classpath} \
+			org.umlgraph.doclet.UmlGraph \
+			-private \
+			-attributes -operations -types -visibility \
+			-output - \
+	| dot -Tpng -o loom.png
