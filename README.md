@@ -1,5 +1,9 @@
 ﻿# Loom: LLVM instrumentation library
 
+<img
+src="https://raw.githubusercontent.com/cadets/loom/master/doc/images/loom.png"
+style="float: right; width: 25%;"/>
+
 Loom is a general-purpose library for adding instrumentation to software in the LLVM intermediate representation (IR) format. It is currently capable of generating static instrumentation points that expose values (e.g., function parameters and return values) to software-defined instrumentation functions.
 
 Loom is part of the [CADETS](https://www.cl.cam.ac.uk/research/security/cadets) (Causal, Adaptive, Distributed, and Efficient Tracing System) project as part of DARPA's [Transparent Computing](http://www.darpa.mil/program/transparent-computing) program.
