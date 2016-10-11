@@ -1,3 +1,7 @@
 [submodule "doc/doxygen-bootstrapped"]
 	path = doc/doxygen/doxygen-bootstrapped
 	url = https://github.com/Velron/doxygen-bootstrapped
+[submodule "web"]
+	path = web
+	url = git@github.com:cadets/loom
+	branch = gh-pages
