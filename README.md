@@ -32,43 +32,48 @@ $ ninja
 ### Building LOOM
 
 1. Set your PATH to include the version of LLVM you just built:
+```sh
+$ export PATH=/path/to/LLVM/Release/bin:$PATH
+```
+or:
+```csh
+$ setenv PATH /path/to/LLVM/Release/bin:$PATH
+```
 
-    ```sh
-    $ export PATH=/path/to/LLVM/Release/bin:$PATH
-    ```
-    or:
-    ```csh
-    $ setenv PATH /path/to/LLVM/Release/bin:$PATH
-    ```
+2. Configure Loom build:
+```sh
+$ cd /path/to/Loom
+$ mkdir Release
+$ cd Release
+$ cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
+```
 
-1. Configure Loom build:
-    ```sh
-    $ cd /path/to/Loom
-    $ mkdir Release
-    $ cd Release
-    $ cmake -G Ninja -D CMAKE_BUILD_TYPE=Release ..
-    ```
+3. Build Loom:
+```sh
+$ ninja
+```
 
-1. Build Loom:
-    ```sh
-    $ ninja
-    ```
+4. (optional) run test suite:
 
-1. (optional) run test suite:
     a. Install [libxo](https://github.com/Juniper/libxo), which is used by
-       Loom to emit structured
-    ```sh
-    $ pkg install libxo    # or whatever your package manager command is
-    $ ninja check
-    ```
+       Loom to emit structured output:
+```sh
+$ pkg install libxo    # or whatever your package manager command is
+```
+    b. Run the Loom test suite:
+```sh
+$ ninja check
+```
 
 
 ## Use it
 
 ### `opt` pass
 
-Loom is structured as a set of libraries for LLVM instrumentation, but can be run most straightforwardly as an LLVM [opt](http://llvm.org/docs/CommandGuide/opt.html) pass. This requires creating an instrumentation policy file such as:
-
+Loom is structured as a set of libraries for LLVM instrumentation,
+but can be run most straightforwardly as an LLVM
+[opt](http://llvm.org/docs/CommandGuide/opt.html) pass.
+This requires creating an instrumentation policy file such as:
 ```yaml
 #
 # There are two instrumentation strategies:
@@ -99,8 +104,8 @@ logging: printf
 # Specify how/when functions should be instrumented.
 #
 # Functions can be instrumented on the caller side (before/after the call)
-# or the callee side (function prelude / return sites). The `functions`
-# configuration value should be a list of entries, each specifying:
+# or the callee side (function prelude / return sites). This configuration
+# value should be a list of entries, each specifying:
 #
 #  * `name`: the name of the function being instrumented (language-mangled)
 #  * `caller`: (optional) list of directions to instrument calls (entry/exit)
