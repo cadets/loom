@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.12"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Loom: NVSerializer Class Reference</title>
+        <title>Loom: loom::NVSerializer Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -76,10 +76,13 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classloom_1_1NVSerializer-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">NVSerializer Class Reference</div>  </div>
+<div class="title">loom::NVSerializer Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -88,7 +91,7 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="NVSerializer_8hh_source.html">NVSerializer.hh</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for NVSerializer:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for loom::NVSerializer:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
@@ -96,56 +99,64 @@ $(function() {
 </div>
 </div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a5b069dd577c89717b2a5d1b3061acfe0"><td class="memItemLeft" align="right" valign="top"><a id="a5b069dd577c89717b2a5d1b3061acfe0"></a>
+typedef std::pair&lt; llvm::Value *, llvm::Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#a5b069dd577c89717b2a5d1b3061acfe0">BufferInfo</a></td></tr>
+<tr class="memdesc:a5b069dd577c89717b2a5d1b3061acfe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">A buffer can be described using a pointer and a length. <br /></td></tr>
+<tr class="separator:a5b069dd577c89717b2a5d1b3061acfe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af0c0a4fafd9ada73c71f6284eae98112"><td class="memItemLeft" align="right" valign="top"><a id="af0c0a4fafd9ada73c71f6284eae98112"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NVSerializer</b> (llvm::Module &amp;)</td></tr>
-<tr class="separator:af0c0a4fafd9ada73c71f6284eae98112"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92f99779c629ced266ac81ce0582d920"><td class="memItemLeft" align="right" valign="top">virtual llvm::StringRef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1NVSerializer.html#a92f99779c629ced266ac81ce0582d920">SchemeName</a> () const override</td></tr>
-<tr class="memdesc:a92f99779c629ced266ac81ce0582d920"><td class="mdescLeft">&#160;</td><td class="mdescRight">A unique name that identifies the serialization scheme (e.g., <code>nvlist</code>).  <a href="#a92f99779c629ced266ac81ce0582d920">More...</a><br /></td></tr>
-<tr class="separator:a92f99779c629ced266ac81ce0582d920"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ed4b4993ed0931e1597cd93f395f564"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classloom_1_1Serializer.html#a9b872b6e3d6e21a9109c28bfea174b87">BufferInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1NVSerializer.html#a6ed4b4993ed0931e1597cd93f395f564">Serialize</a> (llvm::StringRef Name, llvm::StringRef Descrip, llvm::ArrayRef&lt; llvm::Value *&gt;, llvm::IRBuilder&lt;&gt; &amp;) override</td></tr>
-<tr class="memdesc:a6ed4b4993ed0931e1597cd93f395f564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate the code to serialize a set of values, returning details of the resulting buffer (pointer and length).  <a href="#a6ed4b4993ed0931e1597cd93f395f564">More...</a><br /></td></tr>
-<tr class="separator:a6ed4b4993ed0931e1597cd93f395f564"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c5e9942c3b219aaa11d670a8d10ad6d"><td class="memItemLeft" align="right" valign="top">virtual llvm::Instruction *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1NVSerializer.html#a4c5e9942c3b219aaa11d670a8d10ad6d">Cleanup</a> (<a class="el" href="classloom_1_1Serializer.html#a9b872b6e3d6e21a9109c28bfea174b87">BufferInfo</a> &amp;, llvm::IRBuilder&lt;&gt; &amp;) override</td></tr>
-<tr class="memdesc:a4c5e9942c3b219aaa11d670a8d10ad6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up a serialized data buffer using Serializer-specific cleanup code (e.g., <code>free()</code> or <code>nvlist_destroy</code>).  <a href="#a4c5e9942c3b219aaa11d670a8d10ad6d">More...</a><br /></td></tr>
-<tr class="separator:a4c5e9942c3b219aaa11d670a8d10ad6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b4b4af0be00ccef91c2167de7deaa2c"><td class="memItemLeft" align="right" valign="top"><a id="a4b4b4af0be00ccef91c2167de7deaa2c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1NVSerializer.html#a4b4b4af0be00ccef91c2167de7deaa2c">NVSerializer</a> (llvm::Module &amp;)</td></tr>
+<tr class="memdesc:a4b4b4af0be00ccef91c2167de7deaa2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a libnv-based <a class="el" href="classloom_1_1Serializer.html">Serializer</a>. <br /></td></tr>
+<tr class="separator:a4b4b4af0be00ccef91c2167de7deaa2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7630c29371f0d6a01f0f3a16d4956d2"><td class="memItemLeft" align="right" valign="top"><a id="ac7630c29371f0d6a01f0f3a16d4956d2"></a>
+virtual llvm::StringRef&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1NVSerializer.html#ac7630c29371f0d6a01f0f3a16d4956d2">SchemeName</a> () const override</td></tr>
+<tr class="memdesc:ac7630c29371f0d6a01f0f3a16d4956d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">A unique name that identifies the serialization scheme (e.g., <code>nvlist</code>). <br /></td></tr>
+<tr class="separator:ac7630c29371f0d6a01f0f3a16d4956d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bff82243ac6280f6f46e9f20661a267"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classloom_1_1Serializer.html#a5b069dd577c89717b2a5d1b3061acfe0">BufferInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1NVSerializer.html#a6bff82243ac6280f6f46e9f20661a267">Serialize</a> (llvm::StringRef Name, llvm::StringRef Descrip, llvm::ArrayRef&lt; llvm::Value *&gt;, llvm::IRBuilder&lt;&gt; &amp;) override</td></tr>
+<tr class="memdesc:a6bff82243ac6280f6f46e9f20661a267"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate the code to serialize a set of values, returning details of the resulting buffer (pointer and length).  <a href="#a6bff82243ac6280f6f46e9f20661a267">More...</a><br /></td></tr>
+<tr class="separator:a6bff82243ac6280f6f46e9f20661a267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa51bb0c2b1b6e53f83dee183e2e6ee1c"><td class="memItemLeft" align="right" valign="top"><a id="aa51bb0c2b1b6e53f83dee183e2e6ee1c"></a>
+virtual llvm::Instruction *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1NVSerializer.html#aa51bb0c2b1b6e53f83dee183e2e6ee1c">Cleanup</a> (<a class="el" href="classloom_1_1Serializer.html#a5b069dd577c89717b2a5d1b3061acfe0">BufferInfo</a> &amp;, llvm::IRBuilder&lt;&gt; &amp;) override</td></tr>
+<tr class="memdesc:aa51bb0c2b1b6e53f83dee183e2e6ee1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up a serialized data buffer using Serializer-specific cleanup code (e.g., <code>free()</code> or <code>nvlist_destroy</code>). <br /></td></tr>
+<tr class="separator:aa51bb0c2b1b6e53f83dee183e2e6ee1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_classloom_1_1Serializer"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classloom_1_1Serializer')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classloom_1_1Serializer.html">Serializer</a></td></tr>
-<tr class="memitem:a9b872b6e3d6e21a9109c28bfea174b87 inherit pub_types_classloom_1_1Serializer"><td class="memItemLeft" align="right" valign="top">typedef std::pair&lt; llvm::Value *, llvm::Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#a9b872b6e3d6e21a9109c28bfea174b87">BufferInfo</a></td></tr>
-<tr class="memdesc:a9b872b6e3d6e21a9109c28bfea174b87 inherit pub_types_classloom_1_1Serializer"><td class="mdescLeft">&#160;</td><td class="mdescRight">A buffer can be described using a pointer and a length.  <a href="classloom_1_1Serializer.html#a9b872b6e3d6e21a9109c28bfea174b87">More...</a><br /></td></tr>
-<tr class="separator:a9b872b6e3d6e21a9109c28bfea174b87 inherit pub_types_classloom_1_1Serializer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_static_methods_classloom_1_1Serializer"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classloom_1_1Serializer')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classloom_1_1Serializer.html">Serializer</a></td></tr>
-<tr class="memitem:a7e7302a5bb8f1af901adce53725f8501 inherit pub_static_methods_classloom_1_1Serializer"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classloom_1_1Serializer.html">Serializer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#a7e7302a5bb8f1af901adce53725f8501">None</a> ()</td></tr>
-<tr class="memdesc:a7e7302a5bb8f1af901adce53725f8501 inherit pub_static_methods_classloom_1_1Serializer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty <a class="el" href="classloom_1_1Serializer.html" title="A tool that can transform a set of values into a serialized representation. ">Serializer</a> unique_ptr.  <a href="classloom_1_1Serializer.html#a7e7302a5bb8f1af901adce53725f8501">More...</a><br /></td></tr>
-<tr class="separator:a7e7302a5bb8f1af901adce53725f8501 inherit pub_static_methods_classloom_1_1Serializer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classloom_1_1Serializer"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classloom_1_1Serializer')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classloom_1_1Serializer.html">Serializer</a></td></tr>
-<tr class="memitem:ad396e70b55f127b9f40114528d8dbadc inherit pro_methods_classloom_1_1Serializer"><td class="memItemLeft" align="right" valign="top"><a id="ad396e70b55f127b9f40114528d8dbadc"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Serializer</b> (llvm::LLVMContext &amp;Ctx)</td></tr>
-<tr class="separator:ad396e70b55f127b9f40114528d8dbadc inherit pro_methods_classloom_1_1Serializer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classloom_1_1Serializer"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classloom_1_1Serializer')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classloom_1_1Serializer.html">Serializer</a></td></tr>
-<tr class="memitem:a9443ef58ffb641cae94a308b14323da1 inherit pro_attribs_classloom_1_1Serializer"><td class="memItemLeft" align="right" valign="top"><a id="a9443ef58ffb641cae94a308b14323da1"></a>
-llvm::LLVMContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Ctx</b></td></tr>
-<tr class="separator:a9443ef58ffb641cae94a308b14323da1 inherit pro_attribs_classloom_1_1Serializer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad18687ce117eea234e0a7e3f3848bc2b inherit pro_attribs_classloom_1_1Serializer"><td class="memItemLeft" align="right" valign="top"><a id="ad18687ce117eea234e0a7e3f3848bc2b"></a>
-llvm::IntegerType *&#160;</td><td class="memItemRight" valign="bottom"><b>Byte</b></td></tr>
-<tr class="separator:ad18687ce117eea234e0a7e3f3848bc2b inherit pro_attribs_classloom_1_1Serializer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a097ad17d0fd61f51e2e1ebaadcde51 inherit pro_attribs_classloom_1_1Serializer"><td class="memItemLeft" align="right" valign="top"><a id="a5a097ad17d0fd61f51e2e1ebaadcde51"></a>
-llvm::PointerType *&#160;</td><td class="memItemRight" valign="bottom"><b>BytePtr</b></td></tr>
-<tr class="separator:a5a097ad17d0fd61f51e2e1ebaadcde51 inherit pro_attribs_classloom_1_1Serializer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af59847c8163358081f7c71bfefbcd194 inherit pro_attribs_classloom_1_1Serializer"><td class="memItemLeft" align="right" valign="top"><a id="af59847c8163358081f7c71bfefbcd194"></a>
-llvm::IntegerType *&#160;</td><td class="memItemRight" valign="bottom"><b>SizeT</b></td></tr>
-<tr class="separator:af59847c8163358081f7c71bfefbcd194 inherit pro_attribs_classloom_1_1Serializer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a8bf9358417027917eb3722a668a14c30"><td class="memItemLeft" align="right" valign="top"><a id="a8bf9358417027917eb3722a668a14c30"></a>
+static std::unique_ptr&lt; <a class="el" href="classloom_1_1Serializer.html">Serializer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#a8bf9358417027917eb3722a668a14c30">None</a> ()</td></tr>
+<tr class="memdesc:a8bf9358417027917eb3722a668a14c30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty <a class="el" href="classloom_1_1Serializer.html" title="A tool that can transform a set of values into a serialized representation. ">Serializer</a> unique_ptr. <br /></td></tr>
+<tr class="separator:a8bf9358417027917eb3722a668a14c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a2fe3af374242cdb281e4affda63e7c52"><td class="memItemLeft" align="right" valign="top"><a id="a2fe3af374242cdb281e4affda63e7c52"></a>
+llvm::LLVMContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#a2fe3af374242cdb281e4affda63e7c52">Ctx</a></td></tr>
+<tr class="memdesc:a2fe3af374242cdb281e4affda63e7c52"><td class="mdescLeft">&#160;</td><td class="mdescRight">store of LLVM types <br /></td></tr>
+<tr class="separator:a2fe3af374242cdb281e4affda63e7c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81e9fc3e6d27809ffe1d1606d5b6e1bd"><td class="memItemLeft" align="right" valign="top"><a id="a81e9fc3e6d27809ffe1d1606d5b6e1bd"></a>
+llvm::IntegerType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#a81e9fc3e6d27809ffe1d1606d5b6e1bd">Byte</a></td></tr>
+<tr class="memdesc:a81e9fc3e6d27809ffe1d1606d5b6e1bd"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>char</code> / <code>uint8_t</code> <br /></td></tr>
+<tr class="separator:a81e9fc3e6d27809ffe1d1606d5b6e1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7c2d4bca44d98d8ca2467ae24d77c49"><td class="memItemLeft" align="right" valign="top"><a id="ad7c2d4bca44d98d8ca2467ae24d77c49"></a>
+llvm::PointerType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#ad7c2d4bca44d98d8ca2467ae24d77c49">BytePtr</a></td></tr>
+<tr class="memdesc:ad7c2d4bca44d98d8ca2467ae24d77c49"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>char*</code> / <code>uint8_t*</code> <br /></td></tr>
+<tr class="separator:ad7c2d4bca44d98d8ca2467ae24d77c49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1640b5b6365bc38308a5f6d9f294c0c"><td class="memItemLeft" align="right" valign="top"><a id="aa1640b5b6365bc38308a5f6d9f294c0c"></a>
+llvm::IntegerType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Serializer.html#aa1640b5b6365bc38308a5f6d9f294c0c">SizeT</a></td></tr>
+<tr class="memdesc:aa1640b5b6365bc38308a5f6d9f294c0c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>size_t</code> <br /></td></tr>
+<tr class="separator:aa1640b5b6365bc38308a5f6d9f294c0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="classloom_1_1Serializer.html" title="A tool that can transform a set of values into a serialized representation. ">Serializer</a> that uses libnv to aggregate values. </p>
 
 <p>Definition at line <a class="el" href="NVSerializer_8hh_source.html#l00045">45</a> of file <a class="el" href="NVSerializer_8hh_source.html">NVSerializer.hh</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a4c5e9942c3b219aaa11d670a8d10ad6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c5e9942c3b219aaa11d670a8d10ad6d">&sect;&nbsp;</a></span>Cleanup()</h2>
+<a id="a6bff82243ac6280f6f46e9f20661a267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bff82243ac6280f6f46e9f20661a267">&sect;&nbsp;</a></span>Serialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -154,98 +165,7 @@ llvm::IntegerType *&#160;</td><td class="memItemRight" valign="bottom"><b>SizeT<
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual llvm::Instruction* Cleanup </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classloom_1_1Serializer.html#a9b872b6e3d6e21a9109c28bfea174b87">BufferInfo</a> &amp;&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::IRBuilder&lt;&gt; &amp;&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Clean up a serialized data buffer using Serializer-specific cleanup code (e.g., <code>free()</code> or <code>nvlist_destroy</code>). </p>
-
-<p>Implements <a class="el" href="classloom_1_1Serializer.html#ab1ddbfffc659bc650654766a09f28cd3">Serializer</a>.</p>
-
-<p>Referenced by <a class="el" href="NVSerializer_8hh_source.html#l00049">NVSerializer::SchemeName()</a>.</p>
-<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> Here is the caller graph for this function:</div>
-<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1NVSerializer_a4c5e9942c3b219aaa11d670a8d10ad6d_icgraph.svg" width="266" height="39"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="a92f99779c629ced266ac81ce0582d920"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92f99779c629ced266ac81ce0582d920">&sect;&nbsp;</a></span>SchemeName()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual llvm::StringRef SchemeName </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>A unique name that identifies the serialization scheme (e.g., <code>nvlist</code>). </p>
-
-<p>Implements <a class="el" href="classloom_1_1Serializer.html#abf2b5853214b056ef3f3c42feec4be4a">Serializer</a>.</p>
-
-<p>Definition at line <a class="el" href="NVSerializer_8hh_source.html#l00049">49</a> of file <a class="el" href="NVSerializer_8hh_source.html">NVSerializer.hh</a>.</p>
-
-<p>References <a class="el" href="classloom_1_1NVSerializer.html#a4c5e9942c3b219aaa11d670a8d10ad6d">NVSerializer::Cleanup()</a>, and <a class="el" href="classloom_1_1NVSerializer.html#a6ed4b4993ed0931e1597cd93f395f564">NVSerializer::Serialize()</a>.</p>
-<div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> Here is the call graph for this function:</div>
-<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-2-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1NVSerializer_a92f99779c629ced266ac81ce0582d920_cgraph.svg" width="268" height="91"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="a6ed4b4993ed0931e1597cd93f395f564"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ed4b4993ed0931e1597cd93f395f564">&sect;&nbsp;</a></span>Serialize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="classloom_1_1Serializer.html#a9b872b6e3d6e21a9109c28bfea174b87">BufferInfo</a> Serialize </td>
+          <td class="memname"><a class="el" href="classloom_1_1Serializer.html#a5b069dd577c89717b2a5d1b3061acfe0">Serializer::BufferInfo</a> NVSerializer::Serialize </td>
           <td>(</td>
           <td class="paramtype">llvm::StringRef&#160;</td>
           <td class="paramname"><em>Name</em>, </td>
@@ -285,22 +205,26 @@ llvm::IntegerType *&#160;</td><td class="memItemRight" valign="bottom"><b>SizeT<
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Name</td><td>Machine-readable instrumentation name. </td></tr>
-    <tr><td class="paramname">Description</td><td>Human-readable short description (may be ignored). </td></tr>
+    <tr><td class="paramname">Descrip</td><td>Human-readable short description (may be ignored). </td></tr>
     <tr><td class="paramname">Values</td><td>Values actually being serialized </td></tr>
     <tr><td class="paramname">B</td><td>IRBuilder positioned within instrumentation code </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classloom_1_1Serializer.html#aa3cbeeff05f3ef1cc20866cffec0c269">Serializer</a>.</p>
+<p>Implements <a class="el" href="classloom_1_1Serializer.html#a2b45384326140d7bacf144b34ea046e9">loom::Serializer</a>.</p>
 
-<p>Referenced by <a class="el" href="NVSerializer_8hh_source.html#l00049">NVSerializer::SchemeName()</a>.</p>
-<div id="dynsection-3" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-3-trigger" src="closed.png" alt="+"/> Here is the caller graph for this function:</div>
-<div id="dynsection-3-summary" class="dynsummary" style="display:block;">
+<p>Definition at line <a class="el" href="NVSerializer_8cc_source.html#l00095">95</a> of file <a class="el" href="NVSerializer_8cc_source.html">NVSerializer.cc</a>.</p>
+
+<p>References <a class="el" href="Serializer_8hh_source.html#l00079">loom::Serializer::SizeT</a>.</p>
+
+<p>Referenced by <a class="el" href="NVSerializer_8hh_source.html#l00050">SchemeName()</a>.</p>
+<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> Here is the caller graph for this function:</div>
+<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
 </div>
-<div id="dynsection-3-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1NVSerializer_a6ed4b4993ed0931e1597cd93f395f564_icgraph.svg" width="268" height="39"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div id="dynsection-1-content" class="dyncontent" style="display:none;">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1NVSerializer_a6bff82243ac6280f6f46e9f20661a267_icgraph.svg" width="368" height="55"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 

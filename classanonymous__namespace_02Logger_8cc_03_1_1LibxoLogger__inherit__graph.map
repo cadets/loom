@@ -1,4 +1,0 @@
-<map id="LibxoLogger" name="LibxoLogger">
-<area shape="rect" id="node2" href="$classloom_1_1SimpleLogger.html" title="A logging technique that requires a single call to a printf&#45;like function. " alt="" coords="25,167,183,360"/>
-<area shape="rect" id="node3" href="$classloom_1_1Logger.html" title="Something that can be used to log events, e.g., printf or libxo. " alt="" coords="53,5,155,119"/>
-</map>

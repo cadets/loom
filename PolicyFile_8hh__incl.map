@@ -1,7 +1,7 @@
 <map id="src/PolicyFile.hh" name="src/PolicyFile.hh">
 <area shape="rect" id="node2" href="$Policy_8hh.html" title="Definition of loom::Policy. " alt="" coords="384,81,466,109"/>
-<area shape="rect" id="node3" href="$InstrStrategy_8hh_source.html" title="InstrStrategy.hh" alt="" coords="282,157,421,185"/>
-<area shape="rect" id="node11" href="$Serializer_8hh.html" title="Declaration of Serializer. " alt="" coords="50,157,160,185"/>
-<area shape="rect" id="node7" href="$IRUtils_8hh_source.html" title="IRUtils.hh" alt="" coords="320,309,410,337"/>
+<area shape="rect" id="node3" href="$InstrStrategy_8hh.html" title="Declaration of loom::InstrStrategy. " alt="" coords="282,157,421,185"/>
+<area shape="rect" id="node11" href="$Serializer_8hh.html" title="Declaration of loom::Serializer. " alt="" coords="50,157,160,185"/>
+<area shape="rect" id="node7" href="$IRUtils_8hh.html" title="Declarations of LLVM IR utility functions. " alt="" coords="320,309,410,337"/>
 <area shape="rect" id="node10" href="$Logger_8hh.html" title="Declaration of loom::Logger. " alt="" coords="264,233,359,261"/>
 </map>

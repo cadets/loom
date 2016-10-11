@@ -61,7 +61,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node1 -->
 <g id="node2" class="node"><title>Node1</title>
-<g id="a_node2"><a xlink:href="NVSerializer_8hh.html" target="_top" xlink:title="Declaration of NVSerializer. ">
+<g id="a_node2"><a xlink:href="NVSerializer_8hh.html" target="_top" xlink:title="Declaration of loom::NVSerializer. ">
 <polygon fill="none" stroke="black" points="126.5,-114.5 126.5,-134.5 224.5,-134.5 224.5,-114.5 126.5,-114.5"/>
 <text text-anchor="middle" x="175.5" y="-121.7" font-family="Avenir-Book" font-size="11.00">NVSerializer.hh</text>
 </a>
@@ -104,7 +104,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node2 -->
 <g id="node3" class="node"><title>Node2</title>
-<g id="a_node3"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of Serializer. ">
+<g id="a_node3"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of loom::Serializer. ">
 <polygon fill="none" stroke="black" points="89,-57.5 89,-77.5 172,-77.5 172,-57.5 89,-57.5"/>
 <text text-anchor="middle" x="130.5" y="-64.7" font-family="Avenir-Book" font-size="11.00">Serializer.hh</text>
 </a>

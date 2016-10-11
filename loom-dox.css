@@ -1,8 +1,17 @@
-html, body, table, div, p, dl
+html, body, table, table.directory, div, p, dl
 {
 	font-family: "Avenir Book", "Helvetica", sans-serif;
+}
+
+html, body, div, p, dl
+{
 	font-size: 100%;
 	line-height: 120%;
+}
+
+table, table.directory
+{
+	font-size: 80%;
 }
 
 h1, .h1, h2, h3, h4, h5, h6, .navbar-brand
@@ -47,4 +56,17 @@ div.line
 .navbar-default .navbar-nav > li > a:hover
 {
 	color: #fff;
+}
+
+.table tr td.memItemLeft,
+.table tr td.memItemRight
+{
+  padding: 0 0 0 8px;
+}
+
+.table tr td.mdescLeft,
+.table tr td.mdescRight
+{
+  padding-left: 1em;
+  padding-bottom: 0.5em;
 }

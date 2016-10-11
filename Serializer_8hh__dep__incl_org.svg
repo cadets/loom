@@ -28,7 +28,7 @@
 </g>
 <!-- Node14 -->
 <g id="node12" class="node"><title>Node14</title>
-<g id="a_node12"><a xlink:href="KTraceLogger_8cc.html" target="_top" xlink:title="Definition of KTraceLogger. ">
+<g id="a_node12"><a xlink:href="KTraceLogger_8cc.html" target="_top" xlink:title="Definition of loom::KTraceLogger. ">
 <polygon fill="none" stroke="black" points="258,-228.5 258,-248.5 383,-248.5 383,-228.5 258,-228.5"/>
 <text text-anchor="middle" x="320.5" y="-235.7" font-family="Avenir-Book" font-size="11.00">src/KTraceLogger.cc</text>
 </a>
@@ -41,7 +41,7 @@
 </g>
 <!-- Node15 -->
 <g id="node13" class="node"><title>Node15</title>
-<g id="a_node13"><a xlink:href="NVSerializer_8hh.html" target="_top" xlink:title="Declaration of NVSerializer. ">
+<g id="a_node13"><a xlink:href="NVSerializer_8hh.html" target="_top" xlink:title="Declaration of loom::NVSerializer. ">
 <polygon fill="none" stroke="black" points="401,-228.5 401,-248.5 520,-248.5 520,-228.5 401,-228.5"/>
 <text text-anchor="middle" x="460.5" y="-235.7" font-family="Avenir-Book" font-size="11.00">src/NVSerializer.hh</text>
 </a>
@@ -54,7 +54,7 @@
 </g>
 <!-- Node17 -->
 <g id="node15" class="node"><title>Node17</title>
-<g id="a_node15"><a xlink:href="Serializer_8cc.html" target="_top" xlink:title="Definition of Serializer. ">
+<g id="a_node15"><a xlink:href="Serializer_8cc.html" target="_top" xlink:title="Definition of loom::Serializer. ">
 <polygon fill="none" stroke="black" points="538,-228.5 538,-248.5 639,-248.5 639,-228.5 538,-228.5"/>
 <text text-anchor="middle" x="588.5" y="-235.7" font-family="Avenir-Book" font-size="11.00">src/Serializer.cc</text>
 </a>
@@ -106,7 +106,7 @@
 </g>
 <!-- Node6 -->
 <g id="node4" class="node"><title>Node6</title>
-<g id="a_node4"><a xlink:href="Instrumentation_8hh_source.html" target="_top" xlink:title="src/Instrumentation.hh">
+<g id="a_node4"><a xlink:href="Instrumentation_8hh.html" target="_top" xlink:title="Declaration of loom::Instrumentation. ">
 <polygon fill="none" stroke="black" points="231,-114.5 231,-134.5 372,-134.5 372,-114.5 231,-114.5"/>
 <text text-anchor="middle" x="301.5" y="-121.7" font-family="Avenir-Book" font-size="11.00">src/Instrumentation.hh</text>
 </a>
@@ -119,7 +119,7 @@
 </g>
 <!-- Node11 -->
 <g id="node9" class="node"><title>Node11</title>
-<g id="a_node9"><a xlink:href="OptPass_8cc.html" target="_top" xlink:title="Definition of loom::OptPass. ">
+<g id="a_node9"><a xlink:href="OptPass_8cc.html" target="_top" xlink:title="Definition of Loom&#39;s LLVM opt pass. ">
 <polygon fill="none" stroke="black" points="272.5,-0.5 272.5,-20.5 370.5,-20.5 370.5,-0.5 272.5,-0.5"/>
 <text text-anchor="middle" x="321.5" y="-7.7" font-family="Avenir-Book" font-size="11.00">src/OptPass.cc</text>
 </a>
@@ -132,7 +132,7 @@
 </g>
 <!-- Node12 -->
 <g id="node10" class="node"><title>Node12</title>
-<g id="a_node10"><a xlink:href="PolicyFile_8cc.html" target="_top" xlink:title="Definition of PolicyFile. ">
+<g id="a_node10"><a xlink:href="PolicyFile_8cc.html" target="_top" xlink:title="Definition of loom::PolicyFile. ">
 <polygon fill="none" stroke="black" points="480,-114.5 480,-134.5 579,-134.5 579,-114.5 480,-114.5"/>
 <text text-anchor="middle" x="529.5" y="-121.7" font-family="Avenir-Book" font-size="11.00">src/PolicyFile.cc</text>
 </a>
@@ -158,7 +158,7 @@
 </g>
 <!-- Node8 -->
 <g id="node6" class="node"><title>Node8</title>
-<g id="a_node6"><a xlink:href="Instrumentation_8cc_source.html" target="_top" xlink:title="src/Instrumentation.cc">
+<g id="a_node6"><a xlink:href="Instrumentation_8cc.html" target="_top" xlink:title="Definition of loom::Instrumentation. ">
 <polygon fill="none" stroke="black" points="283.5,-57.5 283.5,-77.5 423.5,-77.5 423.5,-57.5 283.5,-57.5"/>
 <text text-anchor="middle" x="353.5" y="-64.7" font-family="Avenir-Book" font-size="11.00">src/Instrumentation.cc</text>
 </a>
@@ -199,7 +199,7 @@
 </g>
 <!-- Node16 -->
 <g id="node14" class="node"><title>Node16</title>
-<g id="a_node14"><a xlink:href="NVSerializer_8cc.html" target="_top" xlink:title="Definition of NVSerializer. ">
+<g id="a_node14"><a xlink:href="NVSerializer_8cc.html" target="_top" xlink:title="Definition of loom::NVSerializer. ">
 <polygon fill="none" stroke="black" points="384,-171.5 384,-191.5 501,-191.5 501,-171.5 384,-171.5"/>
 <text text-anchor="middle" x="442.5" y="-178.7" font-family="Avenir-Book" font-size="11.00">src/NVSerializer.cc</text>
 </a>

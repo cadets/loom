@@ -61,7 +61,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node1 -->
 <g id="node2" class="node"><title>Node1</title>
-<g id="a_node2"><a xlink:href="NVSerializer_8hh.html" target="_top" xlink:title="Declaration of NVSerializer. ">
+<g id="a_node2"><a xlink:href="NVSerializer_8hh.html" target="_top" xlink:title="Declaration of loom::NVSerializer. ">
 <polygon fill="none" stroke="black" points="31.1584,-228.5 31.1584,-248.5 129.158,-248.5 129.158,-228.5 31.1584,-228.5"/>
 <text text-anchor="middle" x="80.1584" y="-235.7" font-family="Avenir-Book" font-size="11.00">NVSerializer.hh</text>
 </a>
@@ -150,7 +150,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node2 -->
 <g id="node3" class="node"><title>Node2</title>
-<g id="a_node3"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of Serializer. ">
+<g id="a_node3"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of loom::Serializer. ">
 <polygon fill="none" stroke="black" points="38.6584,-171.5 38.6584,-191.5 121.658,-191.5 121.658,-171.5 38.6584,-171.5"/>
 <text text-anchor="middle" x="80.1584" y="-178.7" font-family="Avenir-Book" font-size="11.00">Serializer.hh</text>
 </a>
@@ -221,7 +221,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node8 -->
 <g id="node9" class="node"><title>Node8</title>
-<g id="a_node9"><a xlink:href="InstrStrategy_8hh_source.html" target="_top" xlink:title="InstrStrategy.hh">
+<g id="a_node9"><a xlink:href="InstrStrategy_8hh.html" target="_top" xlink:title="Declaration of loom::InstrStrategy. ">
 <polygon fill="none" stroke="black" points="183.158,-171.5 183.158,-191.5 287.158,-191.5 287.158,-171.5 183.158,-171.5"/>
 <text text-anchor="middle" x="235.158" y="-178.7" font-family="Avenir-Book" font-size="11.00">InstrStrategy.hh</text>
 </a>
@@ -274,7 +274,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node10 -->
 <g id="node11" class="node"><title>Node10</title>
-<g id="a_node11"><a xlink:href="IRUtils_8hh_source.html" target="_top" xlink:title="IRUtils.hh">
+<g id="a_node11"><a xlink:href="IRUtils_8hh.html" target="_top" xlink:title="Declarations of LLVM IR utility functions. ">
 <polygon fill="none" stroke="black" points="241.658,-57.5 241.658,-77.5 308.658,-77.5 308.658,-57.5 241.658,-57.5"/>
 <text text-anchor="middle" x="275.158" y="-64.7" font-family="Avenir-Book" font-size="11.00">IRUtils.hh</text>
 </a>

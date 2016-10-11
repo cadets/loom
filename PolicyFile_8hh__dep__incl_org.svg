@@ -15,7 +15,7 @@
 </g>
 <!-- Node14 -->
 <g id="node2" class="node"><title>Node14</title>
-<g id="a_node2"><a xlink:href="Instrumentation_8hh_source.html" target="_top" xlink:title="src/Instrumentation.hh">
+<g id="a_node2"><a xlink:href="Instrumentation_8hh.html" target="_top" xlink:title="Declaration of loom::Instrumentation. ">
 <polygon fill="none" stroke="black" points="211.5,-114.5 211.5,-134.5 352.5,-134.5 352.5,-114.5 211.5,-114.5"/>
 <text text-anchor="middle" x="282" y="-121.7" font-family="Avenir-Book" font-size="11.00">src/Instrumentation.hh</text>
 </a>
@@ -28,7 +28,7 @@
 </g>
 <!-- Node19 -->
 <g id="node7" class="node"><title>Node19</title>
-<g id="a_node7"><a xlink:href="OptPass_8cc.html" target="_top" xlink:title="Definition of loom::OptPass. ">
+<g id="a_node7"><a xlink:href="OptPass_8cc.html" target="_top" xlink:title="Definition of Loom&#39;s LLVM opt pass. ">
 <polygon fill="none" stroke="black" points="403,-0.5 403,-20.5 501,-20.5 501,-0.5 403,-0.5"/>
 <text text-anchor="middle" x="452" y="-7.7" font-family="Avenir-Book" font-size="11.00">src/OptPass.cc</text>
 </a>
@@ -41,7 +41,7 @@
 </g>
 <!-- Node20 -->
 <g id="node8" class="node"><title>Node20</title>
-<g id="a_node8"><a xlink:href="PolicyFile_8cc.html" target="_top" xlink:title="Definition of PolicyFile. ">
+<g id="a_node8"><a xlink:href="PolicyFile_8cc.html" target="_top" xlink:title="Definition of loom::PolicyFile. ">
 <polygon fill="none" stroke="black" points="480.5,-114.5 480.5,-134.5 579.5,-134.5 579.5,-114.5 480.5,-114.5"/>
 <text text-anchor="middle" x="530" y="-121.7" font-family="Avenir-Book" font-size="11.00">src/PolicyFile.cc</text>
 </a>
@@ -67,7 +67,7 @@
 </g>
 <!-- Node16 -->
 <g id="node4" class="node"><title>Node16</title>
-<g id="a_node4"><a xlink:href="Instrumentation_8cc_source.html" target="_top" xlink:title="src/Instrumentation.cc">
+<g id="a_node4"><a xlink:href="Instrumentation_8cc.html" target="_top" xlink:title="Definition of loom::Instrumentation. ">
 <polygon fill="none" stroke="black" points="140,-57.5 140,-77.5 280,-77.5 280,-57.5 140,-57.5"/>
 <text text-anchor="middle" x="210" y="-64.7" font-family="Avenir-Book" font-size="11.00">src/Instrumentation.cc</text>
 </a>

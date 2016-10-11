@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fieldoperation',['FieldOperation',['../PolicyFile_8cc.html#a8d5a188c973f18c3bb7dc30c931073e4',1,'PolicyFile.cc']]]
+  ['direction',['Direction',['../classloom_1_1Policy.html#a7f8ea9a69a445b6fc85a4b0e0490344b',1,'loom::Policy']]]
 ];

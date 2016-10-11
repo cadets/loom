@@ -1,16 +1,16 @@
 <map id="src/Serializer.hh" name="src/Serializer.hh">
 <area shape="rect" id="node2" href="$Policy_8hh.html" title="Definition of loom::Policy. " alt="" coords="215,81,325,109"/>
-<area shape="rect" id="node12" href="$KTraceLogger_8cc.html" title="Definition of KTraceLogger. " alt="" coords="349,81,516,109"/>
-<area shape="rect" id="node13" href="$NVSerializer_8hh.html" title="Declaration of NVSerializer. " alt="" coords="540,81,699,109"/>
-<area shape="rect" id="node15" href="$Serializer_8cc.html" title="Definition of Serializer. " alt="" coords="723,81,857,109"/>
+<area shape="rect" id="node12" href="$KTraceLogger_8cc.html" title="Definition of loom::KTraceLogger. " alt="" coords="349,81,516,109"/>
+<area shape="rect" id="node13" href="$NVSerializer_8hh.html" title="Declaration of loom::NVSerializer. " alt="" coords="540,81,699,109"/>
+<area shape="rect" id="node15" href="$Serializer_8cc.html" title="Definition of loom::Serializer. " alt="" coords="723,81,857,109"/>
 <area shape="rect" id="node3" href="$PolicyFile_8hh.html" title="Declaration of loom::PolicyFile. " alt="" coords="352,157,487,185"/>
 <area shape="rect" id="node7" href="$Instrumenter_8hh.html" title="Declaration of loom::Instrumenter. " alt="" coords="5,309,172,337"/>
 <area shape="rect" id="node11" href="$Policy_8cc.html" title="Definition of loom::Policy. " alt="" coords="126,157,233,185"/>
-<area shape="rect" id="node4" href="$Instrumentation_8hh_source.html" title="src/Instrumentation.hh" alt="" coords="313,233,501,261"/>
-<area shape="rect" id="node9" href="$OptPass_8cc.html" title="Definition of loom::OptPass. " alt="" coords="369,385,499,413"/>
-<area shape="rect" id="node10" href="$PolicyFile_8cc.html" title="Definition of PolicyFile. " alt="" coords="645,233,777,261"/>
+<area shape="rect" id="node4" href="$Instrumentation_8hh.html" title="Declaration of loom::Instrumentation. " alt="" coords="313,233,501,261"/>
+<area shape="rect" id="node9" href="$OptPass_8cc.html" title="Definition of Loom&#39;s LLVM opt pass. " alt="" coords="369,385,499,413"/>
+<area shape="rect" id="node10" href="$PolicyFile_8cc.html" title="Definition of loom::PolicyFile. " alt="" coords="645,233,777,261"/>
 <area shape="rect" id="node5" href="$InstrStrategy_8cc.html" title="Definition of loom::InstrStrategy. " alt="" coords="197,309,359,337"/>
-<area shape="rect" id="node6" href="$Instrumentation_8cc_source.html" title="src/Instrumentation.cc" alt="" coords="383,309,570,337"/>
+<area shape="rect" id="node6" href="$Instrumentation_8cc.html" title="Definition of loom::Instrumentation. " alt="" coords="383,309,570,337"/>
 <area shape="rect" id="node8" href="$Instrumenter_8cc.html" title="Definition of loom::Instrumenter. " alt="" coords="7,385,171,413"/>
-<area shape="rect" id="node14" href="$NVSerializer_8cc.html" title="Definition of NVSerializer. " alt="" coords="517,157,673,185"/>
+<area shape="rect" id="node14" href="$NVSerializer_8cc.html" title="Definition of loom::NVSerializer. " alt="" coords="517,157,673,185"/>
 </map>

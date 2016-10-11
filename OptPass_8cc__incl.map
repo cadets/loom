@@ -1,11 +1,11 @@
 <map id="src/OptPass.cc" name="src/OptPass.cc">
-<area shape="rect" id="node2" href="$DebugInfo_8hh_source.html" title="DebugInfo.hh" alt="" coords="396,81,515,109"/>
+<area shape="rect" id="node2" href="$DebugInfo_8hh.html" title="Declaration of DebugInfo class. " alt="" coords="396,81,515,109"/>
 <area shape="rect" id="node7" href="$PolicyFile_8hh.html" title="Declaration of loom::PolicyFile. " alt="" coords="965,233,1071,261"/>
-<area shape="rect" id="node13" href="$IRUtils_8hh_source.html" title="IRUtils.hh" alt="" coords="1207,537,1296,565"/>
+<area shape="rect" id="node13" href="$IRUtils_8hh.html" title="Declarations of LLVM IR utility functions. " alt="" coords="1207,537,1296,565"/>
 <area shape="rect" id="node20" href="$Instrumenter_8hh.html" title="Declaration of loom::Instrumenter. " alt="" coords="1047,81,1186,109"/>
 <area shape="rect" id="node8" href="$Policy_8hh.html" title="Definition of loom::Policy. " alt="" coords="1075,309,1158,337"/>
-<area shape="rect" id="node9" href="$InstrStrategy_8hh_source.html" title="InstrStrategy.hh" alt="" coords="1283,385,1422,413"/>
-<area shape="rect" id="node17" href="$Serializer_8hh.html" title="Declaration of Serializer. " alt="" coords="1047,385,1157,413"/>
+<area shape="rect" id="node9" href="$InstrStrategy_8hh.html" title="Declaration of loom::InstrStrategy. " alt="" coords="1283,385,1422,413"/>
+<area shape="rect" id="node17" href="$Serializer_8hh.html" title="Declaration of loom::Serializer. " alt="" coords="1047,385,1157,413"/>
 <area shape="rect" id="node16" href="$Logger_8hh.html" title="Declaration of loom::Logger. " alt="" coords="1311,461,1405,489"/>
-<area shape="rect" id="node21" href="$Instrumentation_8hh_source.html" title="Instrumentation.hh" alt="" coords="1165,157,1327,185"/>
+<area shape="rect" id="node21" href="$Instrumentation_8hh.html" title="Declaration of loom::Instrumentation. " alt="" coords="1165,157,1327,185"/>
 </map>

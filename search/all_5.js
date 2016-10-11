@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['getbuilder',['GetBuilder',['../classloom_1_1Instrumentation.html#a2100ba70b1064df534cb1d91d74da8de',1,'loom::Instrumentation']]],
-  ['getfunction',['GetFunction',['../classloom_1_1SimpleLogger.html#a7685d52e99455974f74dc648400dce39',1,'loom::SimpleLogger']]],
-  ['gettype',['GetType',['../classloom_1_1SimpleLogger.html#a444cf5547c73a5e6f520e9b0777cfe1c',1,'loom::SimpleLogger']]]
+  ['getbuilder',['GetBuilder',['../classloom_1_1Instrumentation.html#a9dd4ae73e2a03676623c83727777c3e9',1,'loom::Instrumentation']]],
+  ['getfunction',['GetFunction',['../classloom_1_1SimpleLogger.html#a2f1a9028112ee84ea8e7525d115794f7',1,'loom::SimpleLogger']]],
+  ['getparameters',['GetParameters',['../IRUtils_8hh.html#a1a5cab2951bef0d7fc14ae5153d6516b',1,'loom']]],
+  ['gettype',['GetType',['../classloom_1_1SimpleLogger.html#aafe39fe3cfa3d8bdb2fe808d2c03e261',1,'loom::SimpleLogger']]]
 ];

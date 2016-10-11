@@ -1,4 +1,0 @@
-<map id="SchemeName" name="SchemeName">
-<area shape="rect" id="node2" href="$classloom_1_1Serializer.html#ab1ddbfffc659bc650654766a09f28cd3" title="Clean up a serialized data buffer using Serializer&#45;specific cleanup code (e.g., free() or nvlist_dest..." alt="" coords="181,5,383,33"/>
-<area shape="rect" id="node3" href="$classloom_1_1Serializer.html#aa3cbeeff05f3ef1cc20866cffec0c269" title="Generate the code to serialize a set of values, returning details of the resulting buffer (pointer an..." alt="" coords="180,57,384,85"/>
-</map>

@@ -61,7 +61,7 @@
 </g>
 <!-- Node2 -->
 <g id="node3" class="node"><title>Node2</title>
-<g id="a_node3"><a xlink:href="Instrumentation_8hh_source.html" target="_top" xlink:title="Instrumentation.hh">
+<g id="a_node3"><a xlink:href="Instrumentation_8hh.html" target="_top" xlink:title="Declaration of loom::Instrumentation. ">
 <polygon fill="none" stroke="black" points="314,-342.5 314,-362.5 435,-362.5 435,-342.5 314,-342.5"/>
 <text text-anchor="middle" x="374.5" y="-349.7" font-family="Avenir-Book" font-size="11.00">Instrumentation.hh</text>
 </a>
@@ -97,7 +97,7 @@
 </g>
 <!-- Node3 -->
 <g id="node4" class="node"><title>Node3</title>
-<g id="a_node4"><a xlink:href="InstrStrategy_8hh_source.html" target="_top" xlink:title="InstrStrategy.hh">
+<g id="a_node4"><a xlink:href="InstrStrategy_8hh.html" target="_top" xlink:title="Declaration of loom::InstrStrategy. ">
 <polygon fill="none" stroke="black" points="276.5,-171.5 276.5,-191.5 380.5,-191.5 380.5,-171.5 276.5,-171.5"/>
 <text text-anchor="middle" x="328.5" y="-178.7" font-family="Avenir-Book" font-size="11.00">InstrStrategy.hh</text>
 </a>
@@ -130,7 +130,7 @@
 </g>
 <!-- Node7 -->
 <g id="node8" class="node"><title>Node7</title>
-<g id="a_node8"><a xlink:href="IRUtils_8hh_source.html" target="_top" xlink:title="IRUtils.hh">
+<g id="a_node8"><a xlink:href="IRUtils_8hh.html" target="_top" xlink:title="Declarations of LLVM IR utility functions. ">
 <polygon fill="none" stroke="black" points="378,-57.5 378,-77.5 445,-77.5 445,-57.5 378,-57.5"/>
 <text text-anchor="middle" x="411.5" y="-64.7" font-family="Avenir-Book" font-size="11.00">IRUtils.hh</text>
 </a>
@@ -266,7 +266,7 @@
 </g>
 <!-- Node13 -->
 <g id="node14" class="node"><title>Node13</title>
-<g id="a_node14"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of Serializer. ">
+<g id="a_node14"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of loom::Serializer. ">
 <polygon fill="none" stroke="black" points="123,-171.5 123,-191.5 206,-191.5 206,-171.5 123,-171.5"/>
 <text text-anchor="middle" x="164.5" y="-178.7" font-family="Avenir-Book" font-size="11.00">Serializer.hh</text>
 </a>

@@ -1,16 +1,16 @@
 <map id="src/Logger.hh" name="src/Logger.hh">
-<area shape="rect" id="node2" href="$InstrStrategy_8hh_source.html" title="src/InstrStrategy.hh" alt="" coords="285,81,451,109"/>
+<area shape="rect" id="node2" href="$InstrStrategy_8hh.html" title="Declaration of loom::InstrStrategy. " alt="" coords="285,81,451,109"/>
 <area shape="rect" id="node7" href="$Instrumenter_8cc.html" title="Definition of loom::Instrumenter. " alt="" coords="551,461,715,489"/>
-<area shape="rect" id="node13" href="$KTraceLogger_8hh.html" title="Declaration of KTraceLogger. " alt="" coords="590,81,759,109"/>
+<area shape="rect" id="node13" href="$KTraceLogger_8hh.html" title="Declaration of loom::KTraceLogger. " alt="" coords="590,81,759,109"/>
 <area shape="rect" id="node15" href="$Logger_8cc.html" title="Definition of loom::Logger. " alt="" coords="835,81,954,109"/>
-<area shape="rect" id="node3" href="$Instrumentation_8hh_source.html" title="src/Instrumentation.hh" alt="" coords="190,309,378,337"/>
+<area shape="rect" id="node3" href="$Instrumentation_8hh.html" title="Declaration of loom::Instrumentation. " alt="" coords="190,309,378,337"/>
 <area shape="rect" id="node4" href="$InstrStrategy_8cc.html" title="Definition of loom::InstrStrategy. " alt="" coords="5,385,168,413"/>
 <area shape="rect" id="node9" href="$Policy_8hh.html" title="Definition of loom::Policy. " alt="" coords="381,157,491,185"/>
-<area shape="rect" id="node5" href="$Instrumentation_8cc_source.html" title="src/Instrumentation.cc" alt="" coords="192,385,379,413"/>
+<area shape="rect" id="node5" href="$Instrumentation_8cc.html" title="Definition of loom::Instrumentation. " alt="" coords="192,385,379,413"/>
 <area shape="rect" id="node6" href="$Instrumenter_8hh.html" title="Declaration of loom::Instrumenter. " alt="" coords="525,385,691,413"/>
-<area shape="rect" id="node8" href="$OptPass_8cc.html" title="Definition of loom::OptPass. " alt="" coords="365,461,496,489"/>
+<area shape="rect" id="node8" href="$OptPass_8cc.html" title="Definition of Loom&#39;s LLVM opt pass. " alt="" coords="365,461,496,489"/>
 <area shape="rect" id="node10" href="$PolicyFile_8hh.html" title="Declaration of loom::PolicyFile. " alt="" coords="355,233,490,261"/>
 <area shape="rect" id="node12" href="$Policy_8cc.html" title="Definition of loom::Policy. " alt="" coords="653,233,760,261"/>
-<area shape="rect" id="node11" href="$PolicyFile_8cc.html" title="Definition of PolicyFile. " alt="" coords="454,309,586,337"/>
-<area shape="rect" id="node14" href="$KTraceLogger_8cc.html" title="Definition of KTraceLogger. " alt="" coords="593,157,759,185"/>
+<area shape="rect" id="node11" href="$PolicyFile_8cc.html" title="Definition of loom::PolicyFile. " alt="" coords="454,309,586,337"/>
+<area shape="rect" id="node14" href="$KTraceLogger_8cc.html" title="Definition of loom::KTraceLogger. " alt="" coords="593,157,759,185"/>
 </map>

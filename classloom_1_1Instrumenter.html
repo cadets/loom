@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.12"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Loom: Instrumenter Class Reference</title>
+        <title>Loom: loom::Instrumenter Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -81,7 +81,7 @@ $(function() {
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classloom_1_1Instrumenter-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Instrumenter Class Reference</div>  </div>
+<div class="title">loom::Instrumenter Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -92,47 +92,55 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a60542e78c97bdb6f09739602bd74704e"><td class="memItemLeft" align="right" valign="top"><a id="a60542e78c97bdb6f09739602bd74704e"></a>
-typedef std::function&lt; std::string(const std::vector&lt; std::string &gt; &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>NameFn</b></td></tr>
-<tr class="separator:a60542e78c97bdb6f09739602bd74704e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c4fbc1fb51d9abe50be0748300a0aa"><td class="memItemLeft" align="right" valign="top"><a id="a73c4fbc1fb51d9abe50be0748300a0aa"></a>
+typedef std::function&lt; std::string(const std::vector&lt; std::string &gt; &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a73c4fbc1fb51d9abe50be0748300a0aa">NameFn</a></td></tr>
+<tr class="memdesc:a73c4fbc1fb51d9abe50be0748300a0aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="classloom_1_1Instrumenter.html#a73c4fbc1fb51d9abe50be0748300a0aa">NameFn</a> takes an ordered collection of name components (e.g., <code>"call"</code>, <code>"fn"</code>, <code>"foo"</code>) and converts it into a name that can be used for instrumentation (e.g., <code>"__tesla_call_fn_foo"</code>). <br /></td></tr>
+<tr class="separator:a73c4fbc1fb51d9abe50be0748300a0aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a86d906802f2995abe566c717634c7d9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a86d906802f2995abe566c717634c7d9d">Instrument</a> (llvm::Instruction *)</td></tr>
-<tr class="memdesc:a86d906802f2995abe566c717634c7d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument an instruction generically: instruction name and values.  <a href="#a86d906802f2995abe566c717634c7d9d">More...</a><br /></td></tr>
-<tr class="separator:a86d906802f2995abe566c717634c7d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2a667f5d93991ab871878189a1e4868"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#ab2a667f5d93991ab871878189a1e4868">Instrument</a> (llvm::CallInst *, const Policy::Directions &amp;)</td></tr>
-<tr class="memdesc:ab2a667f5d93991ab871878189a1e4868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function call in the call and/or return direction.  <a href="#ab2a667f5d93991ab871878189a1e4868">More...</a><br /></td></tr>
-<tr class="separator:ab2a667f5d93991ab871878189a1e4868"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc22e5decacbbfe930d755659cf0c23a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#acc22e5decacbbfe930d755659cf0c23a">Instrument</a> (llvm::CallInst *Call, Policy::Direction)</td></tr>
-<tr class="memdesc:acc22e5decacbbfe930d755659cf0c23a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function call (caller-side), either calling or returning.  <a href="#acc22e5decacbbfe930d755659cf0c23a">More...</a><br /></td></tr>
-<tr class="separator:acc22e5decacbbfe930d755659cf0c23a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a8421a5ad26cbff3f999166d5a3d71b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a5a8421a5ad26cbff3f999166d5a3d71b">Instrument</a> (llvm::Function &amp;, const Policy::Directions &amp;)</td></tr>
-<tr class="memdesc:a5a8421a5ad26cbff3f999166d5a3d71b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function entry and/or exit.  <a href="#a5a8421a5ad26cbff3f999166d5a3d71b">More...</a><br /></td></tr>
-<tr class="separator:a5a8421a5ad26cbff3f999166d5a3d71b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8171eab79d878594222265e6a0e99561"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a8171eab79d878594222265e6a0e99561">Instrument</a> (llvm::Function &amp;, Policy::Direction)</td></tr>
-<tr class="memdesc:a8171eab79d878594222265e6a0e99561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function entry or exit.  <a href="#a8171eab79d878594222265e6a0e99561">More...</a><br /></td></tr>
-<tr class="separator:a8171eab79d878594222265e6a0e99561"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8f829842e7a44632c494e1254ecb881"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#ab8f829842e7a44632c494e1254ecb881">Instrument</a> (llvm::GetElementPtrInst *, llvm::LoadInst *, llvm::StringRef FieldName)</td></tr>
-<tr class="memdesc:ab8f829842e7a44632c494e1254ecb881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a read from a structure field.  <a href="#ab8f829842e7a44632c494e1254ecb881">More...</a><br /></td></tr>
-<tr class="separator:ab8f829842e7a44632c494e1254ecb881"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1202f2fd7ea965d417a7880014ba657"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#af1202f2fd7ea965d417a7880014ba657">Instrument</a> (llvm::GetElementPtrInst *, llvm::StoreInst *, llvm::StringRef FieldName)</td></tr>
-<tr class="memdesc:af1202f2fd7ea965d417a7880014ba657"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a write to a structure field.  <a href="#af1202f2fd7ea965d417a7880014ba657">More...</a><br /></td></tr>
-<tr class="separator:af1202f2fd7ea965d417a7880014ba657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4e02fa787c34963c4634a8884a55112"><td class="memItemLeft" align="right" valign="top"><a id="ad4e02fa787c34963c4634a8884a55112"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#ad4e02fa787c34963c4634a8884a55112">Instrument</a> (llvm::Instruction *)</td></tr>
+<tr class="memdesc:ad4e02fa787c34963c4634a8884a55112"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument an instruction generically: instruction name and values. <br /></td></tr>
+<tr class="separator:ad4e02fa787c34963c4634a8884a55112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a448b2d4d712f11de20a86a1732d72cfe"><td class="memItemLeft" align="right" valign="top"><a id="a448b2d4d712f11de20a86a1732d72cfe"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a448b2d4d712f11de20a86a1732d72cfe">Instrument</a> (llvm::CallInst *, const <a class="el" href="classloom_1_1Policy.html#a292a1295a25829d25168ebd491dbc268">Policy::Directions</a> &amp;)</td></tr>
+<tr class="memdesc:a448b2d4d712f11de20a86a1732d72cfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function call in the call and/or return direction. <br /></td></tr>
+<tr class="separator:a448b2d4d712f11de20a86a1732d72cfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a427c6b2d869f16920e6b45817ec181ce"><td class="memItemLeft" align="right" valign="top"><a id="a427c6b2d869f16920e6b45817ec181ce"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a427c6b2d869f16920e6b45817ec181ce">Instrument</a> (llvm::CallInst *Call, <a class="el" href="classloom_1_1Policy.html#a7f8ea9a69a445b6fc85a4b0e0490344b">Policy::Direction</a>)</td></tr>
+<tr class="memdesc:a427c6b2d869f16920e6b45817ec181ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function call (caller-side), either calling or returning. <br /></td></tr>
+<tr class="separator:a427c6b2d869f16920e6b45817ec181ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14bae38ca8d1a15b3d3ca375210e2c9e"><td class="memItemLeft" align="right" valign="top"><a id="a14bae38ca8d1a15b3d3ca375210e2c9e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a14bae38ca8d1a15b3d3ca375210e2c9e">Instrument</a> (llvm::Function &amp;, const <a class="el" href="classloom_1_1Policy.html#a292a1295a25829d25168ebd491dbc268">Policy::Directions</a> &amp;)</td></tr>
+<tr class="memdesc:a14bae38ca8d1a15b3d3ca375210e2c9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function entry and/or exit. <br /></td></tr>
+<tr class="separator:a14bae38ca8d1a15b3d3ca375210e2c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef64a8ab1a0f4233a6b0cd60e9901f15"><td class="memItemLeft" align="right" valign="top"><a id="aef64a8ab1a0f4233a6b0cd60e9901f15"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#aef64a8ab1a0f4233a6b0cd60e9901f15">Instrument</a> (llvm::Function &amp;, <a class="el" href="classloom_1_1Policy.html#a7f8ea9a69a445b6fc85a4b0e0490344b">Policy::Direction</a>)</td></tr>
+<tr class="memdesc:aef64a8ab1a0f4233a6b0cd60e9901f15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a function entry or exit. <br /></td></tr>
+<tr class="separator:aef64a8ab1a0f4233a6b0cd60e9901f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12b2977537d1c7888b04ce96c072a1ef"><td class="memItemLeft" align="right" valign="top"><a id="a12b2977537d1c7888b04ce96c072a1ef"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a12b2977537d1c7888b04ce96c072a1ef">Instrument</a> (llvm::GetElementPtrInst *, llvm::LoadInst *, llvm::StringRef FieldName)</td></tr>
+<tr class="memdesc:a12b2977537d1c7888b04ce96c072a1ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a read from a structure field. <br /></td></tr>
+<tr class="separator:a12b2977537d1c7888b04ce96c072a1ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1df9787a3a4513abfcebfff75401fbf"><td class="memItemLeft" align="right" valign="top"><a id="aa1df9787a3a4513abfcebfff75401fbf"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#aa1df9787a3a4513abfcebfff75401fbf">Instrument</a> (llvm::GetElementPtrInst *, llvm::StoreInst *, llvm::StringRef FieldName)</td></tr>
+<tr class="memdesc:aa1df9787a3a4513abfcebfff75401fbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a write to a structure field. <br /></td></tr>
+<tr class="separator:aa1df9787a3a4513abfcebfff75401fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a2b2c24bfc1c2f4f892ab9fe69810c8a8"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classloom_1_1Instrumenter.html">Instrumenter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a2b2c24bfc1c2f4f892ab9fe69810c8a8">Create</a> (llvm::Module &amp;, NameFn NF, std::unique_ptr&lt; <a class="el" href="classloom_1_1InstrStrategy.html">InstrStrategy</a> &gt; S)</td></tr>
-<tr class="memdesc:a2b2c24bfc1c2f4f892ab9fe69810c8a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new <a class="el" href="classloom_1_1Instrumenter.html" title="An object used for instrumenting code within a single LLVM module. ">Instrumenter</a> instance.  <a href="#a2b2c24bfc1c2f4f892ab9fe69810c8a8">More...</a><br /></td></tr>
-<tr class="separator:a2b2c24bfc1c2f4f892ab9fe69810c8a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1385c021e6d415ac8d6594666297b72a"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classloom_1_1Instrumenter.html">Instrumenter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumenter.html#a1385c021e6d415ac8d6594666297b72a">Create</a> (llvm::Module &amp;, <a class="el" href="classloom_1_1Instrumenter.html#a73c4fbc1fb51d9abe50be0748300a0aa">NameFn</a> NF, std::unique_ptr&lt; <a class="el" href="classloom_1_1InstrStrategy.html">InstrStrategy</a> &gt;)</td></tr>
+<tr class="memdesc:a1385c021e6d415ac8d6594666297b72a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new <a class="el" href="classloom_1_1Instrumenter.html" title="An object used for instrumenting code within a single LLVM module. ">Instrumenter</a> instance.  <a href="#a1385c021e6d415ac8d6594666297b72a">More...</a><br /></td></tr>
+<tr class="separator:a1385c021e6d415ac8d6594666297b72a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An object used for instrumenting code within a single LLVM module. </p>
 
 <p>Definition at line <a class="el" href="Instrumenter_8hh_source.html#l00047">47</a> of file <a class="el" href="Instrumenter_8hh_source.html">Instrumenter.hh</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2b2c24bfc1c2f4f892ab9fe69810c8a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2b2c24bfc1c2f4f892ab9fe69810c8a8">&sect;&nbsp;</a></span>Create()</h2>
+<a id="a1385c021e6d415ac8d6594666297b72a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1385c021e6d415ac8d6594666297b72a">&sect;&nbsp;</a></span>Create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -141,7 +149,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static std::unique_ptr&lt;<a class="el" href="classloom_1_1Instrumenter.html">Instrumenter</a>&gt; Create </td>
+          <td class="memname">unique_ptr&lt; <a class="el" href="classloom_1_1Instrumenter.html">Instrumenter</a> &gt; Instrumenter::Create </td>
           <td>(</td>
           <td class="paramtype">llvm::Module &amp;&#160;</td>
           <td class="paramname">, </td>
@@ -149,14 +157,14 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">NameFn&#160;</td>
+          <td class="paramtype"><a class="el" href="classloom_1_1Instrumenter.html#a73c4fbc1fb51d9abe50be0748300a0aa">NameFn</a>&#160;</td>
           <td class="paramname"><em>NF</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classloom_1_1InstrStrategy.html">InstrStrategy</a> &gt;&#160;</td>
-          <td class="paramname"><em>S</em>&#160;</td>
+          <td class="paramname">&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -179,251 +187,7 @@ Static Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-</div>
-</div>
-<a id="a86d906802f2995abe566c717634c7d9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a86d906802f2995abe566c717634c7d9d">&sect;&nbsp;</a></span>Instrument() <span class="overload">[1/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Instrument </td>
-          <td>(</td>
-          <td class="paramtype">llvm::Instruction *&#160;</td>
-          <td class="paramname"><em>I</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Instrument an instruction generically: instruction name and values. </p>
-
-<p>Definition at line <a class="el" href="Instrumenter_8cc_source.html#l00059">59</a> of file <a class="el" href="Instrumenter_8cc_source.html">Instrumenter.cc</a>.</p>
-
-<p>References <a class="el" href="Instrumentation_8hh_source.html#l00080">Instrumentation::Values()</a>.</p>
-
-<p>Referenced by <a class="el" href="Instrumenter_8cc_source.html#l00147">Instrumenter::Instrument()</a>.</p>
-<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Here is the call graph for this function:</div>
-<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Instrumenter_a86d906802f2995abe566c717634c7d9d_cgraph.svg" width="346" height="55"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> Here is the caller graph for this function:</div>
-<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Instrumenter_a86d906802f2995abe566c717634c7d9d_icgraph.svg" width="264" height="39"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="ab2a667f5d93991ab871878189a1e4868"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2a667f5d93991ab871878189a1e4868">&sect;&nbsp;</a></span>Instrument() <span class="overload">[2/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Instrument </td>
-          <td>(</td>
-          <td class="paramtype">llvm::CallInst *&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Policy::Directions &amp;&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Instrument a function call in the call and/or return direction. </p>
-
-</div>
-</div>
-<a id="acc22e5decacbbfe930d755659cf0c23a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc22e5decacbbfe930d755659cf0c23a">&sect;&nbsp;</a></span>Instrument() <span class="overload">[3/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Instrument </td>
-          <td>(</td>
-          <td class="paramtype">llvm::CallInst *&#160;</td>
-          <td class="paramname"><em>Call</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Policy::Direction&#160;</td>
-          <td class="paramname"><em>Dir</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Instrument a function call (caller-side), either calling or returning. </p>
-
-<p>Definition at line <a class="el" href="Instrumenter_8cc_source.html#l00147">147</a> of file <a class="el" href="Instrumenter_8cc_source.html">Instrumenter.cc</a>.</p>
-
-<p>References <a class="el" href="Instrumenter_8cc_source.html#l00059">Instrumenter::Instrument()</a>.</p>
-<div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> Here is the call graph for this function:</div>
-<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-2-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Instrumenter_acc22e5decacbbfe930d755659cf0c23a_cgraph.svg" width="496" height="55"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="a5a8421a5ad26cbff3f999166d5a3d71b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a8421a5ad26cbff3f999166d5a3d71b">&sect;&nbsp;</a></span>Instrument() <span class="overload">[4/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Instrument </td>
-          <td>(</td>
-          <td class="paramtype">llvm::Function &amp;&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Policy::Directions &amp;&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Instrument a function entry and/or exit. </p>
-
-</div>
-</div>
-<a id="a8171eab79d878594222265e6a0e99561"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8171eab79d878594222265e6a0e99561">&sect;&nbsp;</a></span>Instrument() <span class="overload">[5/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Instrument </td>
-          <td>(</td>
-          <td class="paramtype">llvm::Function &amp;&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Policy::Direction&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Instrument a function entry or exit. </p>
-
-</div>
-</div>
-<a id="ab8f829842e7a44632c494e1254ecb881"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8f829842e7a44632c494e1254ecb881">&sect;&nbsp;</a></span>Instrument() <span class="overload">[6/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Instrument </td>
-          <td>(</td>
-          <td class="paramtype">llvm::GetElementPtrInst *&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::LoadInst *&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::StringRef&#160;</td>
-          <td class="paramname"><em>FieldName</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Instrument a read from a structure field. </p>
-
-</div>
-</div>
-<a id="af1202f2fd7ea965d417a7880014ba657"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af1202f2fd7ea965d417a7880014ba657">&sect;&nbsp;</a></span>Instrument() <span class="overload">[7/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool Instrument </td>
-          <td>(</td>
-          <td class="paramtype">llvm::GetElementPtrInst *&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::StoreInst *&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::StringRef&#160;</td>
-          <td class="paramname"><em>FieldName</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Instrument a write to a structure field. </p>
+<p>Definition at line <a class="el" href="Instrumenter_8cc_source.html#l00046">46</a> of file <a class="el" href="Instrumenter_8cc_source.html">Instrumenter.cc</a>.</p>
 
 </div>
 </div>

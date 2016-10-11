@@ -28,7 +28,7 @@
 </g>
 <!-- Node2 -->
 <g id="node3" class="node"><title>Node2</title>
-<g id="a_node3"><a xlink:href="IRUtils_8hh_source.html" target="_top" xlink:title="IRUtils.hh">
+<g id="a_node3"><a xlink:href="IRUtils_8hh.html" target="_top" xlink:title="Declarations of LLVM IR utility functions. ">
 <polygon fill="none" stroke="black" points="147.5,-57.5 147.5,-77.5 214.5,-77.5 214.5,-57.5 147.5,-57.5"/>
 <text text-anchor="middle" x="181" y="-64.7" font-family="Avenir-Book" font-size="11.00">IRUtils.hh</text>
 </a>

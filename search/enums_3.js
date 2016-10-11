@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['serializationtype',['SerializationType',['../PolicyFile_8cc.html#a354f5fcb0e19770840b5fc0dd06cd13a',1,'PolicyFile.cc']]]
+  ['logtype',['LogType',['../classloom_1_1SimpleLogger.html#a64c0cc953ae3cc41f5879c4351c979d6',1,'loom::SimpleLogger']]]
 ];

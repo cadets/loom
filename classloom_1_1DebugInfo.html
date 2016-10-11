@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.12"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Loom: DebugInfo Class Reference</title>
+        <title>Loom: loom::DebugInfo Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -80,7 +80,7 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classloom_1_1DebugInfo-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">DebugInfo Class Reference</div>  </div>
+<div class="title">loom::DebugInfo Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -91,97 +91,42 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a9edce4401f496596d955431f12fa8c6e"><td class="memItemLeft" align="right" valign="top">typedef std::pair&lt; unsigned, llvm::MDNode * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1DebugInfo.html#a9edce4401f496596d955431f12fa8c6e">DebugNode</a></td></tr>
-<tr class="memdesc:a9edce4401f496596d955431f12fa8c6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A single LLVM metadata node, with an integer metadata "kind".  <a href="#a9edce4401f496596d955431f12fa8c6e">More...</a><br /></td></tr>
-<tr class="separator:a9edce4401f496596d955431f12fa8c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8227b4dc6ca96d5d356993e2771c1f8"><td class="memTemplParams" colspan="2">template&lt;unsigned int Size = 4&gt; </td></tr>
-<tr class="memitem:ab8227b4dc6ca96d5d356993e2771c1f8"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classloom_1_1DebugInfo.html#ab8227b4dc6ca96d5d356993e2771c1f8">DebugVec</a> = llvm::SmallVector&lt; <a class="el" href="classloom_1_1DebugInfo.html#a9edce4401f496596d955431f12fa8c6e">DebugNode</a>, Size &gt;</td></tr>
-<tr class="memdesc:ab8227b4dc6ca96d5d356993e2771c1f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">A vector of metadata nodes associated with a Value.  <a href="#ab8227b4dc6ca96d5d356993e2771c1f8">More...</a><br /></td></tr>
-<tr class="separator:ab8227b4dc6ca96d5d356993e2771c1f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc490bdeaaaeea1f3eae590ad3148012"><td class="memItemLeft" align="right" valign="top"><a id="acc490bdeaaaeea1f3eae590ad3148012"></a>
+typedef std::pair&lt; unsigned, llvm::MDNode * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1DebugInfo.html#acc490bdeaaaeea1f3eae590ad3148012">DebugNode</a></td></tr>
+<tr class="memdesc:acc490bdeaaaeea1f3eae590ad3148012"><td class="mdescLeft">&#160;</td><td class="mdescRight">A single LLVM metadata node, with an integer metadata "kind". <br /></td></tr>
+<tr class="separator:acc490bdeaaaeea1f3eae590ad3148012"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad14887f66dccd67e6a4f46439ec4c967"><td class="memTemplParams" colspan="2"><a id="ad14887f66dccd67e6a4f46439ec4c967"></a>
+template&lt;unsigned int Size = 4&gt; </td></tr>
+<tr class="memitem:ad14887f66dccd67e6a4f46439ec4c967"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classloom_1_1DebugInfo.html#ad14887f66dccd67e6a4f46439ec4c967">DebugVec</a> = llvm::SmallVector&lt; <a class="el" href="classloom_1_1DebugInfo.html#acc490bdeaaaeea1f3eae590ad3148012">DebugNode</a>, Size &gt;</td></tr>
+<tr class="memdesc:ad14887f66dccd67e6a4f46439ec4c967"><td class="mdescLeft">&#160;</td><td class="mdescRight">A vector of metadata nodes associated with a Value. <br /></td></tr>
+<tr class="separator:ad14887f66dccd67e6a4f46439ec4c967"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af240433292b2aa24aad12b0f8ecc868f"><td class="memItemLeft" align="right" valign="top"><a id="af240433292b2aa24aad12b0f8ecc868f"></a>
+<tr class="memitem:a0ee4842d28125940279aa35d3ee00cff"><td class="memItemLeft" align="right" valign="top"><a id="a0ee4842d28125940279aa35d3ee00cff"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DebugInfo</b> (llvm::Module &amp;)</td></tr>
-<tr class="separator:af240433292b2aa24aad12b0f8ecc868f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f5546446493d91b44e5a3a564e2234c"><td class="memItemLeft" align="right" valign="top"><a id="a0f5546446493d91b44e5a3a564e2234c"></a>
+<tr class="separator:a0ee4842d28125940279aa35d3ee00cff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b467fa6b8a4af9de2184b62621b7c75"><td class="memItemLeft" align="right" valign="top"><a id="a9b467fa6b8a4af9de2184b62621b7c75"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>ModuleHasFullDebugInfo</b> () const</td></tr>
-<tr class="separator:a0f5546446493d91b44e5a3a564e2234c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77ccd452d9a9fbf28934bb841a432df2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1DebugInfo.html#a77ccd452d9a9fbf28934bb841a432df2">FieldName</a> (llvm::GetElementPtrInst *)</td></tr>
-<tr class="memdesc:a77ccd452d9a9fbf28934bb841a432df2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the name of a field being looked up by a GetElementPtrInst.  <a href="#a77ccd452d9a9fbf28934bb841a432df2">More...</a><br /></td></tr>
-<tr class="separator:a77ccd452d9a9fbf28934bb841a432df2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a496655d3edd91b2495d83c9cd4b05677"><td class="memTemplParams" colspan="2"><a id="a496655d3edd91b2495d83c9cd4b05677"></a>
+<tr class="separator:a9b467fa6b8a4af9de2184b62621b7c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fc9bae7a055a344276543ee6a886e1f"><td class="memItemLeft" align="right" valign="top"><a id="a2fc9bae7a055a344276543ee6a886e1f"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1DebugInfo.html#a2fc9bae7a055a344276543ee6a886e1f">FieldName</a> (llvm::GetElementPtrInst *)</td></tr>
+<tr class="memdesc:a2fc9bae7a055a344276543ee6a886e1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the name of a field being looked up by a GetElementPtrInst. <br /></td></tr>
+<tr class="separator:a2fc9bae7a055a344276543ee6a886e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab930ecc46cbaa5ffba78e980482aa3ab"><td class="memTemplParams" colspan="2"><a id="ab930ecc46cbaa5ffba78e980482aa3ab"></a>
 template&lt;class DebugType  = llvm::Metadata&gt; </td></tr>
-<tr class="memitem:a496655d3edd91b2495d83c9cd4b05677"><td class="memTemplItemLeft" align="right" valign="top">const DebugType *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Get</b> (llvm::NamedMDNode *Node) const</td></tr>
-<tr class="separator:a496655d3edd91b2495d83c9cd4b05677"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39000266af5749adcad707018e27c85c"><td class="memTemplParams" colspan="2"><a id="a39000266af5749adcad707018e27c85c"></a>
+<tr class="memitem:ab930ecc46cbaa5ffba78e980482aa3ab"><td class="memTemplItemLeft" align="right" valign="top">const DebugType *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Get</b> (llvm::NamedMDNode *Node) const</td></tr>
+<tr class="separator:ab930ecc46cbaa5ffba78e980482aa3ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e148e603b92951199fdb261867ca5b5"><td class="memTemplParams" colspan="2"><a id="a0e148e603b92951199fdb261867ca5b5"></a>
 template&lt;class DebugType  = llvm::Metadata&gt; </td></tr>
-<tr class="memitem:a39000266af5749adcad707018e27c85c"><td class="memTemplItemLeft" align="right" valign="top">const DebugType *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Get</b> (llvm::Value *V) const</td></tr>
-<tr class="separator:a39000266af5749adcad707018e27c85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e148e603b92951199fdb261867ca5b5"><td class="memTemplItemLeft" align="right" valign="top">const DebugType *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Get</b> (llvm::Value *V) const</td></tr>
+<tr class="separator:a0e148e603b92951199fdb261867ca5b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class for finding LLVM debug information within a Module. </p>
 
 <p>Definition at line <a class="el" href="DebugInfo_8hh_source.html#l00049">49</a> of file <a class="el" href="DebugInfo_8hh_source.html">DebugInfo.hh</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a9edce4401f496596d955431f12fa8c6e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9edce4401f496596d955431f12fa8c6e">&sect;&nbsp;</a></span>DebugNode</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::pair&lt;unsigned, llvm::MDNode*&gt; <a class="el" href="classloom_1_1DebugInfo.html#a9edce4401f496596d955431f12fa8c6e">DebugNode</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>A single LLVM metadata node, with an integer metadata "kind". </p>
-
-<p>Definition at line <a class="el" href="DebugInfo_8hh_source.html#l00053">53</a> of file <a class="el" href="DebugInfo_8hh_source.html">DebugInfo.hh</a>.</p>
-
-</div>
-</div>
-<a id="ab8227b4dc6ca96d5d356993e2771c1f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8227b4dc6ca96d5d356993e2771c1f8">&sect;&nbsp;</a></span>DebugVec</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="classloom_1_1DebugInfo.html#ab8227b4dc6ca96d5d356993e2771c1f8">DebugVec</a> =  llvm::SmallVector&lt;<a class="el" href="classloom_1_1DebugInfo.html#a9edce4401f496596d955431f12fa8c6e">DebugNode</a>, Size&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>A vector of metadata nodes associated with a Value. </p>
-
-<p>Definition at line <a class="el" href="DebugInfo_8hh_source.html#l00057">57</a> of file <a class="el" href="DebugInfo_8hh_source.html">DebugInfo.hh</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a77ccd452d9a9fbf28934bb841a432df2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77ccd452d9a9fbf28934bb841a432df2">&sect;&nbsp;</a></span>FieldName()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string FieldName </td>
-          <td>(</td>
-          <td class="paramtype">llvm::GetElementPtrInst *&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Find the name of a field being looked up by a GetElementPtrInst. </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/<a class="el" href="DebugInfo_8hh_source.html">DebugInfo.hh</a></li>
 <li>src/<a class="el" href="DebugInfo_8cc_source.html">DebugInfo.cc</a></li>
 </ul>

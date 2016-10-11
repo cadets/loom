@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.12"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Loom: Logger Class Reference</title>
+        <title>Loom: loom::Logger Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -81,7 +81,7 @@ $(function() {
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classloom_1_1Logger-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Logger Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">loom::Logger Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -90,42 +90,43 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="Logger_8hh_source.html">Logger.hh</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for Logger:</div>
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for loom::Logger:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Logger__inherit__graph.svg" width="475" height="527"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Logger__inherit__graph.svg" width="368" height="366"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0c934d8bb86ee4a08af3cc1cfb447789"><td class="memItemLeft" align="right" valign="top">virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Logger.html#a0c934d8bb86ee4a08af3cc1cfb447789">Log</a> (llvm::Instruction *I, llvm::ArrayRef&lt; llvm::Value *&gt; Values, llvm::StringRef Name, llvm::StringRef Description, bool SuppressUniqueness)=0</td></tr>
-<tr class="memdesc:a0c934d8bb86ee4a08af3cc1cfb447789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create code to log a set of values using the underlying mechanism.  <a href="#a0c934d8bb86ee4a08af3cc1cfb447789">More...</a><br /></td></tr>
-<tr class="separator:a0c934d8bb86ee4a08af3cc1cfb447789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafb585ed3f189748f87d6bdb3f5387b4"><td class="memItemLeft" align="right" valign="top">virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Logger.html#aafb585ed3f189748f87d6bdb3f5387b4">Log</a> (llvm::Instruction *I, llvm::Function::ArgumentListType &amp;Args, llvm::StringRef Name, llvm::StringRef Description, bool SuppressUniqueness)</td></tr>
-<tr class="memdesc:aafb585ed3f189748f87d6bdb3f5387b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create code to log function arguments using the underlying mechanism.  <a href="#aafb585ed3f189748f87d6bdb3f5387b4">More...</a><br /></td></tr>
-<tr class="separator:aafb585ed3f189748f87d6bdb3f5387b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17495a73e27b605259b483ba8a040c6c"><td class="memItemLeft" align="right" valign="top">virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Logger.html#a17495a73e27b605259b483ba8a040c6c">Log</a> (llvm::Instruction *I, llvm::ArrayRef&lt; llvm::Value *&gt; Values, llvm::StringRef Name, llvm::StringRef Description, bool SuppressUniqueness)=0</td></tr>
+<tr class="memdesc:a17495a73e27b605259b483ba8a040c6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create code to log a set of values using the underlying mechanism.  <a href="#a17495a73e27b605259b483ba8a040c6c">More...</a><br /></td></tr>
+<tr class="separator:a17495a73e27b605259b483ba8a040c6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a057100112c647066f151f8abb6de2c15"><td class="memItemLeft" align="right" valign="top">virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Logger.html#a057100112c647066f151f8abb6de2c15">Log</a> (llvm::Instruction *I, llvm::Function::ArgumentListType &amp;Args, llvm::StringRef Name, llvm::StringRef Description, bool SuppressUniqueness)</td></tr>
+<tr class="memdesc:a057100112c647066f151f8abb6de2c15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create code to log function arguments using the underlying mechanism.  <a href="#a057100112c647066f151f8abb6de2c15">More...</a><br /></td></tr>
+<tr class="separator:a057100112c647066f151f8abb6de2c15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a18d32aa311099b6e1afed71af69a2983"><td class="memItemLeft" align="right" valign="top"><a id="a18d32aa311099b6e1afed71af69a2983"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Logger</b> (llvm::Module &amp;Mod)</td></tr>
-<tr class="separator:a18d32aa311099b6e1afed71af69a2983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5667739abf7a678a77e904fed1dd83b4"><td class="memItemLeft" align="right" valign="top"><a id="a5667739abf7a678a77e904fed1dd83b4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Logger</b> (llvm::Module &amp;<a class="el" href="classloom_1_1Logger.html#a73940b59775118262ae9dd70cec9d085">Mod</a>)</td></tr>
+<tr class="separator:a5667739abf7a678a77e904fed1dd83b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ac6bb9fc0ac66f26e402f6dd5683a9fde"><td class="memItemLeft" align="right" valign="top"><a id="ac6bb9fc0ac66f26e402f6dd5683a9fde"></a>
-llvm::Module &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Mod</b></td></tr>
-<tr class="separator:ac6bb9fc0ac66f26e402f6dd5683a9fde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73940b59775118262ae9dd70cec9d085"><td class="memItemLeft" align="right" valign="top"><a id="a73940b59775118262ae9dd70cec9d085"></a>
+llvm::Module &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Logger.html#a73940b59775118262ae9dd70cec9d085">Mod</a></td></tr>
+<tr class="memdesc:a73940b59775118262ae9dd70cec9d085"><td class="mdescLeft">&#160;</td><td class="mdescRight">The module being instrumented: where to find functions like xo_emit(). <br /></td></tr>
+<tr class="separator:a73940b59775118262ae9dd70cec9d085"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Something that can be used to log events, e.g., <code>printf</code> or <code>libxo</code>. </p>
 
 <p>Definition at line <a class="el" href="Logger_8hh_source.html#l00052">52</a> of file <a class="el" href="Logger_8hh_source.html">Logger.hh</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0c934d8bb86ee4a08af3cc1cfb447789"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c934d8bb86ee4a08af3cc1cfb447789">&sect;&nbsp;</a></span>Log() <span class="overload">[1/2]</span></h2>
+<a id="a17495a73e27b605259b483ba8a040c6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17495a73e27b605259b483ba8a040c6c">&sect;&nbsp;</a></span>Log() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -134,7 +135,7 @@ llvm::Module &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Mod</b>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual llvm::Value* Log </td>
+          <td class="memname">virtual llvm::Value* loom::Logger::Log </td>
           <td>(</td>
           <td class="paramtype">llvm::Instruction *&#160;</td>
           <td class="paramname"><em>I</em>, </td>
@@ -189,12 +190,12 @@ llvm::Module &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Mod</b>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the last instruction (if any) in the generated instrumentation </dd></dl>
 
-<p>Implemented in <a class="el" href="classloom_1_1SimpleLogger.html#a2f182848ac67113246cb22a3d55b7426">SimpleLogger</a>, and <a class="el" href="classloom_1_1KTraceLogger.html#a7ea2be1a946fdb9d8a81cdd51dd50698">KTraceLogger</a>.</p>
+<p>Implemented in <a class="el" href="classloom_1_1SimpleLogger.html#a8ae586c5660b78053a64f363af9684cd">loom::SimpleLogger</a>, and <a class="el" href="classloom_1_1KTraceLogger.html#a9f642706cfcc7e8d7e5c524bf7b52b05">loom::KTraceLogger</a>.</p>
 
 </div>
 </div>
-<a id="aafb585ed3f189748f87d6bdb3f5387b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aafb585ed3f189748f87d6bdb3f5387b4">&sect;&nbsp;</a></span>Log() <span class="overload">[2/2]</span></h2>
+<a id="a057100112c647066f151f8abb6de2c15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a057100112c647066f151f8abb6de2c15">&sect;&nbsp;</a></span>Log() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -203,7 +204,7 @@ llvm::Module &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>Mod</b>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual llvm::Value* Log </td>
+          <td class="memname">virtual llvm::Value* loom::Logger::Log </td>
           <td>(</td>
           <td class="paramtype">llvm::Instruction *&#160;</td>
           <td class="paramname"><em>I</em>, </td>

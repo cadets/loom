@@ -1,4 +1,0 @@
-<map id="Values" name="Values">
-<area shape="rect" id="node2" href="$classloom_1_1Instrumenter.html#a86d906802f2995abe566c717634c7d9d" title="Instrument an instruction generically: instruction name and values. " alt="" coords="123,5,285,49"/>
-<area shape="rect" id="node3" href="$classloom_1_1Instrumenter.html#acc22e5decacbbfe930d755659cf0c23a" title="Instrument a function call (caller&#45;side), either calling or returning. " alt="" coords="333,5,496,49"/>
-</map>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['bufferinfo',['BufferInfo',['../classloom_1_1Serializer.html#a9b872b6e3d6e21a9109c28bfea174b87',1,'loom::Serializer']]]
+  ['bufferinfo',['BufferInfo',['../classloom_1_1Serializer.html#a5b069dd577c89717b2a5d1b3061acfe0',1,'loom::Serializer']]]
 ];

@@ -1,0 +1,8 @@
+<map id="src/Instrumentation.hh" name="src/Instrumentation.hh">
+<area shape="rect" id="node2" href="$InstrStrategy_8hh.html" title="Declaration of loom::InstrStrategy. " alt="" coords="183,233,321,261"/>
+<area shape="rect" id="node6" href="$IRUtils_8hh.html" title="Declarations of LLVM IR utility functions. " alt="" coords="314,385,403,413"/>
+<area shape="rect" id="node10" href="$PolicyFile_8hh.html" title="Declaration of loom::PolicyFile. " alt="" coords="487,81,593,109"/>
+<area shape="rect" id="node9" href="$Logger_8hh.html" title="Declaration of loom::Logger. " alt="" coords="179,309,274,337"/>
+<area shape="rect" id="node11" href="$Policy_8hh.html" title="Definition of loom::Policy. " alt="" coords="657,157,740,185"/>
+<area shape="rect" id="node12" href="$Serializer_8hh.html" title="Declaration of loom::Serializer. " alt="" coords="550,233,661,261"/>
+</map>

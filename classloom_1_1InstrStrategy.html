@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.12"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Loom: InstrStrategy Class Reference</title>
+        <title>Loom: loom::InstrStrategy Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -83,7 +83,7 @@ $(function() {
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classloom_1_1InstrStrategy-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">InstrStrategy Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">loom::InstrStrategy Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -91,53 +91,53 @@ $(function() {
  <a href="classloom_1_1InstrStrategy.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="InstrStrategy_8hh_source.html">InstrStrategy.hh</a>&gt;</code></p>
-
-<p>Inherited by CalloutStrategy, and InlineStrategy.</p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aa10c9e8951b8ccf714a59ec321bdac5b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#aa10c9e8951b8ccf714a59ec321bdac5b">Kind</a> { <a class="el" href="classloom_1_1InstrStrategy.html#aa10c9e8951b8ccf714a59ec321bdac5ba1eaf6bb9a4bb96ff81a5d26a4cc0314c">Callout</a>, 
-<a class="el" href="classloom_1_1InstrStrategy.html#aa10c9e8951b8ccf714a59ec321bdac5ba0125cf5f3ca38b312ca5d3b511c45a13">Inline</a>
+<tr class="memitem:a86a04490f9083b60dbf3e2399b8ff679"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#a86a04490f9083b60dbf3e2399b8ff679">Kind</a> { <a class="el" href="classloom_1_1InstrStrategy.html#a86a04490f9083b60dbf3e2399b8ff679a1eaf6bb9a4bb96ff81a5d26a4cc0314c">Kind::Callout</a>, 
+<a class="el" href="classloom_1_1InstrStrategy.html#a86a04490f9083b60dbf3e2399b8ff679a0125cf5f3ca38b312ca5d3b511c45a13">Kind::Inline</a>
  }</td></tr>
-<tr class="separator:aa10c9e8951b8ccf714a59ec321bdac5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a86a04490f9083b60dbf3e2399b8ff679"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9f95b1fb20da35b25bdfef3713509abc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#a9f95b1fb20da35b25bdfef3713509abc">AddLogger</a> (std::unique_ptr&lt; <a class="el" href="classloom_1_1Logger.html">Logger</a> &gt;)</td></tr>
-<tr class="memdesc:a9f95b1fb20da35b25bdfef3713509abc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add another <a class="el" href="classloom_1_1Logger.html">Logger</a> to the instrumentation we generate.  <a href="#a9f95b1fb20da35b25bdfef3713509abc">More...</a><br /></td></tr>
-<tr class="separator:a9f95b1fb20da35b25bdfef3713509abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07c20b93c1bc1014d2c5f9fe5971aae2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#a07c20b93c1bc1014d2c5f9fe5971aae2">Instrument</a> (llvm::Instruction *I, llvm::StringRef Name, llvm::StringRef Description, llvm::ArrayRef&lt; Parameter &gt; Params, llvm::ArrayRef&lt; llvm::Value *&gt; Values, bool VarArgs=false, bool AfterInst=false, bool SuppressUniqueness=false)=0</td></tr>
-<tr class="memdesc:a07c20b93c1bc1014d2c5f9fe5971aae2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a particular instruction, returning an <a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a> object that can be used to create actions.  <a href="#a07c20b93c1bc1014d2c5f9fe5971aae2">More...</a><br /></td></tr>
-<tr class="separator:a07c20b93c1bc1014d2c5f9fe5971aae2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5908a9bb745e8b9bf801e7cfbd8aa5af"><td class="memItemLeft" align="right" valign="top"><a id="a5908a9bb745e8b9bf801e7cfbd8aa5af"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#a5908a9bb745e8b9bf801e7cfbd8aa5af">AddLogger</a> (std::unique_ptr&lt; <a class="el" href="classloom_1_1Logger.html">Logger</a> &gt;)</td></tr>
+<tr class="memdesc:a5908a9bb745e8b9bf801e7cfbd8aa5af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add another <a class="el" href="classloom_1_1Logger.html">Logger</a> to the instrumentation we generate. <br /></td></tr>
+<tr class="separator:a5908a9bb745e8b9bf801e7cfbd8aa5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad02aede8be9993ead1a7ae06731658b5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#ad02aede8be9993ead1a7ae06731658b5">Instrument</a> (llvm::Instruction *I, llvm::StringRef Name, llvm::StringRef Description, llvm::ArrayRef&lt; <a class="el" href="IRUtils_8hh.html#ac8f6736a7431c490b8367a9b13009ee4">Parameter</a> &gt; Params, llvm::ArrayRef&lt; llvm::Value *&gt; Values, bool VarArgs=false, bool AfterInst=false, bool SuppressUniqueness=false)=0</td></tr>
+<tr class="memdesc:ad02aede8be9993ead1a7ae06731658b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instrument a particular instruction, returning an <a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a> object that can be used to create actions.  <a href="#ad02aede8be9993ead1a7ae06731658b5">More...</a><br /></td></tr>
+<tr class="separator:ad02aede8be9993ead1a7ae06731658b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa404007c1a5868a8a76dbaff0f772f28"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classloom_1_1InstrStrategy.html">InstrStrategy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#aa404007c1a5868a8a76dbaff0f772f28">Create</a> (<a class="el" href="classloom_1_1InstrStrategy.html#aa10c9e8951b8ccf714a59ec321bdac5b">Kind</a> K, bool UseBlocks)</td></tr>
-<tr class="memdesc:aa404007c1a5868a8a76dbaff0f772f28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new instrumentation strategy (callout, inline, etc.).  <a href="#aa404007c1a5868a8a76dbaff0f772f28">More...</a><br /></td></tr>
-<tr class="separator:aa404007c1a5868a8a76dbaff0f772f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad015e6bbd3205dd99cf5b7f910e382d7"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classloom_1_1InstrStrategy.html">InstrStrategy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#ad015e6bbd3205dd99cf5b7f910e382d7">Create</a> (<a class="el" href="classloom_1_1InstrStrategy.html#a86a04490f9083b60dbf3e2399b8ff679">Kind</a> K, bool UseBlocks)</td></tr>
+<tr class="memdesc:ad015e6bbd3205dd99cf5b7f910e382d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new instrumentation strategy (callout, inline, etc.).  <a href="#ad015e6bbd3205dd99cf5b7f910e382d7">More...</a><br /></td></tr>
+<tr class="separator:ad015e6bbd3205dd99cf5b7f910e382d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:adda21548ef001563e8977b1d750267ad"><td class="memItemLeft" align="right" valign="top"><a id="adda21548ef001563e8977b1d750267ad"></a>
+<tr class="memitem:a8937f5b7b6d2cf1738cb5f9c7d1715e3"><td class="memItemLeft" align="right" valign="top"><a id="a8937f5b7b6d2cf1738cb5f9c7d1715e3"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>InstrStrategy</b> (bool UseBlocks)</td></tr>
-<tr class="separator:adda21548ef001563e8977b1d750267ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b424a41b165631d9b25c6327a99651e"><td class="memItemLeft" align="right" valign="top">llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#a0b424a41b165631d9b25c6327a99651e">AddLogging</a> (llvm::Instruction *I, llvm::ArrayRef&lt; llvm::Value *&gt;, llvm::StringRef Name, llvm::StringRef Description, bool SuppressUniqueness)</td></tr>
-<tr class="memdesc:a0b424a41b165631d9b25c6327a99651e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add code to instrumentation preamble that will log the instrumented values via all of our <a class="el" href="classloom_1_1Logger.html" title="Something that can be used to log events, e.g., printf or libxo. ">Logger</a> objects.  <a href="#a0b424a41b165631d9b25c6327a99651e">More...</a><br /></td></tr>
-<tr class="separator:a0b424a41b165631d9b25c6327a99651e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a8937f5b7b6d2cf1738cb5f9c7d1715e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71f51016ed2aecae2bbbeaa45a53e784"><td class="memItemLeft" align="right" valign="top">llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#a71f51016ed2aecae2bbbeaa45a53e784">AddLogging</a> (llvm::Instruction *I, llvm::ArrayRef&lt; llvm::Value *&gt;, llvm::StringRef Name, llvm::StringRef Description, bool SuppressUniqueness)</td></tr>
+<tr class="memdesc:a71f51016ed2aecae2bbbeaa45a53e784"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add code to instrumentation preamble that will log the instrumented values via all of our <a class="el" href="classloom_1_1Logger.html" title="Something that can be used to log events, e.g., printf or libxo. ">Logger</a> objects.  <a href="#a71f51016ed2aecae2bbbeaa45a53e784">More...</a><br /></td></tr>
+<tr class="separator:a71f51016ed2aecae2bbbeaa45a53e784"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:acff730c0bd7aca51f9f950d4396d3023"><td class="memItemLeft" align="right" valign="top"><a id="acff730c0bd7aca51f9f950d4396d3023"></a>
-const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructure</b></td></tr>
-<tr class="separator:acff730c0bd7aca51f9f950d4396d3023"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0098903d011c5108ec1ad54f74e5789"><td class="memItemLeft" align="right" valign="top"><a id="ab0098903d011c5108ec1ad54f74e5789"></a>
+const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1InstrStrategy.html#ab0098903d011c5108ec1ad54f74e5789">UseBlockStructure</a></td></tr>
+<tr class="memdesc:ab0098903d011c5108ec1ad54f74e5789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use an explicit structure of premable/instrumentation/end BasicBlocks when creating instrumentation. <br /></td></tr>
+<tr class="separator:ab0098903d011c5108ec1ad54f74e5789"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An instrumentation strategy (inline, callout, etc.). </p>
 
 <p>Definition at line <a class="el" href="InstrStrategy_8hh_source.html#l00056">56</a> of file <a class="el" href="InstrStrategy_8hh_source.html">InstrStrategy.hh</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="aa10c9e8951b8ccf714a59ec321bdac5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa10c9e8951b8ccf714a59ec321bdac5b">&sect;&nbsp;</a></span>Kind</h2>
+<a id="a86a04490f9083b60dbf3e2399b8ff679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86a04490f9083b60dbf3e2399b8ff679">&sect;&nbsp;</a></span>Kind</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -146,7 +146,7 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="classloom_1_1InstrStrategy.html#aa10c9e8951b8ccf714a59ec321bdac5b">Kind</a></td>
+          <td class="memname">enum <a class="el" href="classloom_1_1InstrStrategy.html#a86a04490f9083b60dbf3e2399b8ff679">loom::InstrStrategy::Kind</a></td>
         </tr>
       </table>
   </td>
@@ -156,9 +156,9 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
 </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa10c9e8951b8ccf714a59ec321bdac5ba1eaf6bb9a4bb96ff81a5d26a4cc0314c"></a>Callout&#160;</td><td class="fielddoc"><p>Call out to a user-defined instrumentation function. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a86a04490f9083b60dbf3e2399b8ff679a1eaf6bb9a4bb96ff81a5d26a4cc0314c"></a>Callout&#160;</td><td class="fielddoc"><p>Call out to a user-defined instrumentation function. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="aa10c9e8951b8ccf714a59ec321bdac5ba0125cf5f3ca38b312ca5d3b511c45a13"></a>Inline&#160;</td><td class="fielddoc"><p>Add instrumentation inline with the instrumented code. </p>
+<tr><td class="fieldname"><a id="a86a04490f9083b60dbf3e2399b8ff679a0125cf5f3ca38b312ca5d3b511c45a13"></a>Inline&#160;</td><td class="fielddoc"><p>Add instrumentation inline with the instrumented code. </p>
 </td></tr>
 </table>
 
@@ -167,30 +167,8 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a9f95b1fb20da35b25bdfef3713509abc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f95b1fb20da35b25bdfef3713509abc">&sect;&nbsp;</a></span>AddLogger()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void AddLogger </td>
-          <td>(</td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classloom_1_1Logger.html">Logger</a> &gt;&#160;</td>
-          <td class="paramname"><em>L</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Add another <a class="el" href="classloom_1_1Logger.html">Logger</a> to the instrumentation we generate. </p>
-
-<p>Definition at line <a class="el" href="InstrStrategy_8cc_source.html#l00088">88</a> of file <a class="el" href="InstrStrategy_8cc_source.html">InstrStrategy.cc</a>.</p>
-
-</div>
-</div>
-<a id="a0b424a41b165631d9b25c6327a99651e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b424a41b165631d9b25c6327a99651e">&sect;&nbsp;</a></span>AddLogging()</h2>
+<a id="a71f51016ed2aecae2bbbeaa45a53e784"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71f51016ed2aecae2bbbeaa45a53e784">&sect;&nbsp;</a></span>AddLogging()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,7 +177,7 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">llvm::Value* AddLogging </td>
+          <td class="memname">Value * InstrStrategy::AddLogging </td>
           <td>(</td>
           <td class="paramtype">llvm::Instruction *&#160;</td>
           <td class="paramname"><em>I</em>, </td>
@@ -242,18 +220,24 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
 </div><div class="memdoc">
 
 <p>Add code to instrumentation preamble that will log the instrumented values via all of our <a class="el" href="classloom_1_1Logger.html" title="Something that can be used to log events, e.g., printf or libxo. ">Logger</a> objects. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">I</td><td>the instruction to insert logging code before</td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>the last instruction of the added logging code (or I if none) </dd></dl>
+
+<p>Definition at line <a class="el" href="InstrStrategy_8cc_source.html#l00095">95</a> of file <a class="el" href="InstrStrategy_8cc_source.html">InstrStrategy.cc</a>.</p>
+
+<p>References <a class="el" href="IRUtils_8hh.html#a71cd237df7754268f2324b4a3443d241">loom::FindBlock()</a>.</p>
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Here is the call graph for this function:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1InstrStrategy_a71f51016ed2aecae2bbbeaa45a53e784_cgraph.svg" width="356" height="55"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
 
 </div>
 </div>
-<a id="aa404007c1a5868a8a76dbaff0f772f28"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa404007c1a5868a8a76dbaff0f772f28">&sect;&nbsp;</a></span>Create()</h2>
+<a id="ad015e6bbd3205dd99cf5b7f910e382d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad015e6bbd3205dd99cf5b7f910e382d7">&sect;&nbsp;</a></span>Create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -262,9 +246,9 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unique_ptr&lt; <a class="el" href="classloom_1_1InstrStrategy.html">InstrStrategy</a> &gt; Create </td>
+          <td class="memname">unique_ptr&lt; <a class="el" href="classloom_1_1InstrStrategy.html">InstrStrategy</a> &gt; InstrStrategy::Create </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classloom_1_1InstrStrategy.html#aa10c9e8951b8ccf714a59ec321bdac5b">Kind</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="classloom_1_1InstrStrategy.html#a86a04490f9083b60dbf3e2399b8ff679">Kind</a>&#160;</td>
           <td class="paramname"><em>K</em>, </td>
         </tr>
         <tr>
@@ -299,8 +283,8 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
 
 </div>
 </div>
-<a id="a07c20b93c1bc1014d2c5f9fe5971aae2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07c20b93c1bc1014d2c5f9fe5971aae2">&sect;&nbsp;</a></span>Instrument()</h2>
+<a id="ad02aede8be9993ead1a7ae06731658b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad02aede8be9993ead1a7ae06731658b5">&sect;&nbsp;</a></span>Instrument()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -309,7 +293,7 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a> Instrument </td>
+          <td class="memname">virtual <a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a> loom::InstrStrategy::Instrument </td>
           <td>(</td>
           <td class="paramtype">llvm::Instruction *&#160;</td>
           <td class="paramname"><em>I</em>, </td>
@@ -329,7 +313,7 @@ const bool&#160;</td><td class="memItemRight" valign="bottom"><b>UseBlockStructu
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">llvm::ArrayRef&lt; Parameter &gt;&#160;</td>
+          <td class="paramtype">llvm::ArrayRef&lt; <a class="el" href="IRUtils_8hh.html#ac8f6736a7431c490b8367a9b13009ee4">Parameter</a> &gt;&#160;</td>
           <td class="paramname"><em>Params</em>, </td>
         </tr>
         <tr>

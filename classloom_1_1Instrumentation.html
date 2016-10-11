@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.12"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Loom: Instrumentation Class Reference</title>
+        <title>Loom: loom::Instrumentation Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -79,7 +79,7 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classloom_1_1Instrumentation-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">Instrumentation Class Reference</div>  </div>
+<div class="title">loom::Instrumentation Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -90,150 +90,39 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a493234931f9e08005878af8b4a6c2a72"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#a493234931f9e08005878af8b4a6c2a72">Instrumentation</a> (llvm::SmallVector&lt; llvm::Value *, 4 &gt; <a class="el" href="classloom_1_1Instrumentation.html#ad578a42fafca2fe4e9cc4f5a630b7a23">Values</a>, llvm::BasicBlock *Preamble, llvm::BasicBlock *EndBlock, llvm::Instruction *PreambleEnd, llvm::Instruction *End)</td></tr>
-<tr class="memdesc:a493234931f9e08005878af8b4a6c2a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct some instrumentation that puts all actions into BasicBlocks injected between the specified preamble and end blocks.  <a href="#a493234931f9e08005878af8b4a6c2a72">More...</a><br /></td></tr>
-<tr class="separator:a493234931f9e08005878af8b4a6c2a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aacffcdde711374d1af2b6fa001fd2498"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#aacffcdde711374d1af2b6fa001fd2498">Instrumentation</a> (llvm::SmallVector&lt; llvm::Value *, 4 &gt; <a class="el" href="classloom_1_1Instrumentation.html#ad578a42fafca2fe4e9cc4f5a630b7a23">Values</a>, llvm::Instruction *PreambleEnd, llvm::Instruction *End)</td></tr>
-<tr class="memdesc:aacffcdde711374d1af2b6fa001fd2498"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct some instrumentation that directly injects actions as inline instructions rather than using BasicBlocks.  <a href="#aacffcdde711374d1af2b6fa001fd2498">More...</a><br /></td></tr>
-<tr class="separator:aacffcdde711374d1af2b6fa001fd2498"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad578a42fafca2fe4e9cc4f5a630b7a23"><td class="memItemLeft" align="right" valign="top">llvm::ArrayRef&lt; llvm::Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#ad578a42fafca2fe4e9cc4f5a630b7a23">Values</a> ()</td></tr>
-<tr class="memdesc:ad578a42fafca2fe4e9cc4f5a630b7a23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the values passed into the instrumentation.  <a href="#ad578a42fafca2fe4e9cc4f5a630b7a23">More...</a><br /></td></tr>
-<tr class="separator:ad578a42fafca2fe4e9cc4f5a630b7a23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2100ba70b1064df534cb1d91d74da8de"><td class="memItemLeft" align="right" valign="top">llvm::IRBuilder&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#a2100ba70b1064df534cb1d91d74da8de">GetBuilder</a> ()</td></tr>
-<tr class="memdesc:a2100ba70b1064df534cb1d91d74da8de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an IRBuilder to insert instructions into the instrumentation preamble.  <a href="#a2100ba70b1064df534cb1d91d74da8de">More...</a><br /></td></tr>
-<tr class="separator:a2100ba70b1064df534cb1d91d74da8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa35763cfd102d48421c2863475e9d4e"><td class="memItemLeft" align="right" valign="top">llvm::IRBuilder&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#afa35763cfd102d48421c2863475e9d4e">AddAction</a> (llvm::StringRef Name)</td></tr>
-<tr class="memdesc:afa35763cfd102d48421c2863475e9d4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new link in the chain of actions for this instrumentation.  <a href="#afa35763cfd102d48421c2863475e9d4e">More...</a><br /></td></tr>
-<tr class="separator:afa35763cfd102d48421c2863475e9d4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2a86f315d1344bfd71e43427694deb4"><td class="memItemLeft" align="right" valign="top"><a id="ad2a86f315d1344bfd71e43427694deb4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#ad2a86f315d1344bfd71e43427694deb4">Instrumentation</a> (llvm::SmallVector&lt; llvm::Value *, 4 &gt; <a class="el" href="classloom_1_1Instrumentation.html#abc9d6e2712b31c3fe93b8c6fe0cceea4">Values</a>, llvm::BasicBlock *Preamble, llvm::BasicBlock *EndBlock, llvm::Instruction *PreambleEnd, llvm::Instruction *End)</td></tr>
+<tr class="memdesc:ad2a86f315d1344bfd71e43427694deb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct some instrumentation that puts all actions into BasicBlocks injected between the specified preamble and end blocks. <br /></td></tr>
+<tr class="separator:ad2a86f315d1344bfd71e43427694deb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca601cf0e0b917d3ebb73043b8e086b8"><td class="memItemLeft" align="right" valign="top"><a id="aca601cf0e0b917d3ebb73043b8e086b8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#aca601cf0e0b917d3ebb73043b8e086b8">Instrumentation</a> (llvm::SmallVector&lt; llvm::Value *, 4 &gt; <a class="el" href="classloom_1_1Instrumentation.html#abc9d6e2712b31c3fe93b8c6fe0cceea4">Values</a>, llvm::Instruction *PreambleEnd, llvm::Instruction *End)</td></tr>
+<tr class="memdesc:aca601cf0e0b917d3ebb73043b8e086b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct some instrumentation that directly injects actions as inline instructions rather than using BasicBlocks. <br /></td></tr>
+<tr class="separator:aca601cf0e0b917d3ebb73043b8e086b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc9d6e2712b31c3fe93b8c6fe0cceea4"><td class="memItemLeft" align="right" valign="top"><a id="abc9d6e2712b31c3fe93b8c6fe0cceea4"></a>
+llvm::ArrayRef&lt; llvm::Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#abc9d6e2712b31c3fe93b8c6fe0cceea4">Values</a> ()</td></tr>
+<tr class="memdesc:abc9d6e2712b31c3fe93b8c6fe0cceea4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the values passed into the instrumentation. <br /></td></tr>
+<tr class="separator:abc9d6e2712b31c3fe93b8c6fe0cceea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dd4ae73e2a03676623c83727777c3e9"><td class="memItemLeft" align="right" valign="top">llvm::IRBuilder&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#a9dd4ae73e2a03676623c83727777c3e9">GetBuilder</a> ()</td></tr>
+<tr class="memdesc:a9dd4ae73e2a03676623c83727777c3e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an IRBuilder to insert instructions into the instrumentation preamble.  <a href="#a9dd4ae73e2a03676623c83727777c3e9">More...</a><br /></td></tr>
+<tr class="separator:a9dd4ae73e2a03676623c83727777c3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbc6614435d220b1cccaca87a9dc03fe"><td class="memItemLeft" align="right" valign="top"><a id="adbc6614435d220b1cccaca87a9dc03fe"></a>
+llvm::IRBuilder&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1Instrumentation.html#adbc6614435d220b1cccaca87a9dc03fe">AddAction</a> (llvm::StringRef Name)</td></tr>
+<tr class="memdesc:adbc6614435d220b1cccaca87a9dc03fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new link in the chain of actions for this instrumentation. <br /></td></tr>
+<tr class="separator:adbc6614435d220b1cccaca87a9dc03fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classloom_1_1Instrumentation.html" title="Instrumentation code (which could be a function or inline instructions) that receives program events ...">Instrumentation</a> code (which could be a function or inline instructions) that receives program events such as "called foo(42,97)" and takes policy-defined actions (e.g., logs events or updates counters). </p>
 
 <p>Definition at line <a class="el" href="Instrumentation_8hh_source.html#l00062">62</a> of file <a class="el" href="Instrumentation_8hh_source.html">Instrumentation.hh</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a493234931f9e08005878af8b4a6c2a72"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a493234931f9e08005878af8b4a6c2a72">&sect;&nbsp;</a></span>Instrumentation() <span class="overload">[1/2]</span></h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a9dd4ae73e2a03676623c83727777c3e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dd4ae73e2a03676623c83727777c3e9">&sect;&nbsp;</a></span>GetBuilder()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a> </td>
-          <td>(</td>
-          <td class="paramtype">llvm::SmallVector&lt; llvm::Value *, 4 &gt;&#160;</td>
-          <td class="paramname"><em>Values</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::BasicBlock *&#160;</td>
-          <td class="paramname"><em>Preamble</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::BasicBlock *&#160;</td>
-          <td class="paramname"><em>EndBlock</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::Instruction *&#160;</td>
-          <td class="paramname"><em>PreambleEnd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::Instruction *&#160;</td>
-          <td class="paramname"><em>End</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Construct some instrumentation that puts all actions into BasicBlocks injected between the specified preamble and end blocks. </p>
-
-</div>
-</div>
-<a id="aacffcdde711374d1af2b6fa001fd2498"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aacffcdde711374d1af2b6fa001fd2498">&sect;&nbsp;</a></span>Instrumentation() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classloom_1_1Instrumentation.html">Instrumentation</a> </td>
-          <td>(</td>
-          <td class="paramtype">llvm::SmallVector&lt; llvm::Value *, 4 &gt;&#160;</td>
-          <td class="paramname"><em>Values</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::Instruction *&#160;</td>
-          <td class="paramname"><em>PreambleEnd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">llvm::Instruction *&#160;</td>
-          <td class="paramname"><em>End</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Construct some instrumentation that directly injects actions as inline instructions rather than using BasicBlocks. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="afa35763cfd102d48421c2863475e9d4e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa35763cfd102d48421c2863475e9d4e">&sect;&nbsp;</a></span>AddAction()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">llvm::IRBuilder AddAction </td>
-          <td>(</td>
-          <td class="paramtype">llvm::StringRef&#160;</td>
-          <td class="paramname"><em>Name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Add a new link in the chain of actions for this instrumentation. </p>
-
-<p>Referenced by <a class="el" href="Instrumentation_8cc_source.html#l00071">Instrumentation::GetBuilder()</a>.</p>
-<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Here is the caller graph for this function:</div>
-<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Instrumentation_afa35763cfd102d48421c2863475e9d4e_icgraph.svg" width="252" height="39"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="a2100ba70b1064df534cb1d91d74da8de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2100ba70b1064df534cb1d91d74da8de">&sect;&nbsp;</a></span>GetBuilder()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">IRBuilder GetBuilder </td>
+          <td class="memname">IRBuilder Instrumentation::GetBuilder </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -245,55 +134,6 @@ Public Member Functions</h2></td></tr>
 <p>The preamble is a block where we can put instructions that should run whenever the instrumentation is called, regardless of the values that are passed into it. This could be used to implement gprof-style counting or simple logging. </p>
 
 <p>Definition at line <a class="el" href="Instrumentation_8cc_source.html#l00071">71</a> of file <a class="el" href="Instrumentation_8cc_source.html">Instrumentation.cc</a>.</p>
-
-<p>References <a class="el" href="classloom_1_1Instrumentation.html#afa35763cfd102d48421c2863475e9d4e">Instrumentation::AddAction()</a>.</p>
-<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="closed.png" alt="+"/> Here is the call graph for this function:</div>
-<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Instrumentation_a2100ba70b1064df534cb1d91d74da8de_cgraph.svg" width="252" height="39"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="ad578a42fafca2fe4e9cc4f5a630b7a23"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad578a42fafca2fe4e9cc4f5a630b7a23">&sect;&nbsp;</a></span>Values()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">llvm::ArrayRef&lt;llvm::Value*&gt; Values </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Retrieve the values passed into the instrumentation. </p>
-
-<p>Definition at line <a class="el" href="Instrumentation_8hh_source.html#l00080">80</a> of file <a class="el" href="Instrumentation_8hh_source.html">Instrumentation.hh</a>.</p>
-
-<p>Referenced by <a class="el" href="Instrumenter_8cc_source.html#l00059">Instrumenter::Instrument()</a>.</p>
-<div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-2-trigger" src="closed.png" alt="+"/> Here is the caller graph for this function:</div>
-<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-2-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1Instrumentation_ad578a42fafca2fe4e9cc4f5a630b7a23_icgraph.svg" width="502" height="55"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
 
 </div>
 </div>

@@ -61,7 +61,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node1 -->
 <g id="node2" class="node"><title>Node1</title>
-<g id="a_node2"><a xlink:href="DebugInfo_8hh_source.html" target="_top" xlink:title="DebugInfo.hh">
+<g id="a_node2"><a xlink:href="DebugInfo_8hh.html" target="_top" xlink:title="Declaration of DebugInfo class. ">
 <polygon fill="none" stroke="black" points="293,-57.5 293,-77.5 382,-77.5 382,-57.5 293,-57.5"/>
 <text text-anchor="middle" x="337.5" y="-64.7" font-family="Avenir-Book" font-size="11.00">DebugInfo.hh</text>
 </a>

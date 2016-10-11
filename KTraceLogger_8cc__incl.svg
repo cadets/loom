@@ -61,7 +61,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node1 -->
 <g id="node2" class="node"><title>Node1</title>
-<g id="a_node2"><a xlink:href="KTraceLogger_8hh.html" target="_top" xlink:title="Declaration of KTraceLogger. ">
+<g id="a_node2"><a xlink:href="KTraceLogger_8hh.html" target="_top" xlink:title="Declaration of loom::KTraceLogger. ">
 <polygon fill="none" stroke="black" points="184.5,-171.5 184.5,-191.5 291.5,-191.5 291.5,-171.5 184.5,-171.5"/>
 <text text-anchor="middle" x="238" y="-178.7" font-family="Avenir-Book" font-size="11.00">KTraceLogger.hh</text>
 </a>
@@ -74,7 +74,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node8 -->
 <g id="node9" class="node"><title>Node8</title>
-<g id="a_node9"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of Serializer. ">
+<g id="a_node9"><a xlink:href="Serializer_8hh.html" target="_top" xlink:title="Declaration of loom::Serializer. ">
 <polygon fill="none" stroke="black" points="312.5,-171.5 312.5,-191.5 395.5,-191.5 395.5,-171.5 312.5,-171.5"/>
 <text text-anchor="middle" x="354" y="-178.7" font-family="Avenir-Book" font-size="11.00">Serializer.hh</text>
 </a>
@@ -120,7 +120,7 @@ var sectionId = 'dynsection-0';
 </g>
 <!-- Node3 -->
 <g id="node4" class="node"><title>Node3</title>
-<g id="a_node4"><a xlink:href="IRUtils_8hh_source.html" target="_top" xlink:title="IRUtils.hh">
+<g id="a_node4"><a xlink:href="IRUtils_8hh.html" target="_top" xlink:title="Declarations of LLVM IR utility functions. ">
 <polygon fill="none" stroke="black" points="138.5,-57.5 138.5,-77.5 205.5,-77.5 205.5,-57.5 138.5,-57.5"/>
 <text text-anchor="middle" x="172" y="-64.7" font-family="Avenir-Book" font-size="11.00">IRUtils.hh</text>
 </a>
