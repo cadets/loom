@@ -1,0 +1,50 @@
+html, body, table, div, p, dl
+{
+	font-family: "Avenir Book", "Helvetica", sans-serif;
+	font-size: 100%;
+	line-height: 120%;
+}
+
+h1, .h1, h2, h3, h4, h5, h6, .navbar-brand
+{
+	font-family: "Avenir Black", "Roboto", "Helvetica", sans-serif;
+	font-weight: bold;
+}
+
+div.fragment
+{
+	background-color: #edf2f9;
+	border-color: #7392cb;
+}
+
+div.line
+{
+	font-size: 80%;
+}
+
+.navbar-brand
+{
+	font-size: 110%;
+}
+
+.navbar-default
+{
+	background-color: #7392cb;
+	border-color: #7392cb;
+}
+
+.navbar-default .navbar-brand
+{
+	color: #ddd;
+}
+
+.navbar-default .navbar-nav > li > a
+{
+	color: #eee;
+}
+
+.navbar-default .navbar-nav > li > a:focus,
+.navbar-default .navbar-nav > li > a:hover
+{
+	color: #fff;
+}

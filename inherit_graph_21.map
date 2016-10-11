@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classloom_1_1Serializer.html" title="A tool that can transform a set of values into a serialized representation. " alt="" coords="5,32,93,60"/>
+<area shape="rect" id="node2" href="$classloom_1_1NullSerializer.html" title="A Serializer that doesn&#39;t serialize anything. " alt="" coords="141,5,256,33"/>
+<area shape="rect" id="node3" href="$classloom_1_1NVSerializer.html" title="A Serializer that uses libnv to aggregate values. " alt="" coords="144,57,253,85"/>
+</map>

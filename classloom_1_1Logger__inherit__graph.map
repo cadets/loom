@@ -1,0 +1,6 @@
+<map id="Logger" name="Logger">
+<area shape="rect" id="node2" href="$classloom_1_1KTraceLogger.html" title="A logging technique that serializes values with libnv and writes them to the BSD ktrace framework..." alt="" coords="5,215,156,312"/>
+<area shape="rect" id="node3" href="$classloom_1_1SimpleLogger.html" title="A logging technique that requires a single call to a printf&#45;like function. " alt="" coords="181,167,338,360"/>
+<area shape="rect" id="node4" href="$classanonymous__namespace_02Logger_8cc_03_1_1LibxoLogger.html" title="A logger that calls libxo&#39;s xo_emit(). " alt="" coords="50,408,247,521"/>
+<area shape="rect" id="node5" href="$classanonymous__namespace_02Logger_8cc_03_1_1PrintfLogger.html" title="A logger that calls printf(). " alt="" coords="271,408,469,521"/>
+</map>
