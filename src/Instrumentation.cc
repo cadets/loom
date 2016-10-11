@@ -1,4 +1,4 @@
-//! @file Instrumentation.cpp  Definition of @ref loom::Instrumentation.
+//! @file Instrumentation.cc  Definition of @ref loom::Instrumentation.
 /*
  * Copyright (c) 2013,2015-2016 Jonathan Anderson
  * Copyright (c) 2016 Cem Kilic

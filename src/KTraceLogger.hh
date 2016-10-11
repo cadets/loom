@@ -1,4 +1,4 @@
-//! @file KTraceLogger.hh  Declaration of @ref KTraceLogger.
+//! @file KTraceLogger.hh  Declaration of @ref loom::KTraceLogger.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.

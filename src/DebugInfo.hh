@@ -1,4 +1,4 @@
-//! @file DebugInfo.h  Declaration of DebugInfo class.
+//! @file DebugInfo.hh  Declaration of DebugInfo class.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.

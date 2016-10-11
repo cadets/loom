@@ -1,4 +1,4 @@
-//! @file Serializer.cc  Definition of @ref Serializer.
+//! @file Serializer.cc  Definition of @ref loom::Serializer.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.

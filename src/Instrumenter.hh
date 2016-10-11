@@ -46,6 +46,11 @@ class InstrStrategy;
 /// An object used for instrumenting code within a single LLVM module.
 class Instrumenter {
 public:
+  /**
+   * A @ref NameFn takes an ordered collection of name components (e.g.,
+   * `"call"`, `"fn"`, `"foo"`) and converts it into a name that can
+   * be used for instrumentation (e.g., `"__tesla_call_fn_foo"`).
+   */
   typedef std::function<std::string (const std::vector<std::string>&)> NameFn;
 
   /**
@@ -55,7 +60,7 @@ public:
    *                  (e.g., ["call","foo"] => "__loom_hook_call_foo")
    */
   static std::unique_ptr<Instrumenter>
-    Create(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy> S);
+    Create(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy>);
 
   /// Instrument an instruction generically: instruction name and values.
   bool Instrument(llvm::Instruction*);

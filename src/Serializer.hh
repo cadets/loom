@@ -1,4 +1,4 @@
-//! @file Serializer.hh  Declaration of @ref Serializer.
+//! @file Serializer.hh  Declaration of @ref loom::Serializer.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.
@@ -55,7 +55,7 @@ public:
    * resulting buffer (pointer and length).
    *
    * @param  Name         Machine-readable instrumentation name.
-   * @param  Description  Human-readable short description (may be ignored).
+   * @param  Descrip      Human-readable short description (may be ignored).
    * @param  Values       Values actually being serialized
    * @param  B            IRBuilder positioned within instrumentation code
    */
@@ -70,18 +70,20 @@ public:
   virtual llvm::Value* Cleanup(BufferInfo&, llvm::IRBuilder<>&) = 0;
 
 protected:
-  Serializer(llvm::LLVMContext &Ctx);
+  //! Base constructor for subclasses.
+  Serializer(llvm::LLVMContext&);
 
-  llvm::LLVMContext& Ctx;
-  llvm::IntegerType *Byte;
-  llvm::PointerType *BytePtr;
-  llvm::IntegerType *SizeT;
+  llvm::LLVMContext& Ctx;              //!< store of LLVM types
+  llvm::IntegerType *Byte;             //!< `char` / `uint8_t`
+  llvm::PointerType *BytePtr;          //!< `char*` / `uint8_t*`
+  llvm::IntegerType *SizeT;            //!< `size_t`
 };
 
 
 //! A Serializer that doesn't serialize anything.
 class NullSerializer : public Serializer {
 public:
+  //! Construct a null serializer.
   NullSerializer(llvm::LLVMContext &Ctx) : Serializer(Ctx) {}
 
   virtual llvm::StringRef SchemeName() const override { return "null"; }

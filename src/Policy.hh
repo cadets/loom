@@ -56,6 +56,13 @@ namespace loom {
 class Policy
 {
   public:
+  /**
+   * The instrumentation strategy that should be employed by this pass.
+   *
+   * This is currently a pass-level decision, but in the future we may want to
+   * employ different strategies for different types of instrumentation within
+   * a single module.
+   */
   virtual InstrStrategy::Kind Strategy() const = 0;
 
   //! Create all loggers required by the policy.
@@ -82,7 +89,10 @@ class Policy
   //! Special case: instrument every single function.
   virtual bool InstrumentAll() const = 0;
 
+  //! A direction that we can instrument: on the way in or on the way out.
   enum class Direction { In, Out };
+
+  //! A set of directions that we might like to instrument something on.
   typedef std::vector<Direction> Directions;
 
   //! In which directions should calls to a function be instrumented?

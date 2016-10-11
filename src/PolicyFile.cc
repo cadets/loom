@@ -1,4 +1,4 @@
-//! @file PolicyFile.cc  Definition of @ref PolicyFile.
+//! @file PolicyFile.cc  Definition of @ref loom::PolicyFile.
 /*
  * Copyright (c) 2015-2016 Jonathan Anderson
  * All rights reserved.

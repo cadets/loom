@@ -1,4 +1,4 @@
-//! @file InstrStrategy.h  Declaration of @ref loom::InstrStrategy.
+//! @file InstrStrategy.hh  Declaration of @ref loom::InstrStrategy.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.
@@ -137,8 +137,6 @@ protected:
    * Add code to instrumentation preamble that will log the instrumented values
    * via all of our Logger objects.
    *
-   * @param     I      the instruction to insert logging code before
-   *
    * @returns   the last instruction of the added logging code (or I if none)
    */
   llvm::Value* AddLogging(llvm::Instruction *I,
@@ -147,6 +145,10 @@ protected:
                           llvm::StringRef Description,
                           bool SuppressUniqueness);
 
+  /**
+   * Use an explicit structure of premable/instrumentation/end BasicBlocks
+   * when creating instrumentation.
+   */
   const bool UseBlockStructure;
 
 private:

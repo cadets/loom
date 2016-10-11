@@ -96,6 +96,7 @@ public:
 protected:
   Logger(llvm::Module& Mod) : Mod(Mod) {}
 
+  //! The module being instrumented: where to find functions like xo_emit().
   llvm::Module& Mod;
 };
 
@@ -178,6 +179,7 @@ protected:
   virtual std::vector<llvm::Value*> Adapt(llvm::ArrayRef<llvm::Value*>,
                                           llvm::IRBuilder<>&);
 
+  //! A cache of already-generated format strings.
   llvm::StringMap<llvm::Value*> FormatStrings;
 };
 

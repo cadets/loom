@@ -1,4 +1,4 @@
-//! @file OptPass.cc  Definition of @ref loom::OptPass.
+//! @file OptPass.cc  Definition of Loom's LLVM @b opt pass.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * Copyright (c) 2016 Cem Kilic

@@ -1,4 +1,4 @@
-//! @file KTraceLogger.cc  Definition of @ref KTraceLogger.
+//! @file KTraceLogger.cc  Definition of @ref loom::KTraceLogger.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.

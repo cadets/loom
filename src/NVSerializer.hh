@@ -1,4 +1,4 @@
-//! @file NVSerializer.hh  Declaration of @ref NVSerializer.
+//! @file NVSerializer.hh  Declaration of @ref loom::NVSerializer.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.
@@ -37,13 +37,14 @@
 
 #include <memory>
 
-namespace loom {
+namespace { class LibNV; }
 
-class LibNV;
+namespace loom {
 
 //! A Serializer that uses libnv to aggregate values.
 class NVSerializer : public Serializer {
 public:
+  //! Construct a libnv-based @ref Serializer.
   NVSerializer(llvm::Module&);
 
   virtual llvm::StringRef SchemeName() const override { return "nvlist"; }

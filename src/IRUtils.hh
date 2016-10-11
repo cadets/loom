@@ -1,4 +1,4 @@
-//! @file IRUtils.h  Declarations of LLVM IR utility functions.
+//! @file IRUtils.hh  Declarations of LLVM IR utility functions.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.

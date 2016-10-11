@@ -12,7 +12,7 @@ HIDE_UNDOC_CLASSES     = YES
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
 
-ALWAYS_DETAILED_SEC    = YES
+ALWAYS_DETAILED_SEC    = NO
 
 # If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all
 # inherited members of a class in the documentation of that class as if those
@@ -20,7 +20,7 @@ ALWAYS_DETAILED_SEC    = YES
 # operators of the base classes will not be shown.
 # The default value is: NO.
 
-INLINE_INHERITED_MEMB  = NO
+INLINE_INHERITED_MEMB  = YES
 
 # If the FULL_PATH_NAMES tag is set to YES doxygen will prepend the full path
 # before files name in the file list and in the header files. If set to NO the
@@ -29,7 +29,7 @@ INLINE_INHERITED_MEMB  = NO
 
 FULL_PATH_NAMES        = YES
 
-HIDE_SCOPE_NAMES       = YES
+HIDE_SCOPE_NAMES       = NO
 
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = YES
@@ -57,13 +57,13 @@ SUBGROUPING            = YES
 #---------------------------------------------------------------------------
 
 EXTRACT_ALL            = NO
-EXTRACT_ANON_NSPACES   = YES
+EXTRACT_ANON_NSPACES   = NO
 EXTRACT_PRIVATE        = NO
 EXTRACT_PACKAGE        = NO
 EXTRACT_STATIC         = NO
 
 SORT_MEMBERS_CTORS_1ST = YES
-STRICT_PROTO_MATCHING  = YES
+STRICT_PROTO_MATCHING  = NO
 
 GENERATE_TODOLIST      = YES
 GENERATE_TESTLIST      = YES
@@ -78,8 +78,8 @@ LAYOUT_FILE            =
 #---------------------------------------------------------------------------
 
 QUIET                  = YES
-WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = YES
+WARNINGS               = NO
+WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = NO
 

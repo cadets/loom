@@ -1,4 +1,4 @@
-//! @file NVSerializer.cc  Definition of @ref NVSerializer.
+//! @file NVSerializer.cc  Definition of @ref loom::NVSerializer.
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * All rights reserved.
@@ -41,26 +41,23 @@ using namespace loom;
 
 namespace {
 
+/// Whether or not to emit libnv API calls for debug self-checking.
 cl::opt<bool>
 NVDebug("loom-nv-debug", cl::desc("emit libnv debug code"), cl::init(false));
 
-} // anonymous namespace
-
-
-namespace loom {
 
 /// Object that finds/creates libnv functions.
 class LibNV {
 public:
   LibNV(Module&);
 
-  CallInst* Free(Value*, IRBuilder<>&);         //!< libc's free(void*)
+  CallInst* Free(Value*, IRBuilder<>&);         //!< libc's `free(void*)`
 
-  //! nvlist_create(int flags = NV_FLAG_NO_UNIQUE)
+  //! libnv's `nvlist_create(int flags = NV_FLAG_NO_UNIQUE)`
   CallInst* Create(IRBuilder<>&);
-  CallInst* Destroy(Value*, IRBuilder<>&);      //!< _destroy(nvlist_t*)
-  CallInst* Pack(Value*, Value*, IRBuilder<>&); //!< _pack(nvlist_t*, size_t*)
-  CallInst* Dump(Value*, Value*, IRBuilder<>&); //!< _dump(nvlist_t*, int fd)
+  CallInst* Destroy(Value*, IRBuilder<>&);      //!< `_destroy(nvlist_t*)`
+  CallInst* Pack(Value*, Value*, IRBuilder<>&); //!< `_pack(nvlist_t*, size_t*)`
+  CallInst* Dump(Value*, Value*, IRBuilder<>&); //!< `_dump(nvlist_t*, int fd)`
 
   /// Add a named value to the NVList.
   void Add(Value *List, StringRef Name, Value *V, IRBuilder<>&);
@@ -85,7 +82,7 @@ public:
   PointerType *NVListPtr;
 };
 
-} // loom namespace
+} // anonymous namespace
 
 
 NVSerializer::NVSerializer(llvm::Module &M)
@@ -128,6 +125,8 @@ Instruction* NVSerializer::Cleanup(BufferInfo& Buffer, IRBuilder<>& B) {
   return NV->Free(Buffer.first, B);
 }
 
+
+namespace {
 
 LibNV::LibNV(Module& M)
   : M(M), Ctx(M.getContext()),
@@ -232,3 +231,5 @@ Constant* LibNV::Fn(StringRef Name, Type* Ret, ArrayRef<Type*> Params) {
   FunctionType *T = FunctionType::get(Ret, Params, false);
   return M.getOrInsertFunction(Name, T);
 }
+
+} // anonymous namespace
