@@ -1,0 +1,8 @@
+html, body, table, div, p, dl {
+	font-family: "Avenir", "Helvetica", sans-serif;
+}
+
+h1, .h1, h2, h3, h4, h5, h6 {
+	font-family: "Avenir Black", "Helvetica", sans-serif;
+	font-weight: bold;
+}

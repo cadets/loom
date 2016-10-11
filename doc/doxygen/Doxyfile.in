@@ -1,0 +1,242 @@
+PROJECT_NAME           = "Loom"
+PROJECT_NUMBER         =
+PROJECT_BRIEF          = "Static instrumentation library for LLVM"
+PROJECT_LOGO           = @CMAKE_SOURCE_DIR@/doc/images/loom.png
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BUILD_DIR@
+
+OUTPUT_LANGUAGE        = @DOXYGEN_LANGUAGE@
+
+INTERNAL_DOCS          = NO
+HIDE_UNDOC_CLASSES     = YES
+
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+
+ALWAYS_DETAILED_SEC    = YES
+
+# If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all
+# inherited members of a class in the documentation of that class as if those
+# members were ordinary class members. Constructors, destructors and assignment
+# operators of the base classes will not be shown.
+# The default value is: NO.
+
+INLINE_INHERITED_MEMB  = NO
+
+# If the FULL_PATH_NAMES tag is set to YES doxygen will prepend the full path
+# before files name in the file list and in the header files. If set to NO the
+# shortest path that makes the file name unique will be used
+# The default value is: YES.
+
+FULL_PATH_NAMES        = YES
+
+HIDE_SCOPE_NAMES       = YES
+
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+
+INHERIT_DOCS           = YES
+
+SEPARATE_MEMBER_PAGES  = NO
+
+TAB_SIZE               = 4
+
+ALIASES                += "license=@par License:\n"
+
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+
+BUILTIN_STL_SUPPORT    = YES
+CPP_CLI_SUPPORT        = NO
+
+DISTRIBUTE_GROUP_DOC   = NO
+
+SUBGROUPING            = YES
+
+#---------------------------------------------------------------------------
+# Build related configuration options
+#---------------------------------------------------------------------------
+
+EXTRACT_ALL            = NO
+EXTRACT_ANON_NSPACES   = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_PACKAGE        = NO
+EXTRACT_STATIC         = NO
+
+SORT_MEMBERS_CTORS_1ST = YES
+STRICT_PROTO_MATCHING  = YES
+
+GENERATE_TODOLIST      = YES
+GENERATE_TESTLIST      = YES
+GENERATE_BUGLIST       = YES
+GENERATE_DEPRECATEDLIST= YES
+
+LAYOUT_FILE            =
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to warning and progress messages
+#---------------------------------------------------------------------------
+
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = NO
+
+#---------------------------------------------------------------------------
+# Configuration options related to the input files
+#---------------------------------------------------------------------------
+
+INPUT                  = @CMAKE_SOURCE_DIR@/README.md @CMAKE_SOURCE_DIR@/include @CMAKE_SOURCE_DIR@/src
+STRIP_FROM_PATH        = @CMAKE_SOURCE_DIR@
+RECURSIVE              = YES
+
+EXAMPLE_PATH           =
+EXAMPLE_PATTERNS       =
+
+USE_MDFILE_AS_MAINPAGE = README.md
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to source browsing
+#---------------------------------------------------------------------------
+
+SOURCE_BROWSER         = YES
+
+# Setting the INLINE_SOURCES tag to YES will include the body of functions,
+# classes and enums directly into the documentation.
+# The default value is: NO.
+
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = YES
+
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+REFERENCES_LINK_SOURCE = YES
+
+VERBATIM_HEADERS       = YES
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to the HTML output
+#---------------------------------------------------------------------------
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+HTML_HEADER            = @DOX_THEME@/header.html
+HTML_FOOTER            = @DOX_THEME@/footer.html
+HTML_STYLESHEET        =
+HTML_EXTRA_STYLESHEET  = @DOX_BOOTSTRAP@/customdoxygen.css
+
+HTML_EXTRA_FILES       = @DOX_BOOTSTRAP@/doxy-boot.js @DOX_THEME@/loom-dox.css
+
+HTML_COLORSTYLE_HUE    = 218
+HTML_COLORSTYLE_SAT    = 43
+HTML_COLORSTYLE_GAMMA  = 80
+
+HTML_TIMESTAMP         = NO
+HTML_DYNAMIC_SECTIONS  = YES
+
+GENERATE_DOCSET        = NO
+GENERATE_QHP           = NO
+GENERATE_ECLIPSEHELP   = NO
+
+GENERATE_TREEVIEW      = NO
+TREEVIEW_WIDTH         = 250
+
+USE_MATHJAX            = NO
+MATHJAX_FORMAT         = HTML-CSS
+MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
+MATHJAX_EXTENSIONS     = TeX/AMSmath TeX/AMSsymbols
+MATHJAX_CODEFILE       =
+
+SEARCHENGINE           = YES
+
+
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_XML           = NO
+GENERATE_AUTOGEN_DEF   = NO
+GENERATE_PERLMOD       = NO
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to the man page output
+#---------------------------------------------------------------------------
+
+GENERATE_MAN           = YES
+MAN_OUTPUT             = man
+MAN_EXTENSION          = .3
+MAN_SUBDIR             =
+MAN_LINKS              = YES
+
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to the DOCBOOK output
+#---------------------------------------------------------------------------
+
+GENERATE_DOCBOOK       = YES
+DOCBOOK_OUTPUT         = docbook
+
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to the preprocessor
+#---------------------------------------------------------------------------
+
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = NO
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           =
+INCLUDE_FILE_PATTERNS  =
+PREDEFINED             =
+EXPAND_AS_DEFINED      =
+SKIP_FUNCTION_MACROS   = YES
+
+
+
+#---------------------------------------------------------------------------
+# Configuration options related to the dot tool
+#---------------------------------------------------------------------------
+
+CLASS_DIAGRAMS         = YES
+HIDE_UNDOC_RELATIONS   = YES
+HAVE_DOT               = YES
+DOT_NUM_THREADS        = 0
+DOT_FONTNAME           = Avenir-Book
+
+DOT_FONTSIZE           = 11
+DOT_FONTPATH           =
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = NO
+GROUP_GRAPHS           = YES
+
+UML_LOOK               = YES
+UML_LIMIT_NUM_FIELDS   = 4
+
+TEMPLATE_RELATIONS     = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+
+GRAPHICAL_HIERARCHY    = YES
+
+DIRECTORY_GRAPH        = YES
+
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+
+MAX_DOT_GRAPH_DEPTH    = 0
+
+DOT_TRANSPARENT        = YES
+
+DOT_MULTI_TARGETS      = NO
+
+GENERATE_LEGEND        = YES
+
+DOT_CLEANUP            = YES
