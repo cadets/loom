@@ -71,7 +71,7 @@ main(int argc, char *argv[])
 
 	// CHECK:        "[[PREFIX:__test_hook]]_call_foo:preamble":
 	// CHECK-NEXT:   call [[PRINTF:i32 .* @printf]](i8* getelementptr {{[^)]+}}), [[FOO_INSTR_ARGS:.*]])
-	// CHECK-OUTPUT: call foo: 1 2 3
+	// CHECK-OUTPUT: call foo: 1 2{{.*}} 3{{.*}}
 	// CHECK-NEXT:   br label %"[[PREFIX]]_call_foo:end"
 
 	// CHECK:        "[[PREFIX]]_call_foo:end":
@@ -83,7 +83,7 @@ main(int argc, char *argv[])
 
 	// CHECK:        "[[PREFIX]]_return_foo:preamble":
 	// CHECK-NEXT:   call [[PRINTF]](i8* getelementptr {{[^)]+}}), [[FOO_TYPE]] [[FOO_RET]], [[FOO_INSTR_ARGS]])
-	// CHECK-OUTPUT: return foo: 1 1 2 3
+	// CHECK-OUTPUT: return foo: 1 1 2{{.*}} 3{{.*}}
 	// CHECK-NEXT:   br label %"[[PREFIX]]_return_foo:end"
 
 	// CHECK:        "[[PREFIX]]_return_foo:end":

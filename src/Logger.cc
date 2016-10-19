@@ -192,22 +192,36 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
       << "/"
       ;
 
-    if (T->isIntegerTy(32)) {
-      FormatString << "%d";
-
-    } else if (T->isFloatTy() || T->isDoubleTy()) {
-      FormatString << "%f";
-
-    } else if (T->isIntegerTy(8)) {
-      FormatString << "%c";
-
-    } else if (T->isPointerTy()
-               and T->getPointerElementType()->isIntegerTy(8)) {
+    // C-style strings are special: surround them in quotes
+    if (T->isPointerTy() and T->getPointerElementType()->isIntegerTy(8)) {
       FormatString << "\"%s\"";
 
-    } else if (T->isPointerTy()) {
-      FormatString << "%p";
+    } else {
+      FormatString << "%";
 
+      if (T->isIntegerTy()) {
+        const unsigned Bits = dyn_cast<IntegerType>(T)->getBitWidth();
+
+        if (Bits > 64) {
+          FormatString << "ll";
+        } else if (Bits > 32) {
+          FormatString << "l";
+        }
+
+        FormatString << "d";
+
+      } else if (T->isFloatTy() || T->isDoubleTy()) {
+        FormatString << "f";
+
+      } else if (T->isIntegerTy(8)) {
+        FormatString << "c";
+
+      } else if (T->isPointerTy()) {
+        FormatString << "p";
+
+      } else {
+        assert(false);
+      }
     }
 
     FormatString << "}"; // close the format string
@@ -245,22 +259,38 @@ PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
   for (auto& P : Params) {
     Type *T = P.second;
 
-    if (T->isIntegerTy(32)) {
-      FormatString << " %d";
+    FormatString << " ";
 
-    } else if (T->isFloatTy() || T->isDoubleTy()) {
-      FormatString << " %.0f";
+    // C-style strings are special: surround them in quotes
+    if (T->isPointerTy() and T->getPointerElementType()->isIntegerTy(8)) {
+      FormatString << "\"%s\"";
 
-    } else if (T->isIntegerTy(8)) {
-      FormatString << " %c";
+    } else {
+      FormatString << "%";
 
-    } else if (T->isPointerTy()
-               and T->getPointerElementType()->isIntegerTy(8)) {
-      FormatString << " \"%s\"";
+      if (T->isIntegerTy()) {
+        const unsigned Bits = dyn_cast<IntegerType>(T)->getBitWidth();
 
-    } else if (T->isPointerTy()) {
-      FormatString << " %p";
+        if (Bits > 64) {
+          FormatString << "ll";
+        } else if (Bits > 32) {
+          FormatString << "l";
+        }
 
+        FormatString << "d";
+
+      } else if (T->isFloatTy() || T->isDoubleTy()) {
+        FormatString << "f";
+
+      } else if (T->isIntegerTy(8)) {
+        FormatString << "c";
+
+      } else if (T->isPointerTy()) {
+        FormatString << "p";
+
+      } else {
+        assert(false);
+      }
     }
   }
 

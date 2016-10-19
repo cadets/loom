@@ -73,10 +73,10 @@ main(int argc, char *argv[])
 	// CHECK:   call [[PRINTF]](i8* getelementptr {{[^)]+}}), [[FOO_INSTR_ARGS:.*]])
 	// CHECK:   [[FOO_RET:%.*]] = call [[FOO_TYPE]] @foo(i32 1, float 2.{{[^,]+}}, double 3.{{[^)]+}})
 	foo(1, 2, 3);
-	// CHECK-OUTPUT: call foo: 1 2 3
+	// CHECK-OUTPUT: call foo: 1 2{{.*}} 3{{.*}}
 
 	// CHECK:   call [[PRINTF]](i8* getelementptr {{[^)]+}}), [[FOO_TYPE]] [[FOO_RET]], [[FOO_INSTR_ARGS]])
-	// CHECK-OUTPUT: return foo: 1 1 2 3
+	// CHECK-OUTPUT: return foo: 1 1 2{{.*}} 3{{.*}}
 
 	printf("Then bar():\n");
 
