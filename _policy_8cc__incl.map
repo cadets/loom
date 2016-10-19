@@ -1,0 +1,8 @@
+<map id="src/Policy.cc" name="src/Policy.cc">
+<area shape="rect" id="node2" href="$_k_trace_logger_8hh.html" title="Declaration of loom::KTraceLogger. " alt="" coords="308,83,444,111"/>
+<area shape="rect" id="node9" href="$_policy_8hh.html" title="Definition of loom::Policy. " alt="" coords="154,83,235,111"/>
+<area shape="rect" id="node3" href="$_logger_8hh.html" title="Declaration of loom::Logger. " alt="" coords="383,238,471,266"/>
+<area shape="rect" id="node4" href="$_i_r_utils_8hh.html" title="Declarations of LLVM IR utility functions. " alt="" coords="199,315,284,343"/>
+<area shape="rect" id="node10" href="$_instr_strategy_8hh.html" title="Declaration of loom::InstrStrategy. " alt="" coords="132,161,257,189"/>
+<area shape="rect" id="node12" href="$_serializer_8hh.html" title="Declaration of loom::Serializer. " alt="" coords="281,161,385,189"/>
+</map>

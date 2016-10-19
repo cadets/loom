@@ -1,0 +1,18 @@
+<map id="src/IRUtils.hh" name="src/IRUtils.hh">
+<area shape="rect" id="node2" href="$_instr_strategy_8hh.html" title="Declaration of loom::InstrStrategy. " alt="" coords="296,161,445,189"/>
+<area shape="rect" id="node3" href="$_instrumentation_8hh.html" title="Declaration of loom::Instrumentation. " alt="" coords="165,393,331,421"/>
+<area shape="rect" id="node8" href="$_opt_pass_8cc.html" title="Definition of Loom&#39;s LLVM opt pass. " alt="" coords="360,547,480,575"/>
+<area shape="rect" id="node13" href="$_logger_8hh.html" title="Declaration of loom::Logger. " alt="" coords="452,83,564,111"/>
+<area shape="rect" id="node17" href="$_i_r_utils_8cc.html" title="Definition of LLVM IR utility functions. " alt="" coords="589,83,696,111"/>
+<area shape="rect" id="node4" href="$_instr_strategy_8cc.html" title="Definition of loom::InstrStrategy. " alt="" coords="234,470,381,498"/>
+<area shape="rect" id="node9" href="$_policy_8hh.html" title="Definition of loom::Policy. " alt="" coords="413,238,517,266"/>
+<area shape="rect" id="node5" href="$_instrumentation_8cc.html" title="Definition of loom::Instrumentation. " alt="" coords="44,470,209,498"/>
+<area shape="rect" id="node6" href="$_instrumenter_8hh.html" title="Declaration of loom::Instrumenter. " alt="" coords="493,470,640,498"/>
+<area shape="rect" id="node7" href="$_instrumenter_8cc.html" title="Definition of loom::Instrumenter. " alt="" coords="527,547,673,575"/>
+<area shape="rect" id="node10" href="$_policy_file_8hh.html" title="Declaration of loom::PolicyFile. " alt="" coords="407,315,536,343"/>
+<area shape="rect" id="node12" href="$_policy_8cc.html" title="Definition of loom::Policy. " alt="" coords="647,315,751,343"/>
+<area shape="rect" id="node11" href="$_policy_file_8cc.html" title="Definition of loom::PolicyFile. " alt="" coords="458,393,584,421"/>
+<area shape="rect" id="node14" href="$_k_trace_logger_8hh.html" title="Declaration of loom::KTraceLogger. " alt="" coords="477,161,635,189"/>
+<area shape="rect" id="node16" href="$_logger_8cc.html" title="Definition of loom::Logger. " alt="" coords="826,161,936,189"/>
+<area shape="rect" id="node15" href="$_k_trace_logger_8cc.html" title="Definition of loom::KTraceLogger. " alt="" coords="593,238,751,266"/>
+</map>

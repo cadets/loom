@@ -1,0 +1,11 @@
+<map id="src/Policy.hh" name="src/Policy.hh">
+<area shape="rect" id="node2" href="$_policy_file_8hh.html" title="Declaration of loom::PolicyFile. " alt="" coords="127,83,256,111"/>
+<area shape="rect" id="node6" href="$_instrumenter_8hh.html" title="Declaration of loom::Instrumenter. " alt="" coords="385,238,532,266"/>
+<area shape="rect" id="node10" href="$_policy_8cc.html" title="Definition of loom::Policy. " alt="" coords="465,83,569,111"/>
+<area shape="rect" id="node3" href="$_instrumentation_8hh.html" title="Declaration of loom::Instrumentation. " alt="" coords="194,161,360,189"/>
+<area shape="rect" id="node8" href="$_opt_pass_8cc.html" title="Definition of Loom&#39;s LLVM opt pass. " alt="" coords="83,315,203,343"/>
+<area shape="rect" id="node9" href="$_policy_file_8cc.html" title="Definition of loom::PolicyFile. " alt="" coords="43,161,169,189"/>
+<area shape="rect" id="node4" href="$_instr_strategy_8cc.html" title="Definition of loom::InstrStrategy. " alt="" coords="22,238,169,266"/>
+<area shape="rect" id="node5" href="$_instrumentation_8cc.html" title="Definition of loom::Instrumentation. " alt="" coords="195,238,360,266"/>
+<area shape="rect" id="node7" href="$_instrumenter_8cc.html" title="Definition of loom::Instrumenter. " alt="" coords="385,315,532,343"/>
+</map>

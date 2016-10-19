@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ktrace',['KTrace',['../classloom_1_1Policy.html#adcd0f3d220c8d6d072126aceb662046b',1,'loom::Policy']]]
+  ['ktrace',['KTrace',['../classloom_1_1_policy.html#a16841a867e19c4d3d60ce6c596cd6cca',1,'loom::Policy']]]
 ];

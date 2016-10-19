@@ -1,5 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classloom_1_1Logger.html" title="Something that can be used to log events, e.g., printf or libxo. " alt="" coords="5,32,124,60"/>
-<area shape="rect" id="node2" href="$classloom_1_1KTraceLogger.html" title="A logging technique that serializes values with libnv and writes them to the BSD ktrace framework..." alt="" coords="172,5,339,33"/>
-<area shape="rect" id="node3" href="$classloom_1_1SimpleLogger.html" title="A logging technique that requires a single call to a printf&#45;like function. " alt="" coords="172,57,339,85"/>
+<area shape="rect" id="node1" href="$classloom_1_1_logger.html" title="Something that can be used to log events, e.g., printf or libxo. " alt="" coords="6,31,114,59"/>
+<area shape="rect" id="node2" href="$classloom_1_1_k_trace_logger.html" title="A logging technique that serializes values with libnv and writes them to the BSD ktrace framework..." alt="" coords="163,5,317,33"/>
+<area shape="rect" id="node3" href="$classloom_1_1_simple_logger.html" title="A logging technique that requires a single call to a printf&#45;like function. " alt="" coords="164,57,316,85"/>
 </map>

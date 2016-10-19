@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['useblockstructure',['UseBlockStructure',['../classloom_1_1Policy.html#a74007d60ab950673ea9a6df71c873779',1,'loom::Policy']]]
+  ['useblockstructure',['UseBlockStructure',['../classloom_1_1_policy.html#a2067ba5fb314846cd076aa1d270d4e53',1,'loom::Policy']]]
 ];

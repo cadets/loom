@@ -1,4 +1,0 @@
-<map id="loom::Serializer" name="loom::Serializer">
-<area shape="rect" id="node2" href="$classloom_1_1NullSerializer.html" title="A Serializer that doesn&#39;t serialize anything. " alt="" coords="5,247,165,376"/>
-<area shape="rect" id="node3" href="$classloom_1_1NVSerializer.html" title="A Serializer that uses libnv to aggregate values. " alt="" coords="190,247,346,376"/>
-</map>

@@ -1,9 +1,0 @@
-<map id="src/PolicyFile.hh" name="src/PolicyFile.hh">
-<area shape="rect" id="node2" href="$Instrumentation_8hh.html" title="Declaration of loom::Instrumentation. " alt="" coords="287,81,475,109"/>
-<area shape="rect" id="node7" href="$OptPass_8cc.html" title="Definition of Loom&#39;s LLVM opt pass. " alt="" coords="543,233,673,261"/>
-<area shape="rect" id="node8" href="$PolicyFile_8cc.html" title="Definition of loom::PolicyFile. " alt="" coords="646,81,778,109"/>
-<area shape="rect" id="node3" href="$InstrStrategy_8cc.html" title="Definition of loom::InstrStrategy. " alt="" coords="5,157,168,185"/>
-<area shape="rect" id="node4" href="$Instrumentation_8cc.html" title="Definition of loom::Instrumentation. " alt="" coords="192,157,379,185"/>
-<area shape="rect" id="node5" href="$Instrumenter_8hh.html" title="Declaration of loom::Instrumenter. " alt="" coords="403,157,570,185"/>
-<area shape="rect" id="node6" href="$Instrumenter_8cc.html" title="Definition of loom::Instrumenter. " alt="" coords="354,233,518,261"/>
-</map>

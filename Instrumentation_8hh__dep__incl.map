@@ -1,7 +1,0 @@
-<map id="src/Instrumentation.hh" name="src/Instrumentation.hh">
-<area shape="rect" id="node2" href="$InstrStrategy_8cc.html" title="Definition of loom::InstrStrategy. " alt="" coords="5,81,168,109"/>
-<area shape="rect" id="node3" href="$Instrumentation_8cc.html" title="Definition of loom::Instrumentation. " alt="" coords="192,81,379,109"/>
-<area shape="rect" id="node4" href="$Instrumenter_8hh.html" title="Declaration of loom::Instrumenter. " alt="" coords="403,81,570,109"/>
-<area shape="rect" id="node5" href="$Instrumenter_8cc.html" title="Definition of loom::Instrumenter. " alt="" coords="318,157,482,185"/>
-<area shape="rect" id="node6" href="$OptPass_8cc.html" title="Definition of Loom&#39;s LLVM opt pass. " alt="" coords="507,157,637,185"/>
-</map>

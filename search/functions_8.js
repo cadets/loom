@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['schemename',['SchemeName',['../classloom_1_1NVSerializer.html#ac7630c29371f0d6a01f0f3a16d4956d2',1,'loom::NVSerializer::SchemeName()'],['../classloom_1_1Serializer.html#aa1deb27e81604c99294a7bac7877a15f',1,'loom::Serializer::SchemeName()'],['../classloom_1_1NullSerializer.html#a60742ad3d8590981fe0bce4521a40ad8',1,'loom::NullSerializer::SchemeName()']]],
-  ['serialization',['Serialization',['../classloom_1_1Policy.html#a3f915db905c91e1e2e161edce5d2a379',1,'loom::Policy']]],
-  ['serialize',['Serialize',['../classloom_1_1NVSerializer.html#a6bff82243ac6280f6f46e9f20661a267',1,'loom::NVSerializer::Serialize()'],['../classloom_1_1Serializer.html#a2b45384326140d7bacf144b34ea046e9',1,'loom::Serializer::Serialize()'],['../classloom_1_1NullSerializer.html#a915d39fd4792440fb3229dbf349f7a96',1,'loom::NullSerializer::Serialize()']]],
-  ['serializer',['Serializer',['../classloom_1_1Serializer.html#a7a139d94d4119243007e00264aef86f1',1,'loom::Serializer']]],
-  ['strategy',['Strategy',['../classloom_1_1Policy.html#a820467588d67e5d0d6dce93d9895a58d',1,'loom::Policy']]],
-  ['structtypematters',['StructTypeMatters',['../classloom_1_1Policy.html#a8542bf186c94016ce25336abb2adcdf7',1,'loom::Policy']]]
+  ['schemename',['SchemeName',['../classloom_1_1_n_v_serializer.html#a3a3e27212c5fbcf22bde9a58b0be3fb3',1,'loom::NVSerializer::SchemeName()'],['../classloom_1_1_serializer.html#a3b931082fc64058b84a38a60530352b4',1,'loom::Serializer::SchemeName()'],['../classloom_1_1_null_serializer.html#af8b75e1598fa8e10c289a6d045486bc6',1,'loom::NullSerializer::SchemeName()']]],
+  ['serialization',['Serialization',['../classloom_1_1_policy.html#abab64b391fb7ff736edad89d22f82581',1,'loom::Policy']]],
+  ['serialize',['Serialize',['../classloom_1_1_n_v_serializer.html#af653dcee5639017896eb7940cf02a70e',1,'loom::NVSerializer::Serialize()'],['../classloom_1_1_serializer.html#a6183280144e5ef90c6b923e620ef1b58',1,'loom::Serializer::Serialize()'],['../classloom_1_1_null_serializer.html#a6caf4750375d5b912738f346179f3e84',1,'loom::NullSerializer::Serialize()']]],
+  ['serializer',['Serializer',['../classloom_1_1_serializer.html#a7a139d94d4119243007e00264aef86f1',1,'loom::Serializer']]],
+  ['strategy',['Strategy',['../classloom_1_1_policy.html#a6cebf93071f694ab82cf2b26cf9de261',1,'loom::Policy']]],
+  ['structtypematters',['StructTypeMatters',['../classloom_1_1_policy.html#ab7b162f40e1851957536a896048167d5',1,'loom::Policy']]]
 ];

@@ -1,0 +1,4 @@
+<map id="PrintfLogger" name="PrintfLogger">
+<area shape="rect" id="node2" href="$classloom_1_1_simple_logger.html" title="A logging technique that requires a single call to a printf&#45;like function. " alt="" coords="22,169,161,362"/>
+<area shape="rect" id="node3" href="$classloom_1_1_logger.html" title="Something that can be used to log events, e.g., printf or libxo. " alt="" coords="47,6,136,119"/>
+</map>

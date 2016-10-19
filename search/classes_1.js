@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['fieldinstrumentation',['FieldInstrumentation',['../structFieldInstrumentation.html',1,'']]],
-  ['fninstrumentation',['FnInstrumentation',['../structFnInstrumentation.html',1,'']]]
+  ['fieldinstrumentation',['FieldInstrumentation',['../struct_field_instrumentation.html',1,'']]],
+  ['fninstrumentation',['FnInstrumentation',['../struct_fn_instrumentation.html',1,'']]]
 ];
