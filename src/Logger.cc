@@ -184,7 +184,10 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
     } else {
       FormatString << "%";
 
-      if (T->isIntegerTy()) {
+      if (T->isIntegerTy(8)) {
+        FormatString << "c";
+
+      } else if (T->isIntegerTy()) {
         const unsigned Bits = dyn_cast<IntegerType>(T)->getBitWidth();
 
         if (Bits > 64) {
@@ -197,9 +200,6 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 
       } else if (T->isFloatTy() || T->isDoubleTy()) {
         FormatString << "f";
-
-      } else if (T->isIntegerTy(8)) {
-        FormatString << "c";
 
       } else if (T->isPointerTy()) {
         FormatString << "p";
@@ -253,7 +253,10 @@ PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
     } else {
       FormatString << "%";
 
-      if (T->isIntegerTy()) {
+      if (T->isIntegerTy(8)) {
+        FormatString << "c";
+
+      } else if (T->isIntegerTy()) {
         const unsigned Bits = dyn_cast<IntegerType>(T)->getBitWidth();
 
         if (Bits > 64) {
@@ -266,9 +269,6 @@ PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 
       } else if (T->isFloatTy() || T->isDoubleTy()) {
         FormatString << "f";
-
-      } else if (T->isIntegerTy(8)) {
-        FormatString << "c";
 
       } else if (T->isPointerTy()) {
         FormatString << "p";
