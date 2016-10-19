@@ -2,6 +2,7 @@
 
 : ${umlgraph:="/usr/local/share/java/classes/UmlGraph.jar"}
 : ${tools:="/usr/local/openjdk8/lib/tools.jar"}
+: ${format:="png"}
 
 classpath="-classpath ${umlgraph}:${tools}"
 
@@ -12,4 +13,4 @@ find . -name '*.java' \
 			-private \
 			-attributes -operations -types -visibility \
 			-output - \
-	| dot -Tpng -o loom.png
+	| dot -T${format} -o loom.${format}
