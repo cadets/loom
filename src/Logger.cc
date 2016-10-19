@@ -52,7 +52,7 @@ namespace {
 
     StringRef FunctionName() const override { return "xo_emit"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
-                              ArrayRef<Parameter> Params,
+                              ArrayRef<Value*> Params,
                               StringRef Suffix, bool SuppressUniq) override;
   };
 
@@ -63,7 +63,7 @@ namespace {
 
     StringRef FunctionName() const override { return "printf"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
-                              ArrayRef<Parameter> Params,
+                              ArrayRef<Value*> Params,
                               StringRef Suffix, bool SuppressUniq) override;
   };
 
@@ -135,21 +135,6 @@ FunctionType* SimpleLogger::GetType() {
 }
 
 
-Value* SimpleLogger::CreateFormatString(IRBuilder<>& Builder,
-                                        StringRef Prefix,
-                                        ArrayRef<Value*> Values,
-                                        StringRef Suffix,
-                                        bool SuppressUniqueness) {
-  ParamVec NamedTypes;
-  for (Value *V : Values) {
-    NamedTypes.emplace_back(V->getName(), V->getType());
-  }
-
-  return CreateFormatString(Builder, Prefix, NamedTypes, Suffix,
-                            SuppressUniqueness);
-}
-
-
 vector<Value*> SimpleLogger::Adapt(ArrayRef<Value*> Values, IRBuilder<>& B) {
   vector<Value*> Adapted;
 
@@ -167,16 +152,16 @@ vector<Value*> SimpleLogger::Adapt(ArrayRef<Value*> Values, IRBuilder<>& B) {
 
 Value*
 LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
-                                ArrayRef<Parameter> Params, StringRef Suffix,
+                                ArrayRef<Value*> Values, StringRef Suffix,
                                 bool SuppressUniqueness) {
 
   std::stringstream FormatString;
 
   FormatString << Prefix.str();
 
-  for (auto& P : Params) {
-    const string Name = P.first;
-    Type *T = P.second;
+  for (Value *V : Values) {
+    const string Name = V->getName();
+    Type *T = V->getType();
 
     // xo can humanize values (e.g., 41025981 -> 41M), but we don't want to
     // do this with pointer values (e.g., 0x7fff01... -> 128T) or
@@ -249,15 +234,15 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 
 Value*
 PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
-                                 ArrayRef<Parameter> Params, StringRef Suffix,
+                                 ArrayRef<Value*> Values, StringRef Suffix,
                                  bool /*SuppressUniqueness*/) {
 
   std::stringstream FormatString;
 
   FormatString << Prefix.str();
 
-  for (auto& P : Params) {
-    Type *T = P.second;
+  for (Value *V : Values) {
+    Type *T = V->getType();
 
     FormatString << " ";
 

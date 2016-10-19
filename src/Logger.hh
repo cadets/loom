@@ -147,15 +147,9 @@ protected:
   /// Create a format string that we can pass to the logging function.
   virtual llvm::Value* CreateFormatString(llvm::IRBuilder<>&,
                                           llvm::StringRef Prefix,
-                                          llvm::ArrayRef<Parameter>,
+                                          llvm::ArrayRef<llvm::Value*>,
                                           llvm::StringRef Suffix,
                                           bool SuppressUniqueness) = 0;
-
-  /// Create a format string that we can pass to the logging function.
-  llvm::Value* CreateFormatString(llvm::IRBuilder<>&, llvm::StringRef Prefix,
-                                  llvm::ArrayRef<llvm::Value*>,
-                                  llvm::StringRef Suffix,
-                                  bool SuppressUniqueness);
 
   /**
    * Adapt a set of values into a form that can be logged.
