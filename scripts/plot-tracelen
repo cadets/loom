@@ -78,7 +78,7 @@ plt.xlabel('Input size')
 plt.yscale('log')
 plt.ylabel('Trace size')
 
-fmt = EngFormatter(unit = 'B', places = 0)
+fmt = EngFormatter(unit = ('B' if args.bytes else ''), places = 0)
 ax.xaxis.set_major_formatter(fmt)
 ax.yaxis.set_major_formatter(fmt)
 
