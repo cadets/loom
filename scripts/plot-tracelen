@@ -40,28 +40,38 @@ args.add_argument('filename', nargs='+')
 
 args = args.parse_args()
 
+def size(name):
+    if base[-1].isalpha():
+        return int(base[:-1]) * {
+            'k': 1024,
+            'M': 1024 ** 2,
+            'G': 1024 ** 3,
+        }[base[-1]]
+
+    else:
+        return int(base)
+
+
+filenames = args.filename
 inputs, outputs = [], []
 
-for name in args.filename:
+for name in filenames:
     (base, ext) = os.path.splitext(name)
 
     if ext == '.trace':
         outputs.append(os.path.getsize(name))
     else:
-        if base[-1].isalpha():
-            size = int(base[:-1]) * {
-                'k': 1024,
-                'M': 1024 ** 2,
-                'G': 1024 ** 3,
-            }[base[-1]]
-
-        else:
-            size = int(base)
-
-        inputs.append(size)
-
+        inputs.append(size(base))
 
 print('Read %d input and %d output sizes' % (len(inputs), len(outputs)))
+
+
+# If we were only given trace files, infer the input sizes from the trace
+# files' names.
+if len(inputs) == 0:
+    for name in filenames:
+        (base, _) = os.path.splitext(name)
+        inputs.append(size(base))
 
 
 import matplotlib.pyplot as plt
