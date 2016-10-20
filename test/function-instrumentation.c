@@ -77,7 +77,7 @@ main(int argc, char *argv[])
 
 	printf("Then bar():\n");
 	bar(4, "5");
-	// CHECK-OUTPUT: enter bar: 4 "5"
+	// CHECK-OUTPUT: enter bar: 4 0x{{[0-9a-z]+}}
 	// CHECK-OUTPUT: bar(4, "5")
 	// CHECK-OUTPUT-NOT: leave bar
 

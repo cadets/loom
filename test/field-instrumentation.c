@@ -107,8 +107,8 @@ main(int argc, char *argv[])
 	// CHECK: [[MESSAGE_PTR:%.+]] = getelementptr {{.*}}%struct.foo, [[FOO]]
 	// CHECK: [[MESSAGE:%.+]] = load i8*, i8** [[MESSAGE_PTR]]
 	// CHECK: call void @[[PREFIX]]_load_struct_foo_field_f_string([[FOO]], i8* [[MESSAGE]])
-	// CHECK-OUTPUT: foo.f_string load: [[FOO]] "[[MESSAGE:.*]]"
-	// CHECK-OUTPUT: message: '[[MESSAGE]]'
+	// CHECK-OUTPUT: foo.f_string load: [[FOO]] 0x{{[0-9a-z]+}}
+	// CHECK-OUTPUT: message: '{{.*}}'
 	const char *message = f.f_string;
 	printf("message: '%s'\n", message);
 

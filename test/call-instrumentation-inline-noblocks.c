@@ -81,7 +81,7 @@ main(int argc, char *argv[])
 	printf("Then bar():\n");
 
 	// We should instrument bar's call but not return:
-	// CHECK-OUTPUT: call bar: 4 "5"
+	// CHECK-OUTPUT: call bar: 4 0x{{[0-9a-z]+}}
 	bar(4, "5");
 	// CHECK-OUTPUT-NOT: return bar
 
