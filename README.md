@@ -104,6 +104,18 @@ hook_prefix: __test_hook
 logging: printf
 
 #
+# Loom can report events via FreeBSD's ktrace(1) mechanism, either from
+# the kernel ("kernel") or from userspace via the utrace(2) system call.
+#
+ktrace: utrace
+
+#
+# Loom currently serializes event information for, e.g., ktrace reporting
+# using libnv. Support for other serialization schemes can be added.
+#
+serialization: nv
+
+#
 # Specify how/when functions should be instrumented.
 #
 # Functions can be instrumented on the caller side (before/after the call)
