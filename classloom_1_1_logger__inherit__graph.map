@@ -1,4 +1,4 @@
 <map id="loom::Logger" name="loom::Logger">
-<area shape="rect" id="node2" href="$classloom_1_1_k_trace_logger.html" title="A logging technique that serializes values with libnv and writes them to the BSD ktrace framework..." alt="" coords="5,217,160,314"/>
-<area shape="rect" id="node3" href="$classloom_1_1_simple_logger.html" title="A logging technique that requires a single call to a printf&#45;like function. " alt="" coords="184,169,336,362"/>
+<area shape="rect" id="node2" href="$classloom_1_1_k_trace_logger.html" title="A logging technique that serializes values with libnv and writes them to the BSD ktrace framework..." alt="" coords="5,225,160,322"/>
+<area shape="rect" id="node3" href="$classloom_1_1_simple_logger.html" title="A logging technique that requires a single call to a printf&#45;like function. " alt="" coords="184,169,357,378"/>
 </map>

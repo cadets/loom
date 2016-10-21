@@ -18,6 +18,7 @@
   $(document).ready(function() { init_search(); });
 </script>
         <link href="doxygen.css" rel="stylesheet" type="text/css" />
+        <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
         <link href='https://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
@@ -120,7 +121,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1_simple_logger__inherit__graph.svg" width="163" height="368"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classloom_1_1_simple_logger__inherit__graph.svg" width="184" height="384"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <table class="memberdecls">
@@ -170,14 +171,10 @@ virtual llvm::StringRef&#160;</td><td class="memItemRight" valign="bottom"><a cl
 virtual llvm::FunctionType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1_simple_logger.html#aafe39fe3cfa3d8bdb2fe808d2c03e261">GetType</a> ()</td></tr>
 <tr class="memdesc:aafe39fe3cfa3d8bdb2fe808d2c03e261"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the type of the logging function, often <code>int (const char*, ...)</code>. <br /></td></tr>
 <tr class="separator:aafe39fe3cfa3d8bdb2fe808d2c03e261"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0820ca9f354e21bf73f2c790be3827f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0820ca9f354e21bf73f2c790be3827f0"></a>
-virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1_simple_logger.html#a0820ca9f354e21bf73f2c790be3827f0">CreateFormatString</a> (llvm::IRBuilder&lt;&gt; &amp;, llvm::StringRef Prefix, llvm::ArrayRef&lt; <a class="el" href="_i_r_utils_8hh.html#ac8f6736a7431c490b8367a9b13009ee4">Parameter</a> &gt;, llvm::StringRef Suffix, bool SuppressUniqueness)=0</td></tr>
-<tr class="memdesc:a0820ca9f354e21bf73f2c790be3827f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a format string that we can pass to the logging function. <br /></td></tr>
-<tr class="separator:a0820ca9f354e21bf73f2c790be3827f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a268e9eebacf869059ef806f9acedc568"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a268e9eebacf869059ef806f9acedc568"></a>
-llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1_simple_logger.html#a268e9eebacf869059ef806f9acedc568">CreateFormatString</a> (llvm::IRBuilder&lt;&gt; &amp;, llvm::StringRef Prefix, llvm::ArrayRef&lt; llvm::Value * &gt;, llvm::StringRef Suffix, bool SuppressUniqueness)</td></tr>
-<tr class="memdesc:a268e9eebacf869059ef806f9acedc568"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a format string that we can pass to the logging function. <br /></td></tr>
-<tr class="separator:a268e9eebacf869059ef806f9acedc568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89bce8396f68a65377ed1b05af978dde"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89bce8396f68a65377ed1b05af978dde"></a>
+virtual llvm::Value *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1_simple_logger.html#a89bce8396f68a65377ed1b05af978dde">CreateFormatString</a> (llvm::IRBuilder&lt;&gt; &amp;, llvm::StringRef Prefix, llvm::ArrayRef&lt; llvm::Value * &gt;, llvm::StringRef Suffix, bool SuppressUniqueness)=0</td></tr>
+<tr class="memdesc:a89bce8396f68a65377ed1b05af978dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a format string that we can pass to the logging function. <br /></td></tr>
+<tr class="separator:a89bce8396f68a65377ed1b05af978dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88e290e3bc2e66e6d20aeb7abe18c343"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; llvm::Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classloom_1_1_simple_logger.html#a88e290e3bc2e66e6d20aeb7abe18c343">Adapt</a> (llvm::ArrayRef&lt; llvm::Value * &gt;, llvm::IRBuilder&lt;&gt; &amp;)</td></tr>
 <tr class="memdesc:a88e290e3bc2e66e6d20aeb7abe18c343"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapt a set of values into a form that can be logged.  <a href="#a88e290e3bc2e66e6d20aeb7abe18c343">More...</a><br /></td></tr>
 <tr class="separator:a88e290e3bc2e66e6d20aeb7abe18c343"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -271,7 +268,7 @@ llvm::Module &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <p>This function adapts values as necessary and returns a vector of possibly-adapted values. In the best case, nothing requires adaptation, the IRBuilder is not used and the original values are returned. In the worse case, everything requires adaptation and all of the values in the returned vector will be new, derived from the originals using the supplied IRBuilder.</p>
 <dl class="section return"><dt>Returns</dt><dd>a vector of possibly-adapted values </dd></dl>
 
-<p>Definition at line <a class="el" href="_logger_8cc_source.html#l00153">153</a> of file <a class="el" href="_logger_8cc_source.html">Logger.cc</a>.</p>
+<p>Definition at line <a class="el" href="_logger_8cc_source.html#l00138">138</a> of file <a class="el" href="_logger_8cc_source.html">Logger.cc</a>.</p>
 
 </div>
 </div>
