@@ -94,7 +94,7 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
 
     // Don't use the address of an LLVM intrinsic: report its name instead.
     if (Function *F = dyn_cast<Function>(V)) {
-      if (F->hasLLVMReservedName()) {
+      if (F->getName().startswith("llvm.")) {
         V = IRBuilder<>(I).CreateGlobalStringPtr(F->getName(), "fn_name");
       }
     }
