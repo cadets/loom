@@ -365,6 +365,10 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
 
 bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
 {
+  if (not T.hasName()) {
+    return false;
+  }
+
   if (not T.getName().startswith("struct.")) {
     assert(T.getName().startswith("union."));
     return false;
