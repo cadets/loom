@@ -21,6 +21,7 @@ endforeach(base)
 list(APPEND SOURCES OptPass.cc)
 
 file(COPY ${HEADERS} DESTINATION ${CMAKE_BINARY_DIR}/include/loom)
-install(FILES ${HEADERS} DESTINATION "include/loom")
+install(FILES ${HEADERS} COMPONENT "development" DESTINATION "include/loom")
 
 add_llvm_loadable_module(LLVMLoom ${SOURCES})
+install(TARGETS LLVMLoom COMPONENT "runtime" DESTINATION "lib")
