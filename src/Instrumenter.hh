@@ -110,6 +110,8 @@ public:
               llvm::ArrayRef<llvm::Value*> NewArgs,
               ParamPosition Position = ParamPosition::End);
 
+  llvm::Module& getModule() { return Mod; }
+
 
 private:
   Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy>);
