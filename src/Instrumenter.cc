@@ -34,6 +34,7 @@
 #include "Logger.hh"
 
 #include <llvm/IR/Module.h>
+#include <llvm/Transforms/Utils/BasicBlockUtils.h>
 
 #include <sstream>
 
@@ -310,6 +311,38 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
 
   Strategy->Instrument(Store, InstrName, FormatStringPrefix,
                        Parameters, Arguments);
+
+  return true;
+}
+
+
+bool Instrumenter::Extend(CallInst *Call, StringRef NewName,
+                          ArrayRef<Value*> NewArgs, ParamPosition Position)
+{
+  Function *F = Call->getCalledFunction();
+  FunctionType *FT = F->getFunctionType();
+
+  // Create the new function and call by adding parameters and arguments
+  // to the front or the back of the existing arguments and parameters.
+  std::vector<Type*> ParamTypes = FT->params();
+  SmallVector<Value*, 4> Arguments(Call->arg_begin(), Call->arg_end());
+
+  for (Value *Arg : NewArgs) {
+    if (Position == ParamPosition::End) {
+      Arguments.push_back(Arg);
+      ParamTypes.push_back(Arg->getType());
+    } else {
+      Arguments.insert(Arguments.begin(), Arg);
+      ParamTypes.insert(ParamTypes.begin(), Arg->getType());
+    }
+  }
+
+  Constant *NewFn = Mod.getOrInsertFunction(NewName,
+    FunctionType::get(FT->getReturnType(), ParamTypes, FT->isVarArg()));
+
+  // Create the new call to the new function and replace the old call with it.
+  CallInst *NewCall = CallInst::Create(NewFn, Arguments);
+  ReplaceInstWithInst(Call, NewCall);
 
   return true;
 }

@@ -85,6 +85,31 @@ public:
   bool Instrument(llvm::GetElementPtrInst*, llvm::StoreInst*,
                   llvm::StringRef FieldName);
 
+  //! Where parameters can be added to a function's parameter list.
+  enum class ParamPosition { Beginning, End };
+
+  /**
+   * Adapt a function call to use a function with an extended API.
+   *
+   * This is helpful for converting code that uses an existing API to use
+   * an extended version of the same function with additional metadata.
+   * This is an alternative to run-time linker tricks such as LD_PRELOAD.
+   *
+   * This method can only be used to extend function calls by adding additional
+   * arguments at the beginning or the end of the parameter list: all of the
+   * original arguments will still be passed and the return value will not
+   * be modified.
+   *
+   * @param   Call        the original function call: will be replaced with a
+   *                      call to the new, extended function
+   * @param   NewName     the name of the new, extended function
+   * @param   NewArgs     the arguments to be added to the call
+   * @param   Position    where the new parameters should be added
+   */
+  bool Extend(llvm::CallInst *Call, llvm::StringRef NewName,
+              llvm::ArrayRef<llvm::Value*> NewArgs,
+              ParamPosition Position = ParamPosition::End);
+
 
 private:
   Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy>);
