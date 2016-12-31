@@ -106,9 +106,9 @@ public:
    * @param   NewArgs     the arguments to be added to the call
    * @param   Position    where the new parameters should be added
    */
-  bool Extend(llvm::CallInst *Call, llvm::StringRef NewName,
-              llvm::ArrayRef<llvm::Value*> NewArgs,
-              ParamPosition Position = ParamPosition::End);
+  llvm::CallInst* Extend(llvm::CallInst *Call, llvm::StringRef NewName,
+                         llvm::ArrayRef<llvm::Value*> NewArgs,
+                         ParamPosition Position = ParamPosition::End);
 
   llvm::Module& getModule() { return Mod; }
 

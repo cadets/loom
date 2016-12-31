@@ -316,8 +316,8 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
 }
 
 
-bool Instrumenter::Extend(CallInst *Call, StringRef NewName,
-                          ArrayRef<Value*> NewArgs, ParamPosition Position)
+CallInst* Instrumenter::Extend(CallInst *Call, StringRef NewName,
+                               ArrayRef<Value*> NewArgs, ParamPosition Position)
 {
   Function *F = Call->getCalledFunction();
   FunctionType *FT = F->getFunctionType();
@@ -344,7 +344,7 @@ bool Instrumenter::Extend(CallInst *Call, StringRef NewName,
   CallInst *NewCall = CallInst::Create(NewFn, Arguments);
   ReplaceInstWithInst(Call, NewCall);
 
-  return true;
+  return NewCall;
 }
 
 
