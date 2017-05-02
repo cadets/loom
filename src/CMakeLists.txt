@@ -1,5 +1,6 @@
 set(FILES
 	DebugInfo
+    DTraceLogger
 	Instrumentation
 	Instrumenter
 	InstrStrategy
