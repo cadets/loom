@@ -31,6 +31,7 @@
  */
 
 #include "KTraceLogger.hh"
+#include "DTraceLogger.hh"
 #include "Policy.hh"
 using namespace llvm;
 using namespace loom;
@@ -59,6 +60,15 @@ std::vector<unique_ptr<Logger>> Policy::Loggers(Module& Mod) const
     break;
 
   case Policy::KTraceTarget::None:
+    break;
+  }
+  
+  switch (this->DTrace()) {
+  case Policy::DTraceTarget::Userspace:
+    Loggers.emplace_back(new DTraceLogger(Mod));
+    break;
+
+  case Policy::DTraceTarget::None:
     break;
   }
 

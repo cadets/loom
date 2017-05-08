@@ -76,6 +76,13 @@ class Policy
 
   //! Should we use ktrace logging?
   virtual KTraceTarget KTrace() const = 0;
+  
+  //! Ways that we can use DTrace (or not).
+  enum class DTraceTarget { Userspace, None };
+
+  //! Should we use ktrace logging?
+  virtual DTraceTarget DTrace() const = 0;
+
 
   //! How should we serialize data?
   virtual std::unique_ptr<Serializer> Serialization(llvm::Module&) const = 0;
