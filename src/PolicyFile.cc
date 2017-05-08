@@ -139,6 +139,9 @@ struct PolicyFile::PolicyFileData {
 
   /// KTrace-based logging.
   Policy::KTraceTarget KTrace;
+  
+  /// DTrace-based logging.
+  Policy::DTraceTarget DTrace;
 
   /// Serialization.
   SerializationType Serial;
@@ -191,6 +194,15 @@ template <> struct yaml::ScalarEnumerationTraits<Policy::KTraceTarget> {
     io.enumCase(T, "kernel", Policy::KTraceTarget::Kernel);
     io.enumCase(T, "utrace", Policy::KTraceTarget::Userspace);
     io.enumCase(T, "none", Policy::KTraceTarget::None);
+  }
+};
+
+/// Converts an DTraceTarget to/from YAML.
+template <>
+struct yaml::ScalarEnumerationTraits<Policy::DTraceTarget> {
+  static void enumeration(yaml::IO &io, Policy::DTraceTarget& T) {
+    io.enumCase(T, "userspace", Policy::DTraceTarget::Userspace);
+    io.enumCase(T, "none", Policy::DTraceTarget::None);
   }
 };
 
@@ -278,6 +290,7 @@ template <> struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("strategy", policy.Strategy, InstrStrategy::Kind::Callout);
     io.mapOptional("logging", policy.Logging, SimpleLogger::LogType::None);
     io.mapOptional("ktrace", policy.KTrace, Policy::KTraceTarget::None);
+    io.mapOptional("dtrace", policy.DTrace, Policy::DTraceTarget::None);
     io.mapOptional("serialization", policy.Serial, SerializationType::None);
     io.mapOptional("block_structure", policy.UseBlockStructure, false);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
@@ -322,7 +335,10 @@ SimpleLogger::LogType PolicyFile::Logging() const { return Policy->Logging; }
 
 Policy::KTraceTarget PolicyFile::KTrace() const { return Policy->KTrace; }
 
-unique_ptr<Serializer> PolicyFile::Serialization(Module &Mod) const {
+Policy::DTraceTarget PolicyFile::DTrace() const { return Policy->DTrace; }
+
+unique_ptr<Serializer> PolicyFile::Serialization(Module& Mod) const
+{
   switch (Policy->Serial) {
   case SerializationType::LibNV:
     return unique_ptr<Serializer>(new NVSerializer(Mod));

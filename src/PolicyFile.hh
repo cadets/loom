@@ -61,6 +61,8 @@ public:
   SimpleLogger::LogType Logging() const override;
 
   KTraceTarget KTrace() const override;
+  
+  DTraceTarget DTrace() const override;
 
   std::unique_ptr<Serializer> Serialization(llvm::Module &) const override;
 
