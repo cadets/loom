@@ -32,15 +32,17 @@
 
 #include "DTraceLogger.hh"
 
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/TypeBuilder.h>
+#include <llvm/Support/raw_ostream.h>
 
 using namespace loom;
 using namespace llvm;
 using std::vector;
 
 DTraceLogger::DTraceLogger(llvm::Module& Mod)
-  : Logger(Mod){};
+  : Logger(Mod){ };
 
 Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
                          StringRef Name, StringRef Descrip,
@@ -50,19 +52,22 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
   IRBuilder<> B(I);
 
   LLVMContext &Ctx = Mod.getContext();
-  std::vector<llvm::Type*> params = {   TypeBuilder<void*, false>::get(Ctx),
-                                        TypeBuilder<void*, false>::get(Ctx),
-                                        TypeBuilder<void*, false>::get(Ctx),
-                                        TypeBuilder<void*, false>::get(Ctx),
-                                        TypeBuilder<void*, false>::get(Ctx),
-                                        TypeBuilder<void*, false>::get(Ctx)};
+  Type* param = TypeBuilder<uintptr_t, false>::get(Ctx);
+  std::vector<Type*> params = { param, param, param, param, param, param };
   auto *FT = FunctionType::get( TypeBuilder<int, false>::get(Ctx), params, false);
   
   Constant *F = Mod.getOrInsertFunction("dt_probe", FT);
 
-  ArrayRef<Value*> args( Mod.getNamedValue(Name) );
+  Value* args[6];
+  for (int i = 0; i < 6; i++)
+  {
+      Value* ptr = ConstantInt::get( param , 0 );
+      args[i] = ptr;
+  }
 
-  return B.CreateCall(F, args);
+  ArrayRef<Value*> argsRef(args, 6);
+
+  return B.CreateCall(F, argsRef);
 
 }
 
