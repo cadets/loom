@@ -175,7 +175,7 @@ struct yaml::ScalarEnumerationTraits<Policy::KTraceTarget> {
   }
 };
 
-/// Converts an KTraceTarget to/from YAML.
+/// Converts an DTraceTarget to/from YAML.
 template <>
 struct yaml::ScalarEnumerationTraits<Policy::DTraceTarget> {
   static void enumeration(yaml::IO &io, Policy::DTraceTarget& T) {
