@@ -76,8 +76,10 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
     Type *T = Values[i]->getType();
     if (T->isPointerTy()) {
         ptr = B.CreatePtrToInt(Values[i], param);
+    } else if (T->isIntegerTy()) {
+        ptr = B.CreateSExt(Values[i], param);
     } else {
-      ptr = ConstantInt::get( param , 0 );
+      ptr = ConstantInt::get(param , 0);
     }
     
     args[i] = ptr;
