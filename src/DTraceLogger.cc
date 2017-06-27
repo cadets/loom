@@ -74,7 +74,7 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
     Value *ptr;
 
     Type *T = Values[i]->getType();
-    if (dyn_cast<PointerType>(T)) {
+    if (T->isPointerTy()) {
         ptr = B.CreatePtrToInt(Values[i], param);
     } else {
       ptr = ConstantInt::get( param , 0 );
