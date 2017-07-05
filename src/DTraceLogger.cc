@@ -78,6 +78,11 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
         ptr = B.CreatePtrToInt(Values[i], param);
     } else if (T->isIntegerTy()) {
         ptr = B.CreateSExt(Values[i], param);
+    } else if (T->isDoubleTy()) {
+        ptr = B.CreateBitCast(Values[i], TypeBuilder<int64_t, false>::get(Ctx));
+    } else if (T->isFloatTy()) {
+        auto *BC = B.CreateBitCast(Values[i], TypeBuilder<int32_t, false>::get(Ctx));
+        ptr = B.CreateSExt(BC, param);
     } else {
       ptr = ConstantInt::get(param , 0);
     }
