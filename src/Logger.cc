@@ -84,17 +84,6 @@ unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
 }
 
 
-Value* Logger::Log(Instruction *I, Function::ArgumentListType& Args,
-                   StringRef Name, StringRef Descrip, bool SuppressUniq) {
-
-  vector<Value*> Values(Args.size());
-  std::transform(Args.begin(), Args.end(), Values.begin(),
-                 [&](Value& V) { return &V; });
-
-  return Log(I, Values, Name, Descrip, SuppressUniq);
-}
-
-
 Value* SimpleLogger::Log(Instruction *I, ArrayRef<Value*> Values,
                          StringRef /*Name*/, StringRef Description,
                          bool SuppressUniqueness) {

@@ -211,7 +211,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
     InstrParameters.emplace_back("retval", FnType->getReturnType());
   }
 
-  for (auto& Arg : Fn.getArgumentList()) {
+  for (auto &Arg : Fn.args()) {
     Arguments.push_back(&Arg);
     InstrParameters.emplace_back(Arg.getName(), Arg.getType());
   }

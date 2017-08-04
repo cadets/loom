@@ -128,11 +128,10 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   // instrumentation function's parameters rather than values that we we see
   // within this context. Convert these from llvm::Argument& to llvm::Value*.
   //
-  auto &InstrParams = InstrFn->getArgumentList();
-  SmallVector<Value*, 4> InstrValues(InstrParams.size());
-
-  std::transform(InstrParams.begin(), InstrParams.end(), InstrValues.begin(),
-                 [](Argument &Arg) { return &Arg; });
+  SmallVector<Value*, 4> InstrValues;
+  for (Argument &Arg : InstrFn->args()) {
+    InstrValues.push_back(&Arg);
+  }
 
   //
   // Find (if the instrumentation function already exists) or create (if it
@@ -163,10 +162,9 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     AddLogging(PreambleEnd, InstrValues, Name, Descrip, SuppressUniq);
 
     // Also set instrumentation function's parameter names:
-    SymbolTableList<Argument>& ArgList = InstrFn->getArgumentList();
     size_t i = 0;
-    for (auto a = ArgList.begin(); a != ArgList.end(); a++) {
-      a->setName(Params[i].first);
+    for (Argument &Arg : InstrFn->args()) {
+      Arg.setName(Params[i].first);
       i++;
     }
 
