@@ -173,8 +173,6 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     EndBlock = FindBlock("exit", *InstrFn);
   }
 
-  InstrFn->dump();
-
   // Call the instrumentation function:
   CallInst *Call = CallInst::Create(InstrFn, Values);
 
