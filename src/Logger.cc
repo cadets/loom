@@ -1,6 +1,6 @@
 //! @file Logger.cc  Definition of @ref loom::Logger.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -68,6 +68,11 @@ namespace {
   };
 
 } // anonymous namespace
+
+
+Logger::~Logger()
+{
+}
 
 
 unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {

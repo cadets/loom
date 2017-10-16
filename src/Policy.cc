@@ -1,6 +1,6 @@
 //! @file Policy.cc  Definition of @ref loom::Policy.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -35,6 +35,11 @@
 using namespace llvm;
 using namespace loom;
 using std::unique_ptr;
+
+
+Policy::~Policy()
+{
+}
 
 
 std::vector<unique_ptr<Logger>> Policy::Loggers(Module& Mod) const

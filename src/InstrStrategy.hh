@@ -1,6 +1,6 @@
 //! @file InstrStrategy.hh  Declaration of @ref loom::InstrStrategy.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -59,6 +59,8 @@ public:
     Callout,    //!< Call out to a user-defined instrumentation function.
     Inline,     //!< Add instrumentation inline with the instrumented code.
   };
+
+  virtual ~InstrStrategy();
 
   /**
    * Create a new instrumentation strategy (callout, inline, etc.).

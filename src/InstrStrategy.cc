@@ -1,6 +1,6 @@
 //! @file InstrStrategy.cc  Definition of @ref loom::InstrStrategy.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -82,6 +82,11 @@ unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, bool UseBlocks)
   case InstrStrategy::Kind::Inline:
     return unique_ptr<InstrStrategy>(new InlineStrategy(UseBlocks));
   }
+}
+
+
+InstrStrategy::~InstrStrategy()
+{
 }
 
 

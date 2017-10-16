@@ -1,6 +1,6 @@
 //! @file Logger.hh  Declaration of @ref loom::Logger.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -51,6 +51,8 @@ namespace loom {
 /// Something that can be used to log events, e.g., `printf` or `libxo`.
 class Logger {
 public:
+  virtual ~Logger();
+
   /**
    * Create code to log a set of values using the underlying mechanism.
    *

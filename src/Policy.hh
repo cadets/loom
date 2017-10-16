@@ -1,6 +1,6 @@
 //! @file Policy.hh  Definition of @ref loom::Policy.
 /*
- * Copyright (c) 2015-2016 Jonathan Anderson
+ * Copyright (c) 2015-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -56,6 +56,8 @@ namespace loom {
 class Policy
 {
   public:
+  virtual ~Policy();
+
   /**
    * The instrumentation strategy that should be employed by this pass.
    *
