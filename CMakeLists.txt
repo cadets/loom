@@ -25,8 +25,8 @@ set(LLVM_BINARY_DIR ${LLVM_DIR}/../../../bin)
 # Always use C++11.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-# Always build with all warnings.
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wstrict-prototypes")
+# Enable warnings, i.e., suppress LLVM's insertion of `-w`.
+set(LLVM_ENABLE_WARNINGS TRUE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 add_subdirectory(doc)
