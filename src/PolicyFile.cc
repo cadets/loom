@@ -71,21 +71,21 @@ struct FnInstrumentation
   Policy::Directions Body;
 };
 
-/// An operation that can be performed on a structure field
-enum class FieldOperation
+/// An operation that can be performed on a variable
+enum class Operation
 {
   Read,
   Write,
 };
 
-/// A description of how to instrument a function.
+/// A description of which operations to instrument on a structure field.
 struct FieldInstrumentation
 {
   /// Field name.
   string Name;
 
   /// Operations (read/write) that should be instrumented.
-  vector<FieldOperation> Operations;
+  vector<Operation> Operations;
 };
 
 /// Serialization strategies we can use (libnv, MessagePack, null...).
@@ -104,6 +104,15 @@ struct StructInstrumentation
   vector<FieldInstrumentation> Fields;
 };
 
+/// A description of how to instrumnt a global variables.
+struct GlobalInstrumentation
+{
+	/// Name of the global variable to instrument
+	string Name;
+
+	/// Operations (read/write) that should be instrumented.
+	vector<Operation> Operations;
+};
 
 /// Everything contained in an instrumentation description file.
 struct PolicyFile::PolicyFileData
@@ -137,6 +146,9 @@ struct PolicyFile::PolicyFileData
 
   /// Structure field instrumentation.
   vector<StructInstrumentation> Structures;
+
+  /// Global variable insstrumentation.
+  vector<GlobalInstrumentation> Globals;
 };
 
 
@@ -222,12 +234,12 @@ struct yaml::MappingTraits<FnInstrumentation> {
   }
 };
 
-/// Converts a FieldOperation to/from YAML.
+/// Converts a Operation to/from YAML.
 template <>
-struct yaml::ScalarEnumerationTraits<FieldOperation> {
-  static void enumeration(yaml::IO &io, FieldOperation& Dir) {
-    io.enumCase(Dir, "read",  FieldOperation::Read);
-    io.enumCase(Dir, "write", FieldOperation::Write);
+struct yaml::ScalarEnumerationTraits<Operation> {
+  static void enumeration(yaml::IO &io, Operation& Dir) {
+    io.enumCase(Dir, "read",  Operation::Read);
+    io.enumCase(Dir, "write", Operation::Write);
   }
 };
 
@@ -249,6 +261,15 @@ struct yaml::MappingTraits<StructInstrumentation> {
   }
 };
 
+///  COnverts GlobalInstrumentation to/from YAML.
+template<>
+struct yaml::MappingTraits<GlobalInstrumentation> {
+	static void  mapping(yaml::IO &io, GlobalInstrumentation &g) {
+		io.mapRequired("name",			g.Name);
+		io.mapRequired("operations",	g.Operations);
+	}
+};
+
 /// Converts PolicyFileData to/from YAML.
 template <>
 struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
@@ -263,6 +284,7 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("everything", policy.InstrumentEverything, false);
     io.mapOptional("functions",   policy.Functions);
     io.mapOptional("structures",  policy.Structures);
+	io.mapOptional("globals", policy.Globals);
   }
 };
 
@@ -419,7 +441,7 @@ PolicyFile::FieldReadHook(const llvm::StructType& T, StringRef Field) const
 
     for (auto& F : S.Fields) {
       if (F.Name == Field) {
-        return vecContains(F.Operations, FieldOperation::Read);
+        return vecContains(F.Operations, Operation::Read);
       }
     }
   }
@@ -445,7 +467,7 @@ PolicyFile::FieldWriteHook(const llvm::StructType& T, StringRef Field) const
 
     for (auto& F : S.Fields) {
       if (F.Name == Field) {
-        return vecContains(F.Operations, FieldOperation::Write);
+        return vecContains(F.Operations, Operation::Write);
       }
     }
   }
