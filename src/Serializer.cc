@@ -1,6 +1,6 @@
 //! @file Serializer.cc  Definition of @ref loom::Serializer.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -45,6 +45,11 @@ std::unique_ptr<Serializer> Serializer::None()
 Serializer::Serializer(llvm::LLVMContext &Ctx)
   : Ctx(Ctx), Byte(IntegerType::get(Ctx, 8)),
     BytePtr(PointerType::getUnqual(Byte)), SizeT(IntegerType::get(Ctx, 64))
+{
+}
+
+
+Serializer::~Serializer()
 {
 }
 

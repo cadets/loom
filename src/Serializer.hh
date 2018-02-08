@@ -1,6 +1,6 @@
 //! @file Serializer.hh  Declaration of @ref loom::Serializer.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -41,6 +41,8 @@ namespace loom {
 //! A tool that can transform a set of values into a serialized representation.
 class Serializer {
 public:
+  virtual ~Serializer();
+
   //! A buffer can be described using a pointer and a length.
   typedef std::pair<llvm::Value*, llvm::Value*> BufferInfo;
 

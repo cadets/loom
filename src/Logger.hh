@@ -1,6 +1,6 @@
 //! @file Logger.hh  Declaration of @ref loom::Logger.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -51,6 +51,8 @@ namespace loom {
 /// Something that can be used to log events, e.g., `printf` or `libxo`.
 class Logger {
 public:
+  virtual ~Logger();
+
   /**
    * Create code to log a set of values using the underlying mechanism.
    *
@@ -71,27 +73,6 @@ public:
                                  llvm::StringRef Name,
                                  llvm::StringRef Description,
                                  bool SuppressUniqueness) = 0;
-
-  /**
-   * Create code to log function arguments using the underlying mechanism.
-   *
-   * @param  I             Insertion point for the instrumentation
-   * @param  Args          Arguments to log
-   * @param  Name          Machine-readable name of the logged event
-   *                       (may not be used by all Logger types)
-   * @param  Description   Short, human-readable event description
-   *                       (may not be used by all Logger types)
-   * @param  SuppressUniqueness  Suppress uniqueness among format strings
-   *                       to the extent possible (e.g., for libxo, which allows
-   *                       values' names to be specified as well as types).
-   *
-   * @returns the last instruction (if any) in the generated instrumentation
-   */
-  virtual llvm::Value* Log(llvm::Instruction *I,
-                                 llvm::Function::ArgumentListType& Args,
-                                 llvm::StringRef Name,
-                                 llvm::StringRef Description,
-                                 bool SuppressUniqueness);
 
 protected:
   Logger(llvm::Module& Mod) : Mod(Mod) {}

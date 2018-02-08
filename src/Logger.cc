@@ -1,6 +1,6 @@
 //! @file Logger.cc  Definition of @ref loom::Logger.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2016-2017 Jonathan Anderson
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -70,6 +70,11 @@ namespace {
 } // anonymous namespace
 
 
+Logger::~Logger()
+{
+}
+
+
 unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
   switch (Log) {
   case LogType::Printf:
@@ -81,17 +86,6 @@ unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
   case LogType::None:
     return unique_ptr<SimpleLogger>();
   }
-}
-
-
-Value* Logger::Log(Instruction *I, Function::ArgumentListType& Args,
-                   StringRef Name, StringRef Descrip, bool SuppressUniq) {
-
-  vector<Value*> Values(Args.size());
-  std::transform(Args.begin(), Args.end(), Values.begin(),
-                 [&](Value& V) { return &V; });
-
-  return Log(I, Values, Name, Descrip, SuppressUniq);
 }
 
 
