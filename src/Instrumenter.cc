@@ -159,9 +159,11 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   const string Description = Return ? "return" : "call";
   const string FormatStringPrefix = Description + " " + TargetName + ":";
+  //Name is actually a function, which returns the appropriate (string) name
   const string InstrName = Name({ Description, TargetName });
 
   // Start by copying static and dynamic value details from the target function.
+  //This does actually get the formal parameters
   ParamVec Parameters = GetParameters(Target);
   vector<Value*> Arguments(Call->getNumArgOperands());
   std::copy(Call->arg_begin(), Call->arg_end(), Arguments.begin());

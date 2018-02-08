@@ -360,6 +360,7 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
     }
   }
 
+  //SNL: In other words, this returns an empty vector
   return Policy::Directions();
 }
 

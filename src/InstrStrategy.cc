@@ -160,6 +160,8 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
       End = PreambleEnd;
     }
 
+    //SNL: This is the line that actually implements the functionality
+    //in the generated instrumentation function
     AddLogging(PreambleEnd, InstrValues, Name, Descrip, SuppressUniq);
 
     // Also set instrumentation function's parameter names:

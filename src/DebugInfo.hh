@@ -79,6 +79,7 @@ public:
   const DebugType* Get(llvm::Value *V) const
   {
     if (auto *I = llvm::dyn_cast<llvm::Instruction>(V)) {
+      //DebugNode is defined above
       llvm::SmallVector<DebugNode, 4> Debug;
       I->getAllMetadata(Debug);
 
