@@ -31,7 +31,7 @@
 #include "Strings.hh"
 
 #include <algorithm>
-//#include <iterator>
+#include <iterator>
 #include <sstream>
 
 using namespace std;
