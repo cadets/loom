@@ -67,6 +67,17 @@ namespace {
                               StringRef Suffix, bool SuppressUniq) override;
   };
 
+  //! A logger that calls my `stderr_printf()`.
+  class Stderr_PrintfLogger : public SimpleLogger {
+  public:
+    Stderr_PrintfLogger(Module& Mod) : SimpleLogger(Mod) {}
+
+    StringRef FunctionName() const override { return "stderr_printf"; }
+    Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
+                              ArrayRef<Value*> Params,
+                              StringRef Suffix, bool SuppressUniq) override;
+  };
+
 } // anonymous namespace
 
 
@@ -79,6 +90,9 @@ unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
   switch (Log) {
   case LogType::Printf:
     return unique_ptr<SimpleLogger>(new PrintfLogger(Mod));
+
+  case LogType::Stderr_Printf:
+    return unique_ptr<SimpleLogger>(new Stderr_PrintfLogger(Mod));
 
   case LogType::Libxo:
     return unique_ptr<SimpleLogger>(new LibxoLogger(Mod));
@@ -222,6 +236,50 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 
 Value*
 PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
+                                 ArrayRef<Value*> Values, StringRef Suffix,
+                                 bool /*SuppressUniqueness*/) {
+
+  std::stringstream FormatString;
+
+  FormatString << Prefix.str();
+
+  for (Value *V : Values) {
+    Type *T = V->getType();
+
+    FormatString << " %";
+
+    if (T->isIntegerTy(8)) {
+      FormatString << "c";
+
+    } else if (T->isIntegerTy()) {
+      const unsigned Bits = dyn_cast<IntegerType>(T)->getBitWidth();
+
+      if (Bits > 64) {
+        FormatString << "ll";
+      } else if (Bits > 32) {
+        FormatString << "l";
+      }
+
+      FormatString << "d";
+
+    } else if (T->isFloatTy() || T->isDoubleTy()) {
+      FormatString << "f";
+
+    } else if (T->isPointerTy()) {
+      FormatString << "p";
+
+    } else {
+      assert(false);
+    }
+  }
+
+  FormatString << Suffix.str();
+
+  return Builder.CreateGlobalStringPtr(FormatString.str());
+}
+
+Value*
+Stderr_PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
                                  ArrayRef<Value*> Values, StringRef Suffix,
                                  bool /*SuppressUniqueness*/) {
 

@@ -90,6 +90,9 @@ public:
     /// The libc printf() function
     Printf,
 
+    //My added printer
+    Stderr_Printf,
+
     /// Juniper's libxo, which generates text or structured output
     Libxo,
 

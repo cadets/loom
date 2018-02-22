@@ -195,6 +195,7 @@ template <>
 struct yaml::ScalarEnumerationTraits<SimpleLogger::LogType> {
   static void enumeration(yaml::IO &io, SimpleLogger::LogType& T) {
     io.enumCase(T, "printf",  SimpleLogger::LogType::Printf);
+    io.enumCase(T, "stderr_printf",  SimpleLogger::LogType::Stderr_Printf);
     io.enumCase(T, "xo", SimpleLogger::LogType::Libxo);
     io.enumCase(T, "none", SimpleLogger::LogType::None);
   }
