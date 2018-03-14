@@ -141,6 +141,31 @@ class Policy
   virtual bool
     FieldWriteHook(const llvm::StructType& T, llvm::StringRef Field) const = 0;
 
+  /**
+   * A global value is relevant in some way to instrumentation.
+   *
+   * Since the process of iterating over debug metadata can be expensive,
+   * this method allows a policy to express which global values are to be
+   * instrumented in any way.
+   */
+  virtual bool GlobalValueMatters(const llvm::Value&) const = 0;
+
+  /**
+   * Should a read from a global variable be instrumented?
+   *
+   * @param   V     the value of the global being read from
+   */
+  virtual bool
+    GlobalReadHook(const llvm::Value& V) const = 0;
+
+  /**
+   * Should a write to a gloabl variable be instrumented?
+   *
+   * @param   V     the value of the global being written to
+   */
+  virtual bool
+    GlobalWriteHook(const llvm::Value& V) const = 0;
+
   //! Name an instrumentation function for a particular event type.
   virtual std::string
     InstrName(const std::vector<std::string>& Components) const = 0;

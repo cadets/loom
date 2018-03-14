@@ -118,9 +118,12 @@ bool OptPass::runOnModule(Module &Mod)
   std::unordered_map<Function*, Policy::Directions> Functions;
   std::unordered_map<CallInst*, Policy::Directions> Calls;
 
-  typedef std::pair<GetElementPtrInst*, std::string> FieldGEP;
-  std::unordered_map<LoadInst*, FieldGEP> FieldReads;
-  std::unordered_map<StoreInst*, FieldGEP> FieldWrites;
+  typedef std::pair<GetElementPtrInst*, std::string> NamedGEP;
+  std::unordered_map<LoadInst*, NamedGEP> FieldReads;
+  std::unordered_map<StoreInst*, NamedGEP> FieldWrites;
+
+  std::unordered_map<LoadInst*, NamedGEP> GlobalReads;
+  std::unordered_map<StoreInst*, NamedGEP> GlobalWrites;
 
   std::unordered_map<Instruction*, const DIVariable*> PointerInsts;
 
@@ -204,6 +207,37 @@ bool OptPass::runOnModule(Module &Mod)
             }
           }
         }
+		if (isa<GlobalVariable>(GEP->getPointerOperand()))
+		{
+			Value *V = GEP->getPointerOperand();
+			if (not P.GlobalValueMatters(*V))
+				continue;
+
+			const bool HookReads = P.GlobalReadHook(*V);
+			const bool HookWrites = P.GlobalWriteHook(*V);
+
+			std::string GlobalName = V->getName().str();
+			assert(not GlobalName.empty());
+
+			if (not HookReads and not HookWrites)
+				continue;
+
+			for (auto& Use:  GEP->uses()) {
+				User *U = Use.getUser();
+
+				if (HookReads) {
+					if (auto *Load = dyn_cast<LoadInst>(U)) {
+						GlobalReads[Load] = {GEP, GlobalName};
+					}
+				}
+
+				if (HookWrites) {
+					if (auto *Store = dyn_cast<StoreInst>(U)) {
+						GlobalWrites[Store] = {GEP, GlobalName};
+					}
+				}
+			}
+		}
       }
 
       // Is this a call to instrument?
@@ -256,6 +290,22 @@ bool OptPass::runOnModule(Module &Mod)
     StringRef FieldName = i.second.second;
 
     ModifiedIR |= Instr->Instrument(GEP, Store, FieldName);
+  }
+
+  for (auto& i : GlobalReads) {
+    LoadInst *Load = i.first;
+    GetElementPtrInst *GEP = i.second.first;
+    StringRef Name = i.second.second;
+
+    ModifiedIR |= Instr->Instrument(GEP, Load, Name);
+  }
+
+  for (auto& i : GlobalWrites) {
+    StoreInst *Store = i.first;
+    GetElementPtrInst *GEP = i.second.first;
+    StringRef Name = i.second.second;
+
+    ModifiedIR |= Instr->Instrument(GEP, Store, Name);
   }
 
   return ModifiedIR;
