@@ -233,10 +233,14 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
     }
 
     for (ReturnInst *Ret : Returns) {
+
       // This is a return: pass the return value and then the function's
       // parameters to the instrumentation.
       if (not voidFunction) {
         Arguments[0] = Ret->getReturnValue();
+      }
+      else {
+        FormatStringPrefix.append(" %%void%%");
       }
 
       Strategy->Instrument(Ret, InstrName, FormatStringPrefix,

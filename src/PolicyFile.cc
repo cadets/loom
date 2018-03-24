@@ -376,6 +376,7 @@ bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
     return false;
   }
 
+  //return true;/*
   StringRef Name = T.getName().substr(7);
 
   for (StructInstrumentation& S : Policy->Structures) {
@@ -384,7 +385,7 @@ bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
     }
   }
 
-  return false;
+  return false; // */
 }
 
 bool
