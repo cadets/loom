@@ -34,9 +34,11 @@
 #define LOOM_DEBUG_INFO_H
 
 #include <llvm/IR/Instruction.h>
+#include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/Metadata.h>
 #include <llvm/IR/ValueMap.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/IR/DebugInfoMetadata.h>
 
 
 namespace llvm {
@@ -98,7 +100,39 @@ public:
       }
     }
 
+    /* auto j = DbgValues.find(V);
+    if (j != DbgValues.end()) {
+      for (auto *MD : j->second) {
+        if (auto *DebugInfo = llvm::dyn_cast<DebugType>(MD)) {
+          return DebugInfo;
+        }
+      }
+    } // */
+
     return nullptr;
+  }
+
+  const llvm::DIVariable* GetGlobalDIVariable(llvm::GlobalVariable *G) {
+    //llvm::errs() << "In Get< GlobalVariable\n";
+    //DebugNode is defined above
+    llvm::SmallVector<DebugNode, 4> Debug;
+    G->getAllMetadata(Debug);
+
+    llvm::DIVariable * result = nullptr;
+
+    for (auto i : Debug) {
+      if (auto *DebugInfo = llvm::dyn_cast<llvm::DIVariable>(i.second)) {
+        //llvm::errs() << "Returning from Get<\n";
+        result = DebugInfo;
+        break;
+      }
+
+      if (auto *DebugInfo = llvm::dyn_cast<llvm::DIGlobalVariableExpression>(i.second)) {
+        result = DebugInfo->getVariable();
+      }
+    }
+
+    return result;
   }
 
 private:
@@ -121,12 +155,15 @@ private:
 
   llvm::Module& Mod;
   llvm::Function *DbgDeclare;
+  llvm::Function *DbgValue;
 
   /// Kinds of metadata that are used in this module.
   llvm::SmallVector<llvm::StringRef, 4> MetadataKinds;
 
   /// Declarations of metadata, i.e., metadata from `@llvm.db.declare()` calls.
   llvm::ValueMap<llvm::Value*, llvm::SmallVector<llvm::Metadata*, 4>> DbgDecls;
+  /// Declarations of metadata, i.e., metadata from `@llvm.db.value()` calls.
+  llvm::ValueMap<llvm::Value*, llvm::SmallVector<llvm::Metadata*, 4>> DbgValues;
 };
 
 } // namespace loom
