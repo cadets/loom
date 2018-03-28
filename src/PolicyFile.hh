@@ -63,6 +63,8 @@ class PolicyFile : public Policy
 
   bool InstrumentAll() const override;
 
+  bool InstrumentPointerInsts() const override;
+
   Policy::Directions
     CallHooks(const llvm::Function&) const override;
 
