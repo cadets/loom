@@ -91,6 +91,9 @@ class Policy
   //! Special case: instrument every single function.
   virtual bool InstrumentAll() const = 0;
 
+  //! Special case: instrument all load, store, and GEP instructions.
+  virtual bool InstrumentPointerInsts() const = 0;
+
   //! A direction that we can instrument: on the way in or on the way out.
   enum class Direction { In, Out };
 

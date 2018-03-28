@@ -65,6 +65,9 @@ public:
   /// Instrument an instruction generically: instruction name and values.
   bool Instrument(llvm::Instruction*);
 
+  /// Instrument an instruction generically with better info: instruction type and values.
+  bool InstrumentWisconsin(llvm::Instruction*);
+
   /// Instrument a function call in the call and/or return direction.
   bool Instrument(llvm::CallInst*, const Policy::Directions&);
 

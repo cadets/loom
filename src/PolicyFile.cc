@@ -129,6 +129,9 @@ struct PolicyFile::PolicyFileData
   /// Just instrument every instruction.
   bool InstrumentEverything;
 
+  /// Instrument all stores, loads and GEPs.
+  bool InstrumentPointerInsts;
+
   /// Function instrumentation.
   vector<FnInstrumentation> Functions;
 
@@ -249,6 +252,7 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("block_structure", policy.UseBlockStructure, false);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("everything", policy.InstrumentEverything, false);
+    io.mapOptional("pointerInsts", policy.InstrumentPointerInsts, false);
     io.mapOptional("functions",   policy.Functions);
     io.mapOptional("structures",  policy.Structures);
   }
@@ -328,6 +332,12 @@ bool
 PolicyFile::InstrumentAll() const
 {
   return Policy->InstrumentEverything;
+}
+
+bool
+PolicyFile::InstrumentPointerInsts() const
+{
+  return Policy->InstrumentPointerInsts;
 }
 
 

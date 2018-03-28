@@ -35,6 +35,8 @@
 
 #include <llvm/IR/Module.h>
 #include <llvm/Transforms/Utils/BasicBlockUtils.h>
+//TODO: separate this out
+#include "llvm/IR/DebugInfoMetadata.h"
 
 #include <sstream>
 
@@ -129,6 +131,90 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
 
   Strategy->Instrument(I, Name, Name, ValueDescriptions, Values,
                        Varargs, AfterInst, true);
+
+  return true;
+}
+
+bool Instrumenter::InstrumentWisconsin(llvm::Instruction *I)
+{
+
+  std::ostringstream LocationBuilder;
+
+  const DebugLoc dloc = I->getDebugLoc();
+  DILocation * loc = dloc.get();
+  if( loc ) {
+    LocationBuilder << loc->getFilename().str() << "@" << loc->getLine() << " ";
+  }
+  LocationBuilder << I->getOpcodeName();
+  LocationBuilder << ":";
+
+  string FormatStringPrefix = LocationBuilder.str();
+
+  // If this instruction terminates a block, we need to treat it a bit
+  // differently, placing instrumentation before it rather than after.
+  const bool Terminator = I->isTerminator();
+
+  // If this instruction is a terminator *or* is of void type, it doesn't
+  // have a value for us to log.
+  const bool Void = Terminator or I->getType()->isVoidTy();
+
+  ParamVec ValueDescriptions;
+  vector<Value*> Values;
+
+  if (not Void)
+  {
+    ValueDescriptions.emplace_back(I->getName(), I->getType());
+    Values.push_back(I);
+  } else {
+    FormatStringPrefix.append(" %%void%%");
+  }
+
+  for (Use& U : I->operands()) {
+    // If this is a phi node, ignore the operands (values that *could* exist)
+    // and stick to the phi value (that value that *does* exist).
+    if (isa<PHINode>(I)) {
+      break;
+    }
+
+    Value *V = U.get();
+
+    // Don't try to pass a BasicBlock around by value (e.g., in a BranchInst).
+    if (isa<BasicBlock>(V)) {
+      continue;
+    }
+
+    // Don't use the address of an LLVM intrinsic: report its name instead.
+    if (Function *F = dyn_cast<Function>(V)) {
+      if (F->getName().startswith("llvm.")) {
+        V = IRBuilder<>(I).CreateGlobalStringPtr(F->getName(), "fn_name");
+      }
+    }
+
+    Type *T = V->getType();
+    if (T->isMetadataTy()) {
+      // Ignore metadata-consuming instructions such as calls to
+      // @llvm.dbg.declare().
+      return false;
+    }
+
+    ValueDescriptions.emplace_back(V->getName(), T);
+    Values.push_back(V);
+  }
+
+  // We don't handle varargs generically: that needs to be done by
+  // function- or call-specific instrumentation.
+  constexpr bool Varargs = false;
+
+  // Instrument all non-terminators after the instructor, so that we can
+  // capture the instruction's value (if non-void).
+  const bool AfterInst = not Terminator;
+
+  std::ostringstream NameBuilder;
+  NameBuilder << static_cast<const void*>(I);
+  const string InstrName = Name({ "instruction", NameBuilder.str() });
+
+  Strategy->Instrument(I, InstrName, FormatStringPrefix, ValueDescriptions,
+                       Values, Varargs, AfterInst, true);
 
   return true;
 }
