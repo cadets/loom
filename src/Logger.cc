@@ -295,7 +295,7 @@ Stderr_PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
     FormatString << " %";
 
     if (T->isIntegerTy(8)) {
-      FormatString << "c";
+      FormatString << "%$%c";
 
     } else if (T->isIntegerTy()) {
       const unsigned Bits = dyn_cast<IntegerType>(T)->getBitWidth();
@@ -312,6 +312,12 @@ Stderr_PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
       FormatString << "f";
 
     } else if (T->isPointerTy()) {
+
+      /*
+      //Unfortunately, when I ran this on vim, I always got segfaults
+      if( cast<PointerType>(T)->getElementType()->isIntegerTy(8) ) {
+        FormatString << "%\"%.10s\"";
+      } else // */
       FormatString << "p";
 
     } else if (VectorType * VT = dyn_cast<VectorType>(T)) {

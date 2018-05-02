@@ -106,7 +106,6 @@ bool OptPass::runOnModule(Module &Mod)
   // instrumentation points like calls before we actually instrument them.
   //
   std::vector<Instruction*> AllInstructions;
-  std::vector<Instruction*> PointerInsts;
 
   std::unordered_map<Function*, Policy::Directions> Functions;
   std::unordered_map<CallInst*, Policy::Directions> Calls;
@@ -114,6 +113,9 @@ bool OptPass::runOnModule(Module &Mod)
   typedef std::pair<GetElementPtrInst*, std::string> FieldGEP;
   std::unordered_map<LoadInst*, FieldGEP> FieldReads;
   std::unordered_map<StoreInst*, FieldGEP> FieldWrites;
+
+  std::unordered_map<Instruction*, const DIVariable*> PointerInsts;
+
 
   for (auto& Fn : Mod) {
     // Do we need to instrument this function?
@@ -129,9 +131,34 @@ bool OptPass::runOnModule(Module &Mod)
       }
 
       if (P.InstrumentPointerInsts()) {
-        if( isa<StoreInst>(&Inst) || isa<LoadInst>(&Inst) || isa<GetElementPtrInst>(&Inst) ) {
-          PointerInsts.push_back(&Inst);
+        if( isa<StoreInst>(&Inst) || isa<LoadInst>(&Inst) ||
+            isa<GetElementPtrInst>(&Inst) ) {
+
+          Value * Ptr = nullptr;
+          if( StoreInst * store = dyn_cast<StoreInst>(&Inst) ) {
+            Ptr = store->getPointerOperand();
+          } else if( LoadInst * load = dyn_cast<LoadInst>(&Inst) ) {
+            Ptr = load->getPointerOperand();
+          } else if( GetElementPtrInst * gep = dyn_cast<GetElementPtrInst>(&Inst) ) {
+            Ptr = gep->getPointerOperand();
+          }
+
+          const DIVariable * Var = Debug.Get<DIVariable>(Ptr);
+          if (auto *G = llvm::dyn_cast<llvm::GlobalVariable>(Ptr)) {
+            Var = Debug.GetGlobalDIVariable(G);
+          }
+
+          PointerInsts[&Inst] = Var;
         }
+
+        if( BitCastInst * bc = dyn_cast<BitCastInst>(&Inst) ) {
+          Type * tau = bc->getType();
+          //If dest type is a pointer, the source type must be, too
+          if( isa<PointerType>(tau) ) {
+            PointerInsts[bc] = nullptr;
+          }
+        }
+
       }
 
       if (auto *GEP = dyn_cast<GetElementPtrInst>(&Inst)) {
@@ -195,8 +222,10 @@ bool OptPass::runOnModule(Module &Mod)
     Instr->Instrument(I);
   }
 
-  for (auto *I : PointerInsts) {
-    Instr->InstrumentWisconsin(I);
+  for (auto& i : PointerInsts) {
+    Instruction *I = i.first;
+    const DIVariable *Var = i.second;
+    Instr->InstrumentWisconsin(I, Var);
   }
 
   for (auto& i : Functions) {

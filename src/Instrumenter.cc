@@ -39,6 +39,8 @@
 #include "llvm/IR/DebugInfoMetadata.h"
 
 #include <sstream>
+#include <string>
+#include "llvm/Support/raw_ostream.h"
 
 using namespace llvm;
 using namespace loom;
@@ -135,16 +137,69 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
   return true;
 }
 
-bool Instrumenter::InstrumentWisconsin(llvm::Instruction *I)
+//Currently, the second parameter is unused. It would give us the source name instead of the bitcode name
+bool Instrumenter::InstrumentWisconsin(llvm::Instruction *I, const llvm::DIVariable* Var)
 {
 
   std::ostringstream LocationBuilder;
 
+  /*
   const DebugLoc dloc = I->getDebugLoc();
   DILocation * loc = dloc.get();
   if( loc ) {
     LocationBuilder << loc->getFilename().str() << "@" << loc->getLine() << " ";
+  } // */
+
+  /* Get the source-level variable
+  if (Var) {
+    LocationBuilder << Var->getName().str();
+  } else {
+    LocationBuilder << "
+  } */
+  Value * Ptr = nullptr;
+  Value * Val = nullptr;
+  if( StoreInst * store = dyn_cast<StoreInst>(I) ) {
+    Ptr = store->getPointerOperand();
+    Val = store->getValueOperand();
+  } else if( LoadInst * load = dyn_cast<LoadInst>(I) ) {
+    Ptr = load->getPointerOperand();
+    Val = load;
+  } else if( GetElementPtrInst * gep = dyn_cast<GetElementPtrInst>(I) ) {
+    Ptr = gep->getPointerOperand();
+    Val = gep;
+  } else if( BitCastInst * bc = dyn_cast<BitCastInst>(I) ) {
+    Ptr = bc->getOperand(0);
+    Val = bc;
+  }// */
+
+  StringRef PtrName = "";
+  if( Ptr) {//This should always run
+    string dummy;
+    raw_string_ostream raw(dummy);
+
+    // Maintain the convention that return comes first
+    Val->getType()->print(raw, false, true);
+    raw << "| |";
+    Ptr->getType()->print(raw, false, true);
+    string out = raw.str();
+
+    //Put in this order to not disturb snd by first inserting at 0
+    size_t pos = 0;
+    while ((pos = out.find('%', pos)) != std::string::npos) {
+        out.insert(pos, "%");
+        pos += 2;//one for the initial and one for the added
+    }
+    LocationBuilder << '|' << out << "| ";
+
+    PtrName = Ptr->getName();
   }
+  if( !PtrName.empty() ) {
+    string Prefix = isa<GlobalValue>(*Ptr) ? "@" : "%%";
+    LocationBuilder << Prefix << PtrName.str();
+  } else  {
+    LocationBuilder << "???";
+  }
+  LocationBuilder << " ";
   LocationBuilder << I->getOpcodeName();
   LocationBuilder << ":";
 
