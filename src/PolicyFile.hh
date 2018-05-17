@@ -1,6 +1,7 @@
 //! @file PolicyFile.hh  Declaration of @ref loom::PolicyFile.
 /*
  * Copyright (c) 2015-2016 Jonathan Anderson
+ * Copyright (c) 2018 Brian Kidney
  * All rights reserved.
  *
  * This software was developed at Memorial University under the
@@ -78,6 +79,8 @@ class PolicyFile : public Policy
 
   private:
   PolicyFile(const PolicyFileData&);
+
+  bool MatchName(std::string instrName, llvm::StringRef name) const;
 
   std::unique_ptr<PolicyFileData> Policy;
 };

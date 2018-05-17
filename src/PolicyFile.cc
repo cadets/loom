@@ -1,6 +1,7 @@
 //! @file PolicyFile.cc  Definition of @ref loom::PolicyFile.
 /*
  * Copyright (c) 2015-2016 Jonathan Anderson
+ * Copyright (c) 2018 Brian Kidney
  * All rights reserved.
  *
  * This software was developed at Memorial University under the
@@ -337,7 +338,7 @@ PolicyFile::CallHooks(const llvm::Function& Fn) const
 
   for (FnInstrumentation& F : Policy->Functions)
   {
-    if (F.Name == Name)
+    if (MatchName(F.Name, Name))
     {
       return F.Call;
     }
@@ -354,7 +355,7 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
 
   for (FnInstrumentation& F : Policy->Functions)
   {
-    if (F.Name == Name)
+    if (MatchName(F.Name, Name))
     {
       return F.Body;
     }
@@ -377,7 +378,7 @@ bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
   StringRef Name = T.getName().substr(7);
 
   for (StructInstrumentation& S : Policy->Structures) {
-    if (S.Name == Name) {
+    if (MatchName(S.Name, Name)) {
       return true;
     }
   }
@@ -396,12 +397,12 @@ PolicyFile::FieldReadHook(const llvm::StructType& T, StringRef Field) const
   StringRef Name = T.getName().substr(7);
 
   for (StructInstrumentation& S : Policy->Structures) {
-    if (S.Name != Name) {
+    if (!MatchName(S.Name, Name)) {
       continue;
     }
 
     for (auto& F : S.Fields) {
-      if (F.Name == Field) {
+      if (MatchName(F.Name, Field)) {
         return vecContains(F.Operations, FieldOperation::Read);
       }
     }
@@ -422,12 +423,12 @@ PolicyFile::FieldWriteHook(const llvm::StructType& T, StringRef Field) const
   StringRef Name = T.getName().substr(7);
 
   for (StructInstrumentation& S : Policy->Structures) {
-    if (S.Name != Name) {
+    if (!MatchName(S.Name, Name)) {
       continue;
     }
 
     for (auto& F : S.Fields) {
-      if (F.Name == Field) {
+      if (MatchName(F.Name, Field)) {
         return vecContains(F.Operations, FieldOperation::Write);
       }
     }
@@ -443,6 +444,26 @@ string PolicyFile::InstrName(const vector<string>& Components) const
   FullName.insert(FullName.end(), Components.begin(), Components.end());
 
   return Join(FullName, "_");
+}
+
+bool
+PolicyFile::MatchName(std::string instrName, StringRef name) const
+{
+
+	std::string error; // BJK: What to do with Error?
+	llvm::Regex nameRegex = llvm::Regex(instrName);
+
+	if (!nameRegex.isValid(error))
+	{
+		return false;
+	}
+
+	if (nameRegex.match(name))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 } // namespace loom
