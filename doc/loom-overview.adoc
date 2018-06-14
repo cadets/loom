@@ -1,42 +1,39 @@
 = Loom: LLVM instrumentation library
 
-Loom is a genral purpose library for adding instrumentation to software. Given access to code compiled to the LLVM intermediate representation (IR), developers can weave in static instrumentation that expose values (e.g. function parameters, variable contents) to instumentation functions. Loom has a default set of these functions, but it can also be expanded to use the instrumentation framework of the  developers choosing.
+Loom is a general purpose library for adding instrumentation to software. Loom does not require you to have access to the original source code, working instead on code compiled to the LLVM intermediate representation (IR) bytecode. Loom weaves in static instrumentation into this bytecode,  allowing you to expose internal values to instrumentation frameworks. Loom ships with multiple supported frameworks, but it can also be expanded to use the instrumentation framework of your choosing.
 
 == How Loom Works
 
 // Include a diagram in this section of the instrumentation process
 
-In order to use Loom a developer needs access to the application of interest in LLVM IR. Some system make use of "Fat Binaries", or binaries that contain both a machine code compiled version of the application and a version compiled to LLVM IR. On those system, the provided intermediate representaiton can be used. Otherwise, the developer need to compile the IR themselves using the LLVM toolchain.
+In order to use Loom a you needs access to the application of interest compiled to LLVM IR. Some system make use of "Fat Binaries", or binaries that contain both a machine code compiled version of the application and a version compiled to LLVM IR. On those system, the provided intermediate representation can be used. Otherwise, you need to compile the IR themselves using the LLVM tool chain to allow for Loom to be used.
 
-The instrumentation is defined in a policy file using YAML syntax. This file defines any setup required, including instrumentation strategies, logging formats, and the instrumentation framework. As part of the policy the developer may also define any custom configuration the framework may require. 
+Working from LLVM IR means that the end user does not need to add instrumentation the application in the source code. Instead, the require probes are defined in a Loom policy file. This allows you to specify the parameters for instrumentation in an easy to use YAML syntax. Without touching the source code of the application, you can specify functions and variables to be trace, logging formats and instrumentation framework to be used.
 
-The policy file also specifies the code to be instrumented. Currently, Loom supports the instrumentation functionality defined in Table X. Additional functionality is under development. For the lastest list, check https://github.com/cadets/loom.
+The policy file also specifies the code to be instrumented. Currently, Loom supports the instrumentation of functions (on entry and return), structures and structure fields and global variable. Additional functionality is under development. For the latest list, check https://github.com/cadets/loom.
 
-[%header,cols=2*]
-|===
-| Primative | Instrumentation
+Loom uses an LLVM Optimization (Opt) pass to instrument the IR code. When run with the IR code and policy file as inputs, the Loom Opt pass outputs an augmented version of application IR with the specified instrumentation woven throughout. This IR is then compiled to the final machine code to be run on the desired architecture. Once running, the new version of the application will output tracing data as each instrumentation port is reached.
 
-| functions | entry
-|  | exit
+== Why Loom?
 
-|  Structure Fields | read
-|  | write
+Loom is designed to be a general purpose library, allowing you to instrument your application without imposing requirements on source code or architecture. We provide outputs to multiple instrumentation frameworks and are continuing development to add more. But you are not just limited to we provide, Loom is design to be extended to suit you needs. 
 
-| Global Variables | read
-|  | write
-|===
+=== Separation of code and instrumentation
 
-Loom uses an LLVM Optimization (Opt) pass to instrument the IR code. When run with the IR code and policy file as inputs, the Loom Opt pass outputs an augmented version of application IR with the specified intrumentation woven in. This IR then is compiled to the final machine code to be run on the desired architecture. Once running, the new version of the application will output tracing data as each instrumentation port is reached.
+Loom's use of a policy file to define what you want to instrument allows you to keep your codebase clean of instrumentation. This allows you to avoid the overhead of unnecessary instrumentation is production code, or the added complexity of defining code to be enabled only during debug builds. It allow allow you flexibility and ease when you need to change instrumentation requirements as your application evolves.
 
-== Supported Tracing
+=== Architecture Independent
 
-Currently, Loom supports has three supported instrumentation outputs. The Logging instrumentor simply outputs the events and their data to log file. There are two supported formats for this data, simple text and structured data (e.g. json).
+Because Loom works with LLVM architecture independent intermediate representation, instrumentation is added before final compilation. In practice, this means that the application can be instrumented once, and then compiled to many architectures for testing.
 
-Loom also supports two external logging frameworks, dtrace(1) and FreeBSD's ktrace(1). When either  of these loggers are used Loom makes function calls to pass the data into the framework itself, bypassing the use of log files. Currently dtrace(1) requires the use of new system call to  make use  of this functionality.
+=== Support for Multiple Frameworks
 
-== Extensiblity
+Currently, Loom supports three instrumentation outputs. For tracing tasks that do not require the complexity of using an instrumentation framework, there is a simple logger that outputs data as text. There are two supported formats for this data, simple text and structured data (e.g. json).
 
-Loom currently includes support for existing instrumentation frameworks to get you started, but it is not limited to just these. Loom  has  been designed with extensiblilty in mind....
+Loom also supports two external logging frameworks, dtrace(1)* and FreeBSD's ktrace(1). When either of these loggers are used Loom makes function calls to pass the data into the framework itself, bypassing the use of log files. 
 
+* Currently dtrace(1) requires the use of new system call to make use  of this functionality.
 
-== Example Usage?
+=== Designed for Extensibility
+
+If the instrumentation frameworks provided do not meet your needs it can be extended to support others. Loom is an open source library designed with extensibility in mind. Adding new instrumentation frameworks can be done by extending one of the existing loggers and making small changes to the policy file parser.
