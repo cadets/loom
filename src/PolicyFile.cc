@@ -72,6 +72,9 @@ struct FnInstrumentation
   /// Function name (as named by LLVM, possibly language-mangled).
   string Name;
 
+  /// File name (Original source file, Optional)
+  string FileName;
+
   /// Instrumentation that should be applied to calls to this function.
   Policy::Directions Call;
 
@@ -217,6 +220,7 @@ template <>
 struct yaml::MappingTraits<FnInstrumentation> {
   static void mapping(yaml::IO &io, FnInstrumentation &fn) {
     io.mapOptional("name",        fn.Name);
+	io.mapOptional("within-file",    fn.FileName);
     io.mapOptional("caller",      fn.Call);
     io.mapOptional("callee",      fn.Body);
   }
@@ -353,12 +357,12 @@ Policy::Directions
 PolicyFile::CallHooks(const llvm::Function& Fn) const
 {
   StringRef Name = Fn.getName();
-
+  
   for (FnInstrumentation& F : Policy->Functions)
   {
     if (MatchName(F.Name, Name))
     {
-      return F.Call;
+	  return F.Call;
     }
   }
 
@@ -371,11 +375,25 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
 {
   StringRef Name = Fn.getName();
 
+  std::string FileName = Fn.getParent()->getSourceFileName();
+  std::string BaseFileName = FileName.substr(FileName.find_last_of("/\\") + 1);
+
   for (FnInstrumentation& F : Policy->Functions)
   {
     if (MatchName(F.Name, Name))
     {
-      return F.Body;
+	  if (!F.FileName.empty()) 
+	  { 
+		  if ( MatchName(F.FileName, BaseFileName))
+		  {
+			 return F.Body;
+
+		  }
+	  } 
+	  else 
+	  {
+		return F.Body;
+	  }
     }
   }
 
