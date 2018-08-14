@@ -252,6 +252,18 @@ bool Instrumenter::InstrumentWisconsin(llvm::Instruction *I, const llvm::DIVaria
       return false;
     }
 
+    if( T->isPointerTy() )
+    // Remember, can condition on pointer but not && on it
+    if (ConstantExpr * K = dyn_cast<ConstantExpr>(V)) {
+
+      Instruction * N = K->getAsInstruction();
+      if( isa<BitCastInst>(N) || isa<GetElementPtrInst>(N) ) {
+        N->insertBefore(I);
+        this->InstrumentWisconsin(N, nullptr);
+        //Cannot remove because the instrumentation will use its result
+      }
+    }
+
     ValueDescriptions.emplace_back(V->getName(), T);
     Values.push_back(V);
   }
