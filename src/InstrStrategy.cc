@@ -187,24 +187,6 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     Call->insertBefore(I);
   }
 
-  /* With all due respect to the excellent Cadets team, this does not seem well
-     thought-out: the previous call can have various attributes which really do
-     not apply to the instrumentation call. Thus, commenting this out.
-  if (auto *CI = dyn_cast<CallInst>(I)) {
-    if (Function *Target = CI->getCalledFunction()) {
-      if( !Target->isIntrinsic() ) {
-        //if( Target->getAttributes().hasAttribute(AttributeList::FunctionIndex, Attribute::Speculatable) ) {
-          llvm::errs() << "Heffalump ";
-          CI->print(llvm::errs());
-          llvm::errs() << "\n";//std::endl;
-          llvm::errs() << "Adding attributes to " << Name.str() << "\n";//std::endl;
-        //}
-
-        Call->setAttributes(Target->getAttributes());
-      }
-    }
-  } */
-
   if (UseBlockStructure) {
     return Instrumentation(InstrValues, Preamble, EndBlock, PreambleEnd, End);
   } else {
