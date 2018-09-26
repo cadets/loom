@@ -138,7 +138,7 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
 }
 
 //Currently, the second parameter is unused. It would give us the source name instead of the bitcode name
-bool Instrumenter::InstrumentWisconsin(llvm::Instruction *I, const llvm::DIVariable* Var)
+bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariable* Var)
 {
 
   std::ostringstream LocationBuilder;
@@ -259,7 +259,7 @@ bool Instrumenter::InstrumentWisconsin(llvm::Instruction *I, const llvm::DIVaria
       Instruction * N = K->getAsInstruction();
       if( isa<BitCastInst>(N) || isa<GetElementPtrInst>(N) ) {
         N->insertBefore(I);
-        this->InstrumentWisconsin(N, nullptr);
+        this->InstrumentPtrInsts(N, nullptr);
         //Cannot remove because the instrumentation will use its result
       }
     }

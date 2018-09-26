@@ -66,7 +66,7 @@ public:
   bool Instrument(llvm::Instruction*);
 
   /// Instrument an instruction generically with better info: instruction type and values.
-  bool InstrumentWisconsin(llvm::Instruction*, const llvm::DIVariable*);
+  bool InstrumentPtrInsts(llvm::Instruction*, const llvm::DIVariable*);
 
   /// Instrument a function call in the call and/or return direction.
   bool Instrument(llvm::CallInst*, const Policy::Directions&);

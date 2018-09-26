@@ -223,7 +223,7 @@ bool OptPass::runOnModule(Module &Mod)
   for (auto& i : PointerInsts) {
     Instruction *I = i.first;
     const DIVariable *Var = i.second;
-    Instr->InstrumentWisconsin(I, Var);
+    Instr->InstrumentPtrInsts(I, Var);
   }
 
   for (auto& i : Functions) {
