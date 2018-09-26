@@ -55,7 +55,7 @@ entry:
 
   call void @llvm.dbg.declare(metadata double* %x, metadata !19, metadata !14), !dbg !21
 
-  ; CHECK: store double 0x402ABCEF97BFC839, double* %x, align 8, !dbg !21
+  ; CHECK: store double 0x402ABCEF97BFC839, double* %x, align 8, !dbg !20
   store double 0x402ABCEF97BFC839, double* %x, align 8, !dbg !21
   ; CHECK: xo_emit({{.*}}double* %x
 
@@ -66,7 +66,7 @@ entry:
   ;       consistency between the value name and what we pass to
   ;       instrumentation.
 
-  ; CHECK: %[[ZERO:[0-9]+]] = load double, double* %x, align 8, !dbg !22
+  ; CHECK: %[[ZERO:[0-9]+]] = load double, double* %x, align 8, !dbg !21
   %0 = load double, double* %x, align 8, !dbg !22
   ; CHECK: xo_emit({{.*}} %[[ZERO]]
 
@@ -105,7 +105,7 @@ attributes #2 = { "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-
 !3 = !{i32 2, !"Dwarf Version", i32 2}
 !4 = !{i32 2, !"Debug Info Version", i32 3}
 !5 = !{!"clang version 4.0.0 (http://llvm.org/git/clang.git 3f7a1d0a6dedbbff7cdd804e31063c9c33a837ec) (http://llvm.org/git/llvm.git 20014804ba63d479300bb5c136856d11fbc1bdae)"}
-!6 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 5, type: !7, isLocal: false, isDefinition: true, scopeLine: 6, flags: DIFlagPrototyped, isOptimized: false, unit: !0, variables: !2)
+!6 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 5, type: !7, isLocal: false, isDefinition: true, scopeLine: 6, flags: DIFlagPrototyped, isOptimized: false, unit: !0, retainedNodes: !2)
 !7 = !DISubroutineType(types: !8)
 !8 = !{!9, !9, !10}
 !9 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
