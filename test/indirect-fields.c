@@ -48,6 +48,8 @@ main(int argc, char *argv[])
 	};
 
 	// CHECK: [[F_INT_PTR:%.+]] = getelementptr inbounds %struct.foo, [[FOO:%.*]], i32 0, i32 0
+	// CHECK: [[F_INT_PTR:%.+]] = getelementptr inbounds %struct.foo, [[FOO:%.*]], i32 0, i32 0
+	// CHECK: [[F_INT_PTR:%.+]] = getelementptr inbounds %struct.foo, [[FOO:%.*]], i32 0, i32 0
 	// CHECK: [[F_INT_NOW:%[0-9]+]] = load [[INT:i[0-9]+]], [[INT]]* [[F_INT_PTR]]
 	// CHECK: call void @[[PREFIX:TEST]]_load_struct_foo_field_f_int([[FOO]], [[INT]] [[F_INT_NOW]]
 	// CHECK: [[INC:%.+]] = add {{.*}}[[INT]] [[F_INT_NOW]], 1
