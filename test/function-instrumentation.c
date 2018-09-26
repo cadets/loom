@@ -36,7 +36,7 @@ functions:
 
 #include <stdio.h>
 
-// CHECK: define [[FOO_TYPE:.*]] @foo([[INT:i[0-9]+]]{{.*}}, float{{.*}}, double{{.*}})
+// CHECK: define{{.*}} [[FOO_TYPE:.*]] @foo([[INT:i[0-9]+]]{{.*}}, float{{.*}}, double{{.*}})
 int	foo(int x, float y, double z)
 {
 	// CHECK: call void @[[PREFIX:__test_hook]]_enter_foo([[FOO_ARGS:.*]])
@@ -46,7 +46,7 @@ int	foo(int x, float y, double z)
 	// CHECK-NEXT: ret [[FOO_TYPE]] [[RETVAL]]
 }
 
-// CHECK: define [[BAR_TYPE:.*]] @bar([[INT]]{{.*}}, i8*{{.*}})
+// CHECK: define{{.*}} [[BAR_TYPE:.*]] @bar([[INT]]{{.*}}, i8*{{.*}})
 float	bar(unsigned int i, const char *s)
 {
 	// CHECK: call void @[[PREFIX]]_enter_bar([[INT]] {{%.*}}, i8* {{%.*}})
@@ -55,7 +55,7 @@ float	bar(unsigned int i, const char *s)
 	return i;
 }
 
-// CHECK: define double @baz()
+// CHECK: define{{.*}} double @baz()
 double	baz(void)
 {
 	// CHECK-NOT: call void @[[PREFIX]]_enter_baz

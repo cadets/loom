@@ -29,7 +29,7 @@ static void foo();
 int
 main(int argc, char *argv[])
 {
-	// CHECK: define i{{[0-9]+}} @main
+	// CHECK: define{{.*}} i{{[0-9]+}} @main
 
 	// CHECK: call void @[[PREFIX:__test_hook]]_call_foo
 	foo();

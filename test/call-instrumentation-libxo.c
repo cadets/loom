@@ -40,21 +40,21 @@ functions:
 
 #include <libxo/xo.h>
 
-// CHECK: define [[FOO_TYPE:.*]] @foo(i32{{.*}}, float{{.*}}, double{{.*}})
+// CHECK: define{{.*}} [[FOO_TYPE:.*]] @foo(i32{{.*}}, float{{.*}}, double{{.*}})
 int	foo(int x, float y, double z)
 {
 	printf("foo(%d, %f, %f\n", x, y, z);
 	return x;
 }
 
-// CHECK: define [[BAR_TYPE:.*]] @bar(i32{{.*}}, i8*{{.*}})
+// CHECK: define{{.*}} [[BAR_TYPE:.*]] @bar(i32{{.*}}, i8*{{.*}})
 float	bar(unsigned int i, const char *s)
 {
 	printf("bar(%d, \"%s\")\n", i, s);
 	return i;
 }
 
-// CHECK: define double @baz()
+// CHECK: define{{.*}} double @baz()
 double	baz(void)
 {
 	printf("baz()\n");

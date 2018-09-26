@@ -26,7 +26,7 @@ functions:
 
 #include <stdio.h>
 
-// CHECK: define [[FOO_TYPE:i[0-9]+]] @foo(i32{{.*}}, float{{.*}}, double{{.*}})
+// CHECK: define{{.*}} [[FOO_TYPE:i[0-9]+]] @foo(i32{{.*}}, float{{.*}}, double{{.*}})
 int	foo(int x, float y, double z)
 {
 	return x;
