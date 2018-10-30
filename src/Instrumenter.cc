@@ -8,6 +8,14 @@
  * FA8650-15-C-7558 ("CADETS"), as part of the DARPA Transparent Computing
  * (TC) research program.
  *
+  * Copyright (c) 2018 Stephen Lee
+ * All rights reserved.
+ *
+ * This software was developed by SRI International, Purdue University,
+ * University of Wisconsin and University of Georgia  under DARPA/AFRL
+ * contract FA8650-15-C-7562 ("TRACE"), as part of the DARPA Transparent
+ * Computing (TC) research program.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -143,19 +151,6 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
 
   std::ostringstream LocationBuilder;
 
-  /*
-  const DebugLoc dloc = I->getDebugLoc();
-  DILocation * loc = dloc.get();
-  if( loc ) {
-    LocationBuilder << loc->getFilename().str() << "@" << loc->getLine() << " ";
-  } // */
-
-  /* Get the source-level variable
-  if (Var) {
-    LocationBuilder << Var->getName().str();
-  } else {
-    LocationBuilder << "
-  } */
   Value * Ptr = nullptr;
   Value * Val = nullptr;
   if( StoreInst * store = dyn_cast<StoreInst>(I) ) {
@@ -170,10 +165,10 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
   } else if( BitCastInst * bc = dyn_cast<BitCastInst>(I) ) {
     Ptr = bc->getOperand(0);
     Val = bc;
-  }// */
+  }
 
   StringRef PtrName = "";
-  if( Ptr) {//This should always run
+  if( Ptr) {
     string dummy;
     raw_string_ostream raw(dummy);
 
@@ -187,7 +182,7 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
     size_t pos = 0;
     while ((pos = out.find('%', pos)) != std::string::npos) {
         out.insert(pos, "%");
-        pos += 2;//one for the initial and one for the added
+        pos += 2;
     }
     LocationBuilder << '|' << out << "| ";
 

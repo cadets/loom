@@ -8,6 +8,14 @@
  * FA8650-15-C-7558 ("CADETS"), as part of the DARPA Transparent Computing
  * (TC) research program.
  *
+ * Copyright (c) 2018 Stephen Lee
+ * All rights reserved.
+ *
+ * This software was developed by SRI International, Purdue University, 
+ * University of Wisconsin and University of Georgia  under DARPA/AFRL 
+ * contract FA8650-15-C-7562 ("TRACE"), as part of the DARPA Transparent 
+ * Computing (TC) research program.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -61,8 +69,6 @@ DebugInfo::DebugInfo(llvm::Module& M)
     for (auto& Use : DbgValue->uses()) {
       auto *Dbg = dyn_cast<DbgValueInst>(Use.getUser());
       assert(Dbg && "call to llvm.dbg.value must be a DbgValueInst");
-      //errs() << *Dbg << "\nValue:" << *(Dbg->getValue()) << "\nVariable:" << *(Dbg->getVariable()) << "\n\n";
-      //DbgValues[Dbg->getValue()].push_back(Dbg->getVariable());
     }
   }
 }
@@ -100,7 +106,6 @@ std::string DebugInfo::FieldName(GetElementPtrInst *GEP)
     return "";
   }
 
-  //errs() << "Var type: " << Var->getType() << "\n";
   const DIType *T = dyn_cast<DIType>(Var->getType());
   assert(T && "DIVariable::getType() should return a DIType");
 
@@ -158,7 +163,6 @@ std::string DebugInfo::FieldName(GetElementPtrInst *GEP)
 const DIVariable*
 DebugInfo::Trace(GetElementPtrInst *GEP, SmallVectorImpl<size_t> &Offsets)
 {
-  //errs() << "Tracing back: "; GEP->print(errs()); errs() << "\n";
 
   // Walk backwards from GEP to source until we find a variable with
   // debug metadata (or die trying, having reached the end of the GEP chain).
@@ -188,15 +192,12 @@ DebugInfo::Trace(GetElementPtrInst *GEP, SmallVectorImpl<size_t> &Offsets)
       }
     }
 
-    //errs() << "Before Getting DI variable a second time.\n";
     if (auto *G = llvm::dyn_cast<llvm::GlobalVariable>(Ptr)) {
         if (auto *Var = GetGlobalDIVariable(G)) {
-            //errs() << "Getting DI variable a second time.\n";
             return Var;
         }
     }
 
-    //errs() << "Next step: "; Ptr->print(errs()); errs() << "\n";
     GEP = dyn_cast<GetElementPtrInst>(Ptr);
   }
   while (GEP != nullptr);

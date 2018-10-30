@@ -8,6 +8,14 @@
  * FA8650-15-C-7558 ("CADETS"), as part of the DARPA Transparent Computing
  * (TC) research program.
  *
+ * Copyright (c) 2018 Stephen Lee
+ * All rights reserved.
+ *
+ * This software was developed by SRI International, Purdue University,
+ * University of Wisconsin and University of Georgia  under DARPA/AFRL
+ * contract FA8650-15-C-7562 ("TRACE"), as part of the DARPA Transparent
+ * Computing (TC) research program.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
