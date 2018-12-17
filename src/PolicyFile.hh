@@ -47,7 +47,6 @@
 
 namespace loom {
 
-
 class PolicyFile : public Policy
 {
   public:
@@ -79,6 +78,9 @@ class PolicyFile : public Policy
   Policy::Directions
     FnHooks(const llvm::Function&) const override;
 
+  std::string
+    FnMetadata(const llvm::Function& Fn) const override;
+  
   bool StructTypeMatters(const llvm::StructType&) const override;
 
   bool FieldReadHook(const llvm::StructType&, llvm::StringRef) const override;

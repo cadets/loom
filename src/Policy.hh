@@ -61,6 +61,7 @@ namespace loom {
  * An instrumentation policy tells us what things to instrument and in
  * which direction (e.g., call vs return).
  */
+
 class Policy
 {
   public:
@@ -108,11 +109,16 @@ class Policy
   //! A set of directions that we might like to instrument something on.
   typedef std::vector<Direction> Directions;
 
+  //! Metadata to be recorded with the instrumentation
+  typedef std::string Metadata;
+
   //! In which directions should calls to a function be instrumented?
   virtual Directions CallHooks(const llvm::Function&) const = 0;
 
   //! In which directions (preamble/return) should a function be instrumented?
   virtual Directions FnHooks(const llvm::Function&) const = 0;
+
+  virtual std::string FnMetadata(const llvm::Function& Fn) const = 0;
 
   /**
    * A structure type is relevant in some way to instrumentation.

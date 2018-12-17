@@ -81,6 +81,9 @@ struct FnInstrumentation
   /// Instrumentation that should be applied to the body of this function
   /// (prologue and epilogue / return points).
   Policy::Directions Body;
+
+  /// Additional information about the function call
+  string Meta;
 };
 
 /// An operation that can be performed on a structure field
@@ -223,6 +226,7 @@ struct yaml::MappingTraits<FnInstrumentation> {
 	io.mapOptional("within-file",    fn.FileName);
     io.mapOptional("caller",      fn.Call);
     io.mapOptional("callee",      fn.Body);
+	io.mapOptional("metadata",        fn.Meta);
   }
 };
 
@@ -398,6 +402,20 @@ PolicyFile::FnHooks(const llvm::Function& Fn) const
   }
 
   return Policy::Directions();
+}
+
+string
+PolicyFile::FnMetadata(const llvm::Function& Fn) const
+{
+	StringRef Name = Fn.getName();
+
+	for (FnInstrumentation& F : Policy->Functions)
+	{
+		if (MatchName(F.Name, Name))
+		{
+			return F.Meta;			
+		}
+	}
 }
 
 bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
