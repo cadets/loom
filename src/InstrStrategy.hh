@@ -134,6 +134,8 @@ public:
                                      bool AfterInst = false,
                                      bool SuppressUniqueness = false) = 0;
 
+  bool  Initialize(llvm::Function& main);
+
 protected:
   InstrStrategy(bool UseBlocks) : UseBlockStructure(UseBlocks) {}
 

@@ -75,6 +75,10 @@ public:
 								 llvm::StringRef Metadata,
                                  bool SuppressUniqueness) = 0;
 
+  virtual bool HasInitialization();
+
+  virtual llvm::Value* Initialize(llvm::Function& Main);
+
 protected:
   Logger(llvm::Module& Mod) : Mod(Mod) {}
 

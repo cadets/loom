@@ -125,8 +125,15 @@ bool OptPass::runOnModule(Module &Mod)
 
   std::unordered_map<Instruction*, const DIVariable*> PointerInsts;
 
+  Function* Main = nullptr;
 
   for (auto& Fn : Mod) {
+    // Store a reference to main for initialization code
+	if (Fn.getName() == "main")
+	{
+	  Main = &Fn;
+	}
+
     // Do we need to instrument this function?
     Policy::Directions Directions = P.FnHooks(Fn);
     if (not Directions.empty()) {
@@ -263,6 +270,14 @@ bool OptPass::runOnModule(Module &Mod)
     StringRef FieldName = i.second.second;
 
     ModifiedIR |= Instr->Instrument(GEP, Store, FieldName);
+  }
+
+  if (ModifiedIR)
+  {
+	  // Add required initialization for loggers to main
+	  if (Main != nullptr) {
+		ModifiedIR |= Instr->InitializeLoggers(*Main);
+	  }
   }
 
   return ModifiedIR;

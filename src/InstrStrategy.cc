@@ -263,3 +263,20 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     return Instrumentation(V, PreambleEnd, End);
   }
 }
+  
+bool 
+InstrStrategy::Initialize(llvm::Function& Main) 
+{
+  bool ModifiedIR = false;
+  Value* Val;
+  for (auto& L : Loggers) {
+    assert(L);
+    if (L->HasInitialization())
+	{
+	  ModifiedIR = true;
+      Val = L->Initialize(Main);
+	  assert(Val != nullptr);
+	}
+  }
+  return ModifiedIR;
+}

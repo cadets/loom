@@ -473,6 +473,13 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
   return true;
 }
 
+bool Instrumenter::InitializeLoggers(llvm::Function& Main) 
+{
+
+  assert(Main.getName().startswith("main"));
+  return Strategy->Initialize(Main);
+
+}
 
 CallInst* Instrumenter::Extend(CallInst *Call, StringRef NewName,
                                ArrayRef<Value*> NewArgs, ParamPosition Position)

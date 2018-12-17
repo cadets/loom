@@ -96,6 +96,9 @@ public:
   bool Instrument(llvm::GetElementPtrInst*, llvm::StoreInst*,
                   llvm::StringRef FieldName);
 
+  /// Add initialization required by Loggers
+  bool InitializeLoggers(llvm::Function&);
+
   //! Where parameters can be added to a function's parameter list.
   enum class ParamPosition { Beginning, End };
 

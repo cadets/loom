@@ -56,6 +56,8 @@ namespace {
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
                               ArrayRef<Value*> Params, StringRef Suffix, 
 							  StringRef Metadata, bool SuppressUniq) override;
+	bool HasInitialization() override { return true; }
+	Value* Initialize(Function& Main) override;
   };
 
   //! A logger that calls `printf()`.
@@ -76,6 +78,11 @@ Logger::~Logger()
 {
 }
 
+bool
+Logger::HasInitialization() { return false; }
+
+Value*
+Logger::Initialize(Function& Main) { return nullptr; }
 
 unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
   switch (Log) {
