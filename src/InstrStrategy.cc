@@ -125,7 +125,6 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
 							StringRef Metadata, bool VarArgs, bool AfterInst, 
 							bool SuppressUniq) {
 
-  assert(Params.size() == Values.size());
 
   Module *M = I->getModule();
   LLVMContext& Ctx = M->getContext();
