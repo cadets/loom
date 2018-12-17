@@ -123,9 +123,10 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
     Values.push_back(V);
   }
 
-  // We don't handle varargs generically: that needs to be done by
-  // function- or call-specific instrumentation.
-  constexpr bool Varargs = false;
+  bool Varargs = false;
+  if (Function *F = dyn_cast<Function>(I)) {
+	  Varargs = F->isVarArg();
+  }
 
   // Instrument all non-terminators after the instructor, so that we can
   // capture the instruction's value (if non-void).
@@ -345,6 +346,11 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir, Policy::Metadata) 
   const bool Return = (Dir == Policy::Direction::Out);
   const string Description = Return ? "leave" : "enter";
   StringRef FnName = Fn.getName();
+  const bool VarArgs = Fn.isVarArg();
+
+  if (VarArgs) {
+	errs() << "Warning: VarArg functions cannot be fully instrumented.\n";
+  }
 
   assert(isa<PointerType>(Fn.getType()));
   FunctionType *FnType = dyn_cast<FunctionType>(Fn.getType()->getElementType());
