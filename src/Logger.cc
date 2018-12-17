@@ -54,8 +54,8 @@ namespace {
 
     StringRef FunctionName() const override { return "xo_emit"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
-                              ArrayRef<Value*> Params,
-                              StringRef Suffix, bool SuppressUniq) override;
+                              ArrayRef<Value*> Params, StringRef Suffix, 
+							  StringRef Metadata, bool SuppressUniq) override;
   };
 
   //! A logger that calls `printf()`.
@@ -65,8 +65,8 @@ namespace {
 
     StringRef FunctionName() const override { return "printf"; }
     Value* CreateFormatString(IRBuilder<>&, StringRef Prefix,
-                              ArrayRef<Value*> Params,
-                              StringRef Suffix, bool SuppressUniq) override;
+                              ArrayRef<Value*> Params, StringRef Suffix, 
+							  StringRef Metadata, bool SuppressUniq) override;
   };
 
 } // anonymous namespace
@@ -93,22 +93,22 @@ unique_ptr<SimpleLogger> SimpleLogger::Create(Module& Mod, LogType Log) {
 
 Value* SimpleLogger::Log(Instruction *I, ArrayRef<Value*> Values,
                          StringRef /*Name*/, StringRef Description,
-                         bool SuppressUniqueness) {
+                         StringRef Metadata, bool SuppressUniqueness) {
 
   // Call the printf-like logging function, ignoring the machine-readable name.
   IRBuilder<> B(I);
-  return Call(B, Description, Values, "\n", SuppressUniqueness);
+  return Call(B, Description, Values, "\n", "", SuppressUniqueness);
 }
 
 
 CallInst* SimpleLogger::Call(IRBuilder<>& Builder, StringRef Prefix,
                              ArrayRef<Value*> Values, StringRef Suffix,
-                             bool SuppressUniqueness) {
+                             StringRef Metadata, bool SuppressUniqueness) {
 
   vector<Value*> Args = Adapt(Values, Builder);
 
   Value *FormatString = CreateFormatString(Builder, Prefix, Args, Suffix,
-                                           SuppressUniqueness);
+                                           Metadata, SuppressUniqueness);
   Args.emplace(Args.begin(), FormatString);
 
   return Builder.CreateCall(GetFunction(), Args);
@@ -149,7 +149,7 @@ vector<Value*> SimpleLogger::Adapt(ArrayRef<Value*> Values, IRBuilder<>& B) {
 Value*
 LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
                                 ArrayRef<Value*> Values, StringRef Suffix,
-                                bool SuppressUniqueness) {
+                                StringRef Metadata, bool SuppressUniqueness) {
 
   std::stringstream FormatString;
 
@@ -225,7 +225,8 @@ LibxoLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
 Value*
 PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
                                  ArrayRef<Value*> Values, StringRef Suffix,
-                                 bool /*SuppressUniqueness*/) {
+                                 StringRef Metadata, 
+								 bool /*SuppressUniqueness*/) {
 
   std::stringstream FormatString;
 

@@ -116,6 +116,7 @@ bool OptPass::runOnModule(Module &Mod)
   std::vector<Instruction*> AllInstructions;
 
   std::unordered_map<Function*, Policy::Directions> Functions;
+  std::unordered_map<Function*, Policy::Metadata> FnMetaData;
   std::unordered_map<CallInst*, Policy::Directions> Calls;
 
   typedef std::pair<GetElementPtrInst*, std::string> FieldGEP;
@@ -130,6 +131,12 @@ bool OptPass::runOnModule(Module &Mod)
     Policy::Directions Directions = P.FnHooks(Fn);
     if (not Directions.empty()) {
       Functions.emplace(&Fn, Directions);
+	  
+	  auto Md = P.FnMetadata(Fn);
+	  if ( not Md.empty() )
+	  {
+		FnMetaData.emplace(&Fn, Md);
+	  }
     }
 
     for (auto& Inst : instructions(Fn)) {

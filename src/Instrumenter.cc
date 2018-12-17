@@ -140,7 +140,7 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
   const string Name = NameBuilder.str();
 
   Strategy->Instrument(I, Name, Name, ValueDescriptions, Values,
-                       Varargs, AfterInst, true);
+                       "", Varargs, AfterInst, true);
 
   return true;
 }
@@ -276,7 +276,7 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
   const string InstrName = Name({ "instruction", NameBuilder.str() });
 
   Strategy->Instrument(I, InstrName, FormatStringPrefix, ValueDescriptions,
-                       Values, Varargs, AfterInst, true);
+                       Values, "", Varargs, AfterInst, true);
 
   return true;
 }
@@ -322,14 +322,14 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   bool InstrAfterCall = Return;
   Strategy->Instrument(Call, InstrName, FormatStringPrefix,
-                       Parameters, Arguments, VarArgs, InstrAfterCall);
+                       Parameters, Arguments, "", VarArgs, InstrAfterCall);
 
   return true;
 }
 
 
 bool
-Instrumenter::Instrument(Function& Fn, const Policy::Directions& D) {
+Instrumenter::Instrument(Function& Fn, const Policy::Directions& D, Policy::Metadata) {
   bool ModifiedIR = false;
 
   for (auto Dir : D) {
@@ -341,7 +341,7 @@ Instrumenter::Instrument(Function& Fn, const Policy::Directions& D) {
 
 
 bool
-Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
+Instrumenter::Instrument(Function& Fn, Policy::Direction Dir, Policy::Metadata) {
   const bool Return = (Dir == Policy::Direction::Out);
   const string Description = Return ? "leave" : "enter";
   StringRef FnName = Fn.getName();
@@ -390,7 +390,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
       }
 
       Strategy->Instrument(Ret, InstrName, FormatStringPrefix,
-                           InstrParameters, Arguments);
+                           InstrParameters, Arguments, "", VarArgs);
     }
 
   } else {
@@ -399,10 +399,10 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir) {
     BasicBlock& Entry = Fn.getBasicBlockList().front();
 
     Strategy->Instrument(&Entry.front(), InstrName, FormatStringPrefix,
-                         InstrParameters, Arguments);
+                         InstrParameters, Arguments, "", VarArgs);
   }
 
-  return false;
+  return true;
 }
 
 
@@ -431,7 +431,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
     (StructName + "." + FieldName + " load:").str();
 
   Strategy->Instrument(Load, InstrName, FormatStringPrefix,
-                       Parameters, Arguments, false, true);
+                       Parameters, Arguments, "", false, true);
 
   return true;
 }

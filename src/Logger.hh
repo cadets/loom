@@ -72,6 +72,7 @@ public:
                                  llvm::ArrayRef<llvm::Value*> Values,
                                  llvm::StringRef Name,
                                  llvm::StringRef Description,
+								 llvm::StringRef Metadata,
                                  bool SuppressUniqueness) = 0;
 
 protected:
@@ -105,12 +106,14 @@ public:
                            llvm::ArrayRef<llvm::Value*> Values,
                            llvm::StringRef Name,
                            llvm::StringRef Description,
+						   llvm::StringRef Metadata,
                            bool SuppressUniqueness) override;
 
   /// Log a set of values, with optional prefix and suffix text.
   llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
                        llvm::ArrayRef<llvm::Value*> Values,
                        llvm::StringRef Suffix,
+					   llvm::StringRef Metadata,
                        bool SuppressUniqueness = false);
 
 protected:
@@ -130,6 +133,7 @@ protected:
                                           llvm::StringRef Prefix,
                                           llvm::ArrayRef<llvm::Value*>,
                                           llvm::StringRef Suffix,
+										  llvm::StringRef Metadata,
                                           bool SuppressUniqueness) = 0;
 
   /**

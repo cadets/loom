@@ -97,6 +97,7 @@ public:
    *                      @b VarArgs, but may be named differently (e.g., when
    *                      instrumenting function calls, the parameters and
    *                      arguments may have different names).
+   * @param  Metadata     Additional metadata about the instrumented function.
    * @param  VarArgs      The instrumentation should accept varargs after the
    *                      explicitly-defined @b Params.
    * @param  AfterInst    If true, apply the instrumentation *after* the
@@ -128,6 +129,7 @@ public:
                                      llvm::StringRef Description,
                                      llvm::ArrayRef<Parameter> Params,
                                      llvm::ArrayRef<llvm::Value*> Values,
+									 llvm::StringRef Metadata = "",
                                      bool VarArgs = false,
                                      bool AfterInst = false,
                                      bool SuppressUniqueness = false) = 0;
@@ -145,6 +147,7 @@ protected:
                           llvm::ArrayRef<llvm::Value*>,
                           llvm::StringRef Name,
                           llvm::StringRef Description,
+						  llvm::StringRef Metadata,
                           bool SuppressUniqueness);
 
   /**

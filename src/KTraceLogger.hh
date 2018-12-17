@@ -51,7 +51,8 @@ public:
 
   virtual llvm::Value* Log(llvm::Instruction*, llvm::ArrayRef<llvm::Value*>,
                            llvm::StringRef Name, llvm::StringRef Descrip,
-                           bool SuppressUniqueness) override;
+                           llvm::StringRef Metadata, 
+						   bool SuppressUniqueness) override;
 
 private:
   const std::unique_ptr<Serializer> Serial;

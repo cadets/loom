@@ -83,10 +83,10 @@ public:
   bool Instrument(llvm::CallInst *Call, Policy::Direction);
 
   /// Instrument a function entry and/or exit.
-  bool Instrument(llvm::Function&, const Policy::Directions&);
+  bool Instrument(llvm::Function&, const Policy::Directions&, Policy::Metadata = "");
 
   /// Instrument a function entry or exit.
-  bool Instrument(llvm::Function&, Policy::Direction);
+  bool Instrument(llvm::Function&, Policy::Direction, Policy::Metadata = "");
 
   /// Instrument a read from a structure field.
   bool Instrument(llvm::GetElementPtrInst*, llvm::LoadInst*,

@@ -9,7 +9,7 @@
  * (TC) research program, as well as at Memorial University under the
  * NSERC Discovery program (RGPIN-2015-06048).
  *
-  * Copyright (c) 2018 Stephen Lee
+ * Copyright (c) 2018 Stephen Lee
  * All rights reserved.
  *
  * This software was developed by SRI International, Purdue University,
@@ -60,7 +60,7 @@ public:
 
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
-                             ArrayRef<Value*> Values,
+                             ArrayRef<Value*> Values, StringRef Metadata,
                              bool VarArgs, bool AfterInst, bool) override;
 };
 
@@ -73,7 +73,7 @@ public:
 
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
-                             ArrayRef<Value*> Values,
+                             ArrayRef<Value*> Values, StringRef Metadata,
                              bool VarArgs, bool AfterInst,
                              bool SuppressInstrumentation) override;
 };
@@ -107,12 +107,12 @@ void InstrStrategy::AddLogger(unique_ptr<Logger> L) {
 Value*
 InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value*> Values,
                           StringRef Name, StringRef Description,
-                          bool SuppressUniqueness) {
+                          StringRef Metadata, bool SuppressUniqueness) {
   Value *End = nullptr;
 
   for (auto& L : Loggers) {
     assert(L);
-    End = L->Log(I, Values, Name, Description, SuppressUniqueness);
+    End = L->Log(I, Values, Name, Description, Metadata, SuppressUniqueness);
   }
 
   return End;
@@ -122,7 +122,8 @@ InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value*> Values,
 Instrumentation
 CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                             ArrayRef<Parameter> Params, ArrayRef<Value*> Values,
-                            bool VarArgs, bool AfterInst, bool SuppressUniq) {
+							StringRef Metadata, bool VarArgs, bool AfterInst, 
+							bool SuppressUniq) {
 
   assert(Params.size() == Values.size());
 
@@ -172,7 +173,7 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
       End = PreambleEnd;
     }
 
-    AddLogging(PreambleEnd, InstrValues, Name, Descrip, SuppressUniq);
+    AddLogging(PreambleEnd, InstrValues, Name, Descrip, Metadata, SuppressUniq);
 
     // Also set instrumentation function's parameter names:
     size_t i = 0;
@@ -206,9 +207,8 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
 Instrumentation
 InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                            ArrayRef<Parameter> Params, ArrayRef<Value*> Values,
-                           bool VarArgs, bool AfterInst, bool SuppressUniq) {
-
-  assert(Params.size() == Values.size());
+						   StringRef Metadata, bool VarArgs, bool AfterInst, 
+						   bool SuppressUniq) {
 
   BasicBlock *BB = I->getParent();
   Function *F = BB->getParent();
@@ -253,7 +253,7 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     End = I;
   }
 
-  AddLogging(PreambleEnd, Values, Name, Descrip, SuppressUniq);
+  AddLogging(PreambleEnd, Values, Name, Descrip, Metadata, SuppressUniq);
 
   SmallVector<Value*, 4> V(Values.begin(), Values.end());
 
