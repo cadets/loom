@@ -41,13 +41,12 @@
 #ifndef LOOM_DEBUG_INFO_H
 #define LOOM_DEBUG_INFO_H
 
-#include <llvm/IR/Instruction.h>
+#include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/GlobalVariable.h>
+#include <llvm/IR/Instruction.h>
 #include <llvm/IR/Metadata.h>
 #include <llvm/IR/ValueMap.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llvm/IR/DebugInfoMetadata.h>
-
 
 namespace llvm {
 class GetElementPtrInst;
@@ -56,26 +55,24 @@ class GetElementPtrInst;
 namespace loom {
 
 /// Class for finding LLVM debug information within a Module.
-class DebugInfo
-{
+class DebugInfo {
 public:
   /// A single LLVM metadata node, with an integer metadata "kind".
-  typedef std::pair<unsigned, llvm::MDNode*> DebugNode;
+  typedef std::pair<unsigned, llvm::MDNode *> DebugNode;
 
   /// A vector of metadata nodes associated with a Value.
-  template<unsigned int Size=4>
+  template <unsigned int Size = 4>
   using DebugVec = llvm::SmallVector<DebugNode, Size>;
 
-  DebugInfo(llvm::Module&);
+  DebugInfo(llvm::Module &);
 
   bool ModuleHasFullDebugInfo() const;
 
   /// Find the name of a field being looked up by a GetElementPtrInst.
-  std::string FieldName(llvm::GetElementPtrInst*);
+  std::string FieldName(llvm::GetElementPtrInst *);
 
-  template<class DebugType = llvm::Metadata>
-  const DebugType* Get(llvm::NamedMDNode *Node) const
-  {
+  template <class DebugType = llvm::Metadata>
+  const DebugType *Get(llvm::NamedMDNode *Node) const {
     for (auto *MD : Node->operands()) {
       if (auto *DebugInfo = llvm::dyn_cast<DebugType>(MD)) {
         return DebugInfo;
@@ -85,9 +82,8 @@ public:
     return nullptr;
   }
 
-  template<class DebugType = llvm::Metadata>
-  const DebugType* Get(llvm::Value *V) const
-  {
+  template <class DebugType = llvm::Metadata>
+  const DebugType *Get(llvm::Value *V) const {
     if (auto *I = llvm::dyn_cast<llvm::Instruction>(V)) {
       llvm::SmallVector<DebugNode, 4> Debug;
       I->getAllMetadata(Debug);
@@ -120,22 +116,23 @@ public:
     return nullptr;
   }
 
-  const llvm::DIVariable* GetGlobalDIVariable(llvm::GlobalVariable *G) {
-    //llvm::errs() << "In Get< GlobalVariable\n";
-    //DebugNode is defined above
+  const llvm::DIVariable *GetGlobalDIVariable(llvm::GlobalVariable *G) {
+    // llvm::errs() << "In Get< GlobalVariable\n";
+    // DebugNode is defined above
     llvm::SmallVector<DebugNode, 4> Debug;
     G->getAllMetadata(Debug);
 
-    llvm::DIVariable * result = nullptr;
+    llvm::DIVariable *result = nullptr;
 
     for (auto i : Debug) {
       if (auto *DebugInfo = llvm::dyn_cast<llvm::DIVariable>(i.second)) {
-        //llvm::errs() << "Returning from Get<\n";
+        // llvm::errs() << "Returning from Get<\n";
         result = DebugInfo;
         break;
       }
 
-      if (auto *DebugInfo = llvm::dyn_cast<llvm::DIGlobalVariableExpression>(i.second)) {
+      if (auto *DebugInfo =
+              llvm::dyn_cast<llvm::DIGlobalVariableExpression>(i.second)) {
         result = DebugInfo->getVariable();
       }
     }
@@ -158,10 +155,10 @@ private:
    *
    * @returns     debug metadata for the variable we found
    */
-  const llvm::DIVariable* Trace(llvm::GetElementPtrInst *GEP,
+  const llvm::DIVariable *Trace(llvm::GetElementPtrInst *GEP,
                                 llvm::SmallVectorImpl<size_t> &Offsets);
 
-  llvm::Module& Mod;
+  llvm::Module &Mod;
   llvm::Function *DbgDeclare;
   llvm::Function *DbgValue;
 
@@ -169,9 +166,11 @@ private:
   llvm::SmallVector<llvm::StringRef, 4> MetadataKinds;
 
   /// Declarations of metadata, i.e., metadata from `@llvm.db.declare()` calls.
-  llvm::ValueMap<llvm::Value*, llvm::SmallVector<llvm::Metadata*, 4>> DbgDecls;
+  llvm::ValueMap<llvm::Value *, llvm::SmallVector<llvm::Metadata *, 4>>
+      DbgDecls;
   /// Declarations of metadata, i.e., metadata from `@llvm.db.value()` calls.
-  llvm::ValueMap<llvm::Value*, llvm::SmallVector<llvm::Metadata*, 4>> DbgValues;
+  llvm::ValueMap<llvm::Value *, llvm::SmallVector<llvm::Metadata *, 4>>
+      DbgValues;
 };
 
 } // namespace loom

@@ -44,7 +44,7 @@ public:
   virtual ~Serializer();
 
   //! A buffer can be described using a pointer and a length.
-  typedef std::pair<llvm::Value*, llvm::Value*> BufferInfo;
+  typedef std::pair<llvm::Value *, llvm::Value *> BufferInfo;
 
   //! Create an empty Serializer unique_ptr.
   static std::unique_ptr<Serializer> None();
@@ -62,25 +62,24 @@ public:
    * @param  B            IRBuilder positioned within instrumentation code
    */
   virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
-                               llvm::ArrayRef<llvm::Value*> Values,
-                               llvm::IRBuilder<>& B) = 0;
+                               llvm::ArrayRef<llvm::Value *> Values,
+                               llvm::IRBuilder<> &B) = 0;
 
   /**
    * Clean up a serialized data buffer using Serializer-specific cleanup code
    * (e.g., `free()` or `nvlist_destroy`).
    */
-  virtual llvm::Value* Cleanup(BufferInfo&, llvm::IRBuilder<>&) = 0;
+  virtual llvm::Value *Cleanup(BufferInfo &, llvm::IRBuilder<> &) = 0;
 
 protected:
   //! Base constructor for subclasses.
-  Serializer(llvm::LLVMContext&);
+  Serializer(llvm::LLVMContext &);
 
-  llvm::LLVMContext& Ctx;              //!< store of LLVM types
-  llvm::IntegerType *Byte;             //!< `char` / `uint8_t`
-  llvm::PointerType *BytePtr;          //!< `char*` / `uint8_t*`
-  llvm::IntegerType *SizeT;            //!< `size_t`
+  llvm::LLVMContext &Ctx;     //!< store of LLVM types
+  llvm::IntegerType *Byte;    //!< `char` / `uint8_t`
+  llvm::PointerType *BytePtr; //!< `char*` / `uint8_t*`
+  llvm::IntegerType *SizeT;   //!< `size_t`
 };
-
 
 //! A Serializer that doesn't serialize anything.
 class NullSerializer : public Serializer {
@@ -91,13 +90,13 @@ public:
   virtual llvm::StringRef SchemeName() const override { return "null"; }
 
   virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
-                               llvm::ArrayRef<llvm::Value*>,
-                               llvm::IRBuilder<>&) override;
+                               llvm::ArrayRef<llvm::Value *>,
+                               llvm::IRBuilder<> &) override;
 
-  virtual llvm::Value* Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;
+  virtual llvm::Value *Cleanup(BufferInfo &, llvm::IRBuilder<> &) override;
 
 private:
-  llvm::Value* Nop(llvm::IRBuilder<>&);
+  llvm::Value *Nop(llvm::IRBuilder<> &);
 };
 
 } // namespace loom

@@ -11,9 +11,9 @@
  * Copyright (c) 2018 Stephen Lee
  * All rights reserved.
  *
- * This software was developed by SRI International, Purdue University, 
- * University of Wisconsin and University of Georgia  under DARPA/AFRL 
- * contract FA8650-15-C-7562 ("TRACE"), as part of the DARPA Transparent 
+ * This software was developed by SRI International, Purdue University,
+ * University of Wisconsin and University of Georgia  under DARPA/AFRL
+ * contract FA8650-15-C-7562 ("TRACE"), as part of the DARPA Transparent
  * Computing (TC) research program.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,16 +48,14 @@
 using namespace llvm;
 using namespace loom;
 
-
-DebugInfo::DebugInfo(llvm::Module& M)
-  : Mod(M), DbgDeclare(Mod.getFunction("llvm.dbg.declare")),
-    DbgValue(Mod.getFunction("llvm.dbg.value"))
-{
+DebugInfo::DebugInfo(llvm::Module &M)
+    : Mod(M), DbgDeclare(Mod.getFunction("llvm.dbg.declare")),
+      DbgValue(Mod.getFunction("llvm.dbg.value")) {
   Mod.getMDKindNames(MetadataKinds);
 
   if (DbgDeclare) {
     // Examine all calls to @llvm.dbg.declare() to find metadata:
-    for (auto& Use : DbgDeclare->uses()) {
+    for (auto &Use : DbgDeclare->uses()) {
       auto *Dbg = dyn_cast<DbgDeclareInst>(Use.getUser());
       assert(Dbg && "call to llvm.dbg.declare must be a DbgDeclareInst");
       DbgDecls[Dbg->getAddress()].push_back(Dbg->getVariable());
@@ -66,16 +64,14 @@ DebugInfo::DebugInfo(llvm::Module& M)
 
   if (DbgValue) {
     // Examine all calls to @llvm.dbg.value() to find metadata:
-    for (auto& Use : DbgValue->uses()) {
+    for (auto &Use : DbgValue->uses()) {
       auto *Dbg = dyn_cast<DbgValueInst>(Use.getUser());
       assert(Dbg && "call to llvm.dbg.value must be a DbgValueInst");
     }
   }
 }
 
-
-bool DebugInfo::ModuleHasFullDebugInfo() const
-{
+bool DebugInfo::ModuleHasFullDebugInfo() const {
   if (not DbgDeclare)
     return false;
 
@@ -92,9 +88,7 @@ bool DebugInfo::ModuleHasFullDebugInfo() const
   return false;
 }
 
-
-std::string DebugInfo::FieldName(GetElementPtrInst *GEP)
-{
+std::string DebugInfo::FieldName(GetElementPtrInst *GEP) {
   // Trace back to a variable with debug metadata.
   SmallVector<size_t, 4> GEPOffsets;
   const DIVariable *Var = Trace(GEP, GEPOffsets);
@@ -142,14 +136,15 @@ std::string DebugInfo::FieldName(GetElementPtrInst *GEP)
     }
 
     case dwarf::DW_TAG_typedef: {
-      auto * DT = dyn_cast<DIDerivedType>(T);
+      auto *DT = dyn_cast<DIDerivedType>(T);
       T = dyn_cast<DIType>(DT->getBaseType());
       break;
     }
 
     default:
       errs() << "ERROR: unhandled debug info tag: " << T->getTag() << "\n";
-      T->print(errs(), GEP->getModule()); errs() << " tag\n";
+      T->print(errs(), GEP->getModule());
+      errs() << " tag\n";
 
       return "";
     }
@@ -159,19 +154,16 @@ std::string DebugInfo::FieldName(GetElementPtrInst *GEP)
   return "";
 }
 
-
-const DIVariable*
-DebugInfo::Trace(GetElementPtrInst *GEP, SmallVectorImpl<size_t> &Offsets)
-{
+const DIVariable *DebugInfo::Trace(GetElementPtrInst *GEP,
+                                   SmallVectorImpl<size_t> &Offsets) {
 
   // Walk backwards from GEP to source until we find a variable with
   // debug metadata (or die trying, having reached the end of the GEP chain).
-  do
-  {
+  do {
     // If GEP'ing the address of a structure field, track which field
-    // index we are working with. 
-    if (isa<StructType>(GEP->getSourceElementType())
-        and GEP->getNumIndices() == 2) {
+    // index we are working with.
+    if (isa<StructType>(GEP->getSourceElementType()) and
+        GEP->getNumIndices() == 2) {
 
       Value *Index = GEP->idx_begin()[1];
 
@@ -193,15 +185,13 @@ DebugInfo::Trace(GetElementPtrInst *GEP, SmallVectorImpl<size_t> &Offsets)
     }
 
     if (auto *G = llvm::dyn_cast<llvm::GlobalVariable>(Ptr)) {
-        if (auto *Var = GetGlobalDIVariable(G)) {
-            return Var;
-        }
+      if (auto *Var = GetGlobalDIVariable(G)) {
+        return Var;
+      }
     }
 
     GEP = dyn_cast<GetElementPtrInst>(Ptr);
-  }
-  while (GEP != nullptr);
+  } while (GEP != nullptr);
 
   return nullptr;
 }
-

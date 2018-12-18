@@ -15,7 +15,7 @@
  * University of Wisconsin and University of Georgia  under DARPA/AFRL
  * contract FA8650-15-C-7562 ("TRACE"), as part of the DARPA Transparent
  * Computing (TC) research program.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -46,7 +46,6 @@
 
 #include <functional>
 
-
 namespace loom {
 
 class InstrStrategy;
@@ -59,7 +58,7 @@ public:
    * `"call"`, `"fn"`, `"foo"`) and converts it into a name that can
    * be used for instrumentation (e.g., `"__tesla_call_fn_foo"`).
    */
-  typedef std::function<std::string (const std::vector<std::string>&)> NameFn;
+  typedef std::function<std::string(const std::vector<std::string> &)> NameFn;
 
   /**
    * Create a new Instrumenter instance.
@@ -67,37 +66,39 @@ public:
    * @param   NF      a function that can be called to name instrumentation
    *                  (e.g., ["call","foo"] => "__loom_hook_call_foo")
    */
-  static std::unique_ptr<Instrumenter>
-    Create(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy>);
+  static std::unique_ptr<Instrumenter> Create(llvm::Module &, NameFn NF,
+                                              std::unique_ptr<InstrStrategy>);
 
   /// Instrument an instruction generically: instruction name and values.
-  bool Instrument(llvm::Instruction*);
+  bool Instrument(llvm::Instruction *);
 
-  /// Instrument an instruction generically with better info: instruction type and values.
-  bool InstrumentPtrInsts(llvm::Instruction*, const llvm::DIVariable*);
+  /// Instrument an instruction generically with better info: instruction type
+  /// and values.
+  bool InstrumentPtrInsts(llvm::Instruction *, const llvm::DIVariable *);
 
   /// Instrument a function call in the call and/or return direction.
-  bool Instrument(llvm::CallInst*, const Policy::Directions&);
+  bool Instrument(llvm::CallInst *, const Policy::Directions &);
 
   /// Instrument a function call (caller-side), either calling or returning.
   bool Instrument(llvm::CallInst *Call, Policy::Direction);
 
   /// Instrument a function entry and/or exit.
-  bool Instrument(llvm::Function&, const Policy::Directions&, Policy::Metadata = "");
+  bool Instrument(llvm::Function &, const Policy::Directions &,
+                  Policy::Metadata = "");
 
   /// Instrument a function entry or exit.
-  bool Instrument(llvm::Function&, Policy::Direction, Policy::Metadata = "");
+  bool Instrument(llvm::Function &, Policy::Direction, Policy::Metadata = "");
 
   /// Instrument a read from a structure field.
-  bool Instrument(llvm::GetElementPtrInst*, llvm::LoadInst*,
+  bool Instrument(llvm::GetElementPtrInst *, llvm::LoadInst *,
                   llvm::StringRef FieldName);
 
   /// Instrument a write to a structure field.
-  bool Instrument(llvm::GetElementPtrInst*, llvm::StoreInst*,
+  bool Instrument(llvm::GetElementPtrInst *, llvm::StoreInst *,
                   llvm::StringRef FieldName);
 
   /// Add initialization required by Loggers
-  bool InitializeLoggers(llvm::Function&);
+  bool InitializeLoggers(llvm::Function &);
 
   //! Where parameters can be added to a function's parameter list.
   enum class ParamPosition { Beginning, End };
@@ -120,23 +121,22 @@ public:
    * @param   NewArgs     the arguments to be added to the call
    * @param   Position    where the new parameters should be added
    */
-  llvm::CallInst* Extend(llvm::CallInst *Call, llvm::StringRef NewName,
-                         llvm::ArrayRef<llvm::Value*> NewArgs,
+  llvm::CallInst *Extend(llvm::CallInst *Call, llvm::StringRef NewName,
+                         llvm::ArrayRef<llvm::Value *> NewArgs,
                          ParamPosition Position = ParamPosition::End);
 
-  llvm::Module& getModule() { return Mod; }
-
+  llvm::Module &getModule() { return Mod; }
 
 private:
-  Instrumenter(llvm::Module&, NameFn NF, std::unique_ptr<InstrStrategy>);
+  Instrumenter(llvm::Module &, NameFn NF, std::unique_ptr<InstrStrategy>);
 
-  Instrumentation& GetOrCreateInstr(llvm::StringRef Name,
+  Instrumentation &GetOrCreateInstr(llvm::StringRef Name,
                                     llvm::StringRef FormatStringPrefix,
-                                    const ParamVec&);
+                                    const ParamVec &);
 
-  uint32_t FieldNumber(llvm::GetElementPtrInst*);
+  uint32_t FieldNumber(llvm::GetElementPtrInst *);
 
-  llvm::Module& Mod;
+  llvm::Module &Mod;
   std::unique_ptr<InstrStrategy> Strategy;
   llvm::StringMap<std::unique_ptr<Instrumentation>> Instr;
   NameFn Name;

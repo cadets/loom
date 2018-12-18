@@ -30,20 +30,15 @@
  * SUCH DAMAGE.
  */
 
-#include "KTraceLogger.hh"
 #include "Policy.hh"
+#include "KTraceLogger.hh"
 using namespace llvm;
 using namespace loom;
 using std::unique_ptr;
 
+Policy::~Policy() {}
 
-Policy::~Policy()
-{
-}
-
-
-std::vector<unique_ptr<Logger>> Policy::Loggers(Module& Mod) const
-{
+std::vector<unique_ptr<Logger>> Policy::Loggers(Module &Mod) const {
   std::vector<unique_ptr<Logger>> Loggers;
 
   auto SimpleLogType = this->Logging();

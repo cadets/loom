@@ -41,48 +41,39 @@
 
 #include <llvm/IR/Module.h>
 
-#include "Instrumentation.hh"
 #include "InstrStrategy.hh"
+#include "Instrumentation.hh"
 
 using namespace llvm;
 using namespace loom;
 using std::unique_ptr;
 
-
 namespace {
 
 class CalloutStrategy : public InstrStrategy {
 public:
-  CalloutStrategy(bool UseBlocks)
-    : InstrStrategy(UseBlocks)
-  {
-  }
+  CalloutStrategy(bool UseBlocks) : InstrStrategy(UseBlocks) {}
 
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
-                             ArrayRef<Value*> Values, StringRef Metadata,
+                             ArrayRef<Value *> Values, StringRef Metadata,
                              bool VarArgs, bool AfterInst, bool) override;
 };
 
 class InlineStrategy : public InstrStrategy {
 public:
-  InlineStrategy(bool UseBlocks)
-    : InstrStrategy(UseBlocks)
-  {
-  }
+  InlineStrategy(bool UseBlocks) : InstrStrategy(UseBlocks) {}
 
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
-                             ArrayRef<Value*> Values, StringRef Metadata,
+                             ArrayRef<Value *> Values, StringRef Metadata,
                              bool VarArgs, bool AfterInst,
                              bool SuppressInstrumentation) override;
 };
 
 } // anonymous namespace
 
-
-unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, bool UseBlocks)
-{
+unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, bool UseBlocks) {
   switch (K) {
   case InstrStrategy::Kind::Callout:
     return unique_ptr<InstrStrategy>(new CalloutStrategy(UseBlocks));
@@ -92,25 +83,19 @@ unique_ptr<InstrStrategy> InstrStrategy::Create(Kind K, bool UseBlocks)
   }
 }
 
-
-InstrStrategy::~InstrStrategy()
-{
-}
-
+InstrStrategy::~InstrStrategy() {}
 
 void InstrStrategy::AddLogger(unique_ptr<Logger> L) {
   assert(L);
   Loggers.emplace_back(std::move(L));
 }
 
-
-Value*
-InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value*> Values,
-                          StringRef Name, StringRef Description,
-                          StringRef Metadata, bool SuppressUniqueness) {
+Value *InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value *> Values,
+                                 StringRef Name, StringRef Description,
+                                 StringRef Metadata, bool SuppressUniqueness) {
   Value *End = nullptr;
 
-  for (auto& L : Loggers) {
+  for (auto &L : Loggers) {
     assert(L);
     End = L->Log(I, Values, Name, Description, Metadata, SuppressUniqueness);
   }
@@ -118,20 +103,19 @@ InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value*> Values,
   return End;
 }
 
-
-Instrumentation
-CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
-                            ArrayRef<Parameter> Params, ArrayRef<Value*> Values,
-							StringRef Metadata, bool VarArgs, bool AfterInst, 
-							bool SuppressUniq) {
-
+Instrumentation CalloutStrategy::Instrument(Instruction *I, StringRef Name,
+                                            StringRef Descrip,
+                                            ArrayRef<Parameter> Params,
+                                            ArrayRef<Value *> Values,
+                                            StringRef Metadata, bool VarArgs,
+                                            bool AfterInst, bool SuppressUniq) {
 
   Module *M = I->getModule();
-  LLVMContext& Ctx = M->getContext();
+  LLVMContext &Ctx = M->getContext();
 
-  std::vector<Type*> ParamTypes(Params.size());
+  std::vector<Type *> ParamTypes(Params.size());
   std::transform(Params.begin(), Params.end(), ParamTypes.begin(),
-                 [](const Parameter& P) { return P.second; });
+                 [](const Parameter &P) { return P.second; });
 
   auto *T = FunctionType::get(Type::getVoidTy(Ctx), ParamTypes, VarArgs);
   auto *InstrFn = dyn_cast<Function>(M->getOrInsertFunction(Name, T));
@@ -141,7 +125,7 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   // instrumentation function's parameters rather than values that we we see
   // within this context. Convert these from llvm::Argument& to llvm::Value*.
   //
-  SmallVector<Value*, 4> InstrValues;
+  SmallVector<Value *, 4> InstrValues;
   for (Argument &Arg : InstrFn->args()) {
     InstrValues.push_back(&Arg);
   }
@@ -165,7 +149,8 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
       End = IRBuilder<>(EndBlock).CreateRetVoid();
 
     } else {
-      Preamble = BasicBlock::Create(Ctx, "entry", InstrFn);;
+      Preamble = BasicBlock::Create(Ctx, "entry", InstrFn);
+      ;
       EndBlock = nullptr;
 
       PreambleEnd = IRBuilder<>(Preamble).CreateRetVoid();
@@ -202,17 +187,17 @@ CalloutStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
   }
 }
 
-
-Instrumentation
-InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
-                           ArrayRef<Parameter> Params, ArrayRef<Value*> Values,
-						   StringRef Metadata, bool VarArgs, bool AfterInst, 
-						   bool SuppressUniq) {
+Instrumentation InlineStrategy::Instrument(Instruction *I, StringRef Name,
+                                           StringRef Descrip,
+                                           ArrayRef<Parameter> Params,
+                                           ArrayRef<Value *> Values,
+                                           StringRef Metadata, bool VarArgs,
+                                           bool AfterInst, bool SuppressUniq) {
 
   BasicBlock *BB = I->getParent();
   Function *F = BB->getParent();
   Module *M = F->getParent();
-  LLVMContext& Ctx = M->getContext();
+  LLVMContext &Ctx = M->getContext();
 
   if (AfterInst) {
     // Move to the next instruction.
@@ -254,7 +239,7 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
 
   AddLogging(PreambleEnd, Values, Name, Descrip, Metadata, SuppressUniq);
 
-  SmallVector<Value*, 4> V(Values.begin(), Values.end());
+  SmallVector<Value *, 4> V(Values.begin(), Values.end());
 
   if (Preamble and EndBlock) {
     return Instrumentation(V, Preamble, EndBlock, PreambleEnd, End);
@@ -262,20 +247,17 @@ InlineStrategy::Instrument(Instruction *I, StringRef Name, StringRef Descrip,
     return Instrumentation(V, PreambleEnd, End);
   }
 }
-  
-bool 
-InstrStrategy::Initialize(llvm::Function& Main) 
-{
+
+bool InstrStrategy::Initialize(llvm::Function &Main) {
   bool ModifiedIR = false;
-  Value* Val;
-  for (auto& L : Loggers) {
+  Value *Val;
+  for (auto &L : Loggers) {
     assert(L);
-    if (L->HasInitialization())
-	{
-	  ModifiedIR = true;
+    if (L->HasInitialization()) {
+      ModifiedIR = true;
       Val = L->Initialize(Main);
-	  assert(Val != nullptr);
-	}
+      assert(Val != nullptr);
+    }
   }
   return ModifiedIR;
 }

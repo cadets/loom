@@ -37,7 +37,9 @@
 
 #include <memory>
 
-namespace { class LibNV; }
+namespace {
+class LibNV;
+}
 
 namespace loom {
 
@@ -45,15 +47,16 @@ namespace loom {
 class NVSerializer : public Serializer {
 public:
   //! Construct a libnv-based @ref Serializer.
-  NVSerializer(llvm::Module&);
+  NVSerializer(llvm::Module &);
 
   virtual llvm::StringRef SchemeName() const override { return "nvlist"; }
 
   virtual BufferInfo Serialize(llvm::StringRef Name, llvm::StringRef Descrip,
-                               llvm::ArrayRef<llvm::Value*>,
-                               llvm::IRBuilder<>&) override;
+                               llvm::ArrayRef<llvm::Value *>,
+                               llvm::IRBuilder<> &) override;
 
-  virtual llvm::Instruction* Cleanup(BufferInfo&, llvm::IRBuilder<>&) override;
+  virtual llvm::Instruction *Cleanup(BufferInfo &,
+                                     llvm::IRBuilder<> &) override;
 
 private:
   const std::unique_ptr<LibNV> NV;

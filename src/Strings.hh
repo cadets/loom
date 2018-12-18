@@ -34,12 +34,11 @@
 #include <string>
 #include <vector>
 
-
 namespace loom {
 
-std::string Join(const std::vector<std::string>&, const std::string& delim = ",");
+std::string Join(const std::vector<std::string> &,
+                 const std::string &delim = ",");
 
 } // namespace loom
-
 
 #endif /* LOOM_STRINGS_H */

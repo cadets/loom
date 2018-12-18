@@ -47,36 +47,26 @@ using std::string;
 using std::unique_ptr;
 using std::vector;
 
-
-Instrumentation::Instrumentation(SmallVector<Value*, 4> Values,
+Instrumentation::Instrumentation(SmallVector<Value *, 4> Values,
                                  BasicBlock *Preamble, BasicBlock *EndBlock,
                                  Instruction *Begin, Instruction *End)
-  : InstrValues(std::move(Values)), Preamble(Preamble), EndBlock(EndBlock),
-    PreambleEnd(Begin), End(End)
-{
+    : InstrValues(std::move(Values)), Preamble(Preamble), EndBlock(EndBlock),
+      PreambleEnd(Begin), End(End) {
   assert(not Preamble->empty());
   assert(not EndBlock->empty());
 }
 
-
-Instrumentation::Instrumentation(SmallVector<Value*, 4> Values,
+Instrumentation::Instrumentation(SmallVector<Value *, 4> Values,
                                  Instruction *Begin, Instruction *End)
-  : InstrValues(std::move(Values)),
-    Preamble(nullptr), EndBlock(nullptr),
-    PreambleEnd(Begin), End(End)
-{
-}
+    : InstrValues(std::move(Values)), Preamble(nullptr), EndBlock(nullptr),
+      PreambleEnd(Begin), End(End) {}
 
-
-IRBuilder<> Instrumentation::GetBuilder()
-{
+IRBuilder<> Instrumentation::GetBuilder() {
   assert(End);
   return IRBuilder<>(End);
 }
 
-
-IRBuilder<> Instrumentation::AddAction(StringRef Name)
-{
+IRBuilder<> Instrumentation::AddAction(StringRef Name) {
   assert(PreambleEnd && End);
 
   if (not Preamble) {
@@ -100,7 +90,7 @@ IRBuilder<> Instrumentation::AddAction(StringRef Name)
   // Create the new instrumentation block and insert it between the
   // old last-but-one block and the "end" block.
   Function *Fn = Predecessor->getParent();
-  LLVMContext& Ctx = Fn->getContext();
+  LLVMContext &Ctx = Fn->getContext();
   BasicBlock *BB = BasicBlock::Create(Ctx, Name, Fn, EndBlock);
 
   IRBuilder<>(Predecessor).CreateBr(BB);

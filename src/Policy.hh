@@ -8,7 +8,7 @@
  * FA8650-15-C-7558 ("CADETS"), as part of the DARPA Transparent Computing
  * (TC) research program.
  *
-  * Copyright (c) 2018 Stephen Lee
+ * Copyright (c) 2018 Stephen Lee
  * All rights reserved.
  *
  * This software was developed by SRI International, Purdue University,
@@ -47,13 +47,10 @@
 #include <string>
 #include <vector>
 
-
-namespace llvm
-{
-  class Function;
-  class StructType;
-}
-
+namespace llvm {
+class Function;
+class StructType;
+} // namespace llvm
 
 namespace loom {
 
@@ -62,9 +59,8 @@ namespace loom {
  * which direction (e.g., call vs return).
  */
 
-class Policy
-{
-  public:
+class Policy {
+public:
   virtual ~Policy();
 
   /**
@@ -77,7 +73,7 @@ class Policy
   virtual InstrStrategy::Kind Strategy() const = 0;
 
   //! Create all loggers required by the policy.
-  virtual std::vector<std::unique_ptr<Logger>> Loggers(llvm::Module&) const;
+  virtual std::vector<std::unique_ptr<Logger>> Loggers(llvm::Module &) const;
 
   //! Simple (non-serializing) logging.
   virtual SimpleLogger::LogType Logging() const = 0;
@@ -89,7 +85,7 @@ class Policy
   virtual KTraceTarget KTrace() const = 0;
 
   //! How should we serialize data?
-  virtual std::unique_ptr<Serializer> Serialization(llvm::Module&) const = 0;
+  virtual std::unique_ptr<Serializer> Serialization(llvm::Module &) const = 0;
 
   /**
    * Create instrumentation within BasicBlocks, making the structure of the
@@ -113,12 +109,12 @@ class Policy
   typedef std::string Metadata;
 
   //! In which directions should calls to a function be instrumented?
-  virtual Directions CallHooks(const llvm::Function&) const = 0;
+  virtual Directions CallHooks(const llvm::Function &) const = 0;
 
   //! In which directions (preamble/return) should a function be instrumented?
-  virtual Directions FnHooks(const llvm::Function&) const = 0;
+  virtual Directions FnHooks(const llvm::Function &) const = 0;
 
-  virtual std::string FnMetadata(const llvm::Function& Fn) const = 0;
+  virtual std::string FnMetadata(const llvm::Function &Fn) const = 0;
 
   /**
    * A structure type is relevant in some way to instrumentation.
@@ -127,7 +123,7 @@ class Policy
    * this method allows a policy to express which structure types are to be
    * instrumented in any way.
    */
-  virtual bool StructTypeMatters(const llvm::StructType&) const = 0;
+  virtual bool StructTypeMatters(const llvm::StructType &) const = 0;
 
   /**
    * Should a read from a structure field be instrumented?
@@ -135,8 +131,8 @@ class Policy
    * @param   T     the type of the structure being read from
    * @param   Field the field being read from within the structure
    */
-  virtual bool
-    FieldReadHook(const llvm::StructType& T, llvm::StringRef Field) const = 0;
+  virtual bool FieldReadHook(const llvm::StructType &T,
+                             llvm::StringRef Field) const = 0;
 
   /**
    * Should a write to a structure field be instrumented?
@@ -144,8 +140,8 @@ class Policy
    * @param   T     the type of the structure being written to
    * @param   Field the field being written to within the structure
    */
-  virtual bool
-    FieldWriteHook(const llvm::StructType& T, llvm::StringRef Field) const = 0;
+  virtual bool FieldWriteHook(const llvm::StructType &T,
+                              llvm::StringRef Field) const = 0;
 
   /**
    * A global value is relevant in some way to instrumentation.
@@ -154,27 +150,25 @@ class Policy
    * this method allows a policy to express which global values are to be
    * instrumented in any way.
    */
-  virtual bool GlobalValueMatters(const llvm::Value&) const = 0;
+  virtual bool GlobalValueMatters(const llvm::Value &) const = 0;
 
   /**
    * Should a read from a global variable be instrumented?
    *
    * @param   V     the value of the global being read from
    */
-  virtual bool
-    GlobalReadHook(const llvm::Value& V) const = 0;
+  virtual bool GlobalReadHook(const llvm::Value &V) const = 0;
 
   /**
    * Should a write to a gloabl variable be instrumented?
    *
    * @param   V     the value of the global being written to
    */
-  virtual bool
-    GlobalWriteHook(const llvm::Value& V) const = 0;
+  virtual bool GlobalWriteHook(const llvm::Value &V) const = 0;
 
   //! Name an instrumentation function for a particular event type.
   virtual std::string
-    InstrName(const std::vector<std::string>& Components) const = 0;
+  InstrName(const std::vector<std::string> &Components) const = 0;
 };
 
 } // namespace loom

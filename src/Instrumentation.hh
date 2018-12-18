@@ -34,11 +34,11 @@
  * SUCH DAMAGE.
  */
 
-#ifndef  LOOM_INSTRUMENTATION_FN_H
-#define  LOOM_INSTRUMENTATION_FN_H
+#ifndef LOOM_INSTRUMENTATION_FN_H
+#define LOOM_INSTRUMENTATION_FN_H
 
-#include "InstrStrategy.hh"
 #include "IRUtils.hh"
+#include "InstrStrategy.hh"
 #include "PolicyFile.hh"
 
 #include <llvm/ADT/ArrayRef.h>
@@ -47,10 +47,10 @@
 #include <llvm/IR/IRBuilder.h>
 
 namespace llvm {
-  class Instruction;
-  class LLVMContext;
-  class Module;
-}
+class Instruction;
+class LLVMContext;
+class Module;
+} // namespace llvm
 
 namespace loom {
 
@@ -65,7 +65,7 @@ public:
    * Construct some instrumentation that puts all actions into BasicBlocks
    * injected between the specified preamble and end blocks.
    */
-  Instrumentation(llvm::SmallVector<llvm::Value*, 4> Values,
+  Instrumentation(llvm::SmallVector<llvm::Value *, 4> Values,
                   llvm::BasicBlock *Preamble, llvm::BasicBlock *EndBlock,
                   llvm::Instruction *PreambleEnd, llvm::Instruction *End);
 
@@ -73,11 +73,11 @@ public:
    * Construct some instrumentation that directly injects actions as inline
    * instructions rather than using BasicBlocks.
    */
-  Instrumentation(llvm::SmallVector<llvm::Value*, 4> Values,
+  Instrumentation(llvm::SmallVector<llvm::Value *, 4> Values,
                   llvm::Instruction *PreambleEnd, llvm::Instruction *End);
 
   //! Retrieve the values passed into the instrumentation.
-  llvm::ArrayRef<llvm::Value*> Values() { return InstrValues; }
+  llvm::ArrayRef<llvm::Value *> Values() { return InstrValues; }
 
   /**
    * Get an IRBuilder to insert instructions into the instrumentation preamble.
@@ -92,15 +92,14 @@ public:
   /// Add a new link in the chain of actions for this instrumentation.
   llvm::IRBuilder<> AddAction(llvm::StringRef Name);
 
-
 private:
-  llvm::SmallVector<llvm::Value*, 4> InstrValues;  //!< Instrumented values
-  llvm::BasicBlock *Preamble;   //!< Cross-instrumentation logging, etc.
-  llvm::BasicBlock *EndBlock;   //!< End of the instrumentation block chain.
+  llvm::SmallVector<llvm::Value *, 4> InstrValues; //!< Instrumented values
+  llvm::BasicBlock *Preamble;     //!< Cross-instrumentation logging, etc.
+  llvm::BasicBlock *EndBlock;     //!< End of the instrumentation block chain.
   llvm::Instruction *PreambleEnd; //!< Terminator of the preamble.
-  llvm::Instruction *End;       //!< Final instruction in the instrumentation.
+  llvm::Instruction *End;         //!< Final instruction in the instrumentation.
 };
 
-}
+} // namespace loom
 
-#endif  /* !LOOM_INSTRUMENTATION_FN_H */
+#endif /* !LOOM_INSTRUMENTATION_FN_H */

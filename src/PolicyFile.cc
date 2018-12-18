@@ -37,8 +37,8 @@
  * SUCH DAMAGE.
  */
 
-#include "NVSerializer.hh"
 #include "PolicyFile.hh"
+#include "NVSerializer.hh"
 #include "Strings.hh"
 
 #include <llvm/IR/Function.h>
@@ -55,20 +55,18 @@ using std::vector;
 
 namespace {
 
-template<class T>
-bool vecContains(const std::vector<T>& V, const T& Val) {
+template <class T> bool vecContains(const std::vector<T> &V, const T &Val) {
   return (std::find(V.begin(), V.end(), Val) != V.end());
 }
 
-}
+} // namespace
 
 //
 // Data that can be represented in an instrumentation description file:
 //
 
 /// A description of how to instrument a function.
-struct FnInstrumentation
-{
+struct FnInstrumentation {
   /// Function name (as named by LLVM, possibly language-mangled).
   string Name;
 
@@ -87,15 +85,13 @@ struct FnInstrumentation
 };
 
 /// An operation that can be performed on a structure field
-enum class FieldOperation
-{
+enum class FieldOperation {
   Read,
   Write,
 };
 
 /// A description of how to instrument a function.
-struct FieldInstrumentation
-{
+struct FieldInstrumentation {
   /// Field name.
   string Name;
 
@@ -110,19 +106,17 @@ enum class SerializationType {
 };
 
 /// A description of how to instrument fields within a structure.
-struct StructInstrumentation
-{
-  /// Name of the structure containing the field (as named by LLVM, possibly mangled).
+struct StructInstrumentation {
+  /// Name of the structure containing the field (as named by LLVM, possibly
+  /// mangled).
   string Name;
 
   /// Instrumentation that should be applied to calls to this function.
   vector<FieldInstrumentation> Fields;
 };
 
-
 /// Everything contained in an instrumentation description file.
-struct PolicyFile::PolicyFileData
-{
+struct PolicyFile::PolicyFileData {
   /// Prefix to prepend to all instrumentation hooks (e.g., "__loom").
   string HookPrefix;
 
@@ -154,16 +148,14 @@ struct PolicyFile::PolicyFileData
   vector<StructInstrumentation> Structures;
 };
 
-
 //
 // YAML conversion details:
 //
 
 /// Converts a vector to/from YAML.
-template<class T>
-struct yaml::SequenceTraits<vector<T>> {
-  static size_t size(yaml::IO&, vector<T>& V) { return V.size(); }
-  static T& element(IO&, vector<T>& V, size_t I) {
+template <class T> struct yaml::SequenceTraits<vector<T>> {
+  static size_t size(yaml::IO &, vector<T> &V) { return V.size(); }
+  static T &element(IO &, vector<T> &V, size_t I) {
     if (I >= V.size())
       V.resize(I + 1);
 
@@ -172,94 +164,84 @@ struct yaml::SequenceTraits<vector<T>> {
 };
 
 /// Converts an InstrStrategy::Kind to/from YAML.
-template <>
-struct yaml::ScalarEnumerationTraits<InstrStrategy::Kind> {
-  static void enumeration(yaml::IO &io, InstrStrategy::Kind& K) {
-    io.enumCase(K, "callout",  InstrStrategy::Kind::Callout);
+template <> struct yaml::ScalarEnumerationTraits<InstrStrategy::Kind> {
+  static void enumeration(yaml::IO &io, InstrStrategy::Kind &K) {
+    io.enumCase(K, "callout", InstrStrategy::Kind::Callout);
     io.enumCase(K, "inline", InstrStrategy::Kind::Inline);
   }
 };
 
 /// Converts an KTraceTarget to/from YAML.
-template <>
-struct yaml::ScalarEnumerationTraits<Policy::KTraceTarget> {
-  static void enumeration(yaml::IO &io, Policy::KTraceTarget& T) {
-    io.enumCase(T, "kernel",  Policy::KTraceTarget::Kernel);
+template <> struct yaml::ScalarEnumerationTraits<Policy::KTraceTarget> {
+  static void enumeration(yaml::IO &io, Policy::KTraceTarget &T) {
+    io.enumCase(T, "kernel", Policy::KTraceTarget::Kernel);
     io.enumCase(T, "utrace", Policy::KTraceTarget::Userspace);
     io.enumCase(T, "none", Policy::KTraceTarget::None);
   }
 };
 
 /// Converts a Policy::Direction to/from YAML.
-template <>
-struct yaml::ScalarEnumerationTraits<Policy::Direction> {
-  static void enumeration(yaml::IO &io, Policy::Direction& Dir) {
-    io.enumCase(Dir, "entry",  Policy::Direction::In);
+template <> struct yaml::ScalarEnumerationTraits<Policy::Direction> {
+  static void enumeration(yaml::IO &io, Policy::Direction &Dir) {
+    io.enumCase(Dir, "entry", Policy::Direction::In);
     io.enumCase(Dir, "exit", Policy::Direction::Out);
   }
 };
 
 /// Converts a SerializationType to/from YAML.
-template <>
-struct yaml::ScalarEnumerationTraits<SerializationType> {
-  static void enumeration(yaml::IO &io, SerializationType& S) {
+template <> struct yaml::ScalarEnumerationTraits<SerializationType> {
+  static void enumeration(yaml::IO &io, SerializationType &S) {
     io.enumCase(S, "nv", SerializationType::LibNV);
     io.enumCase(S, "none", SerializationType::None);
   }
 };
 
 /// Converts a SimpleLogger::LogType to/from YAML.
-template <>
-struct yaml::ScalarEnumerationTraits<SimpleLogger::LogType> {
-  static void enumeration(yaml::IO &io, SimpleLogger::LogType& T) {
-    io.enumCase(T, "printf",  SimpleLogger::LogType::Printf);
+template <> struct yaml::ScalarEnumerationTraits<SimpleLogger::LogType> {
+  static void enumeration(yaml::IO &io, SimpleLogger::LogType &T) {
+    io.enumCase(T, "printf", SimpleLogger::LogType::Printf);
     io.enumCase(T, "xo", SimpleLogger::LogType::Libxo);
     io.enumCase(T, "none", SimpleLogger::LogType::None);
   }
 };
 
 /// Converts FnInstrumentation to/from YAML.
-template <>
-struct yaml::MappingTraits<FnInstrumentation> {
+template <> struct yaml::MappingTraits<FnInstrumentation> {
   static void mapping(yaml::IO &io, FnInstrumentation &fn) {
-    io.mapOptional("name",        fn.Name);
-	io.mapOptional("within-file",    fn.FileName);
-    io.mapOptional("caller",      fn.Call);
-    io.mapOptional("callee",      fn.Body);
-	io.mapOptional("metadata",        fn.Meta);
+    io.mapOptional("name", fn.Name);
+    io.mapOptional("within-file", fn.FileName);
+    io.mapOptional("caller", fn.Call);
+    io.mapOptional("callee", fn.Body);
+    io.mapOptional("metadata", fn.Meta);
   }
 };
 
 /// Converts a FieldOperation to/from YAML.
-template <>
-struct yaml::ScalarEnumerationTraits<FieldOperation> {
-  static void enumeration(yaml::IO &io, FieldOperation& Dir) {
-    io.enumCase(Dir, "read",  FieldOperation::Read);
+template <> struct yaml::ScalarEnumerationTraits<FieldOperation> {
+  static void enumeration(yaml::IO &io, FieldOperation &Dir) {
+    io.enumCase(Dir, "read", FieldOperation::Read);
     io.enumCase(Dir, "write", FieldOperation::Write);
   }
 };
 
 /// Converts FieldInstrumentation to/from YAML.
-template <>
-struct yaml::MappingTraits<FieldInstrumentation> {
+template <> struct yaml::MappingTraits<FieldInstrumentation> {
   static void mapping(yaml::IO &io, FieldInstrumentation &f) {
-    io.mapRequired("name",        f.Name);
-    io.mapRequired("operations",  f.Operations);
+    io.mapRequired("name", f.Name);
+    io.mapRequired("operations", f.Operations);
   }
 };
 
 /// Converts StructInstrumentation to/from YAML.
-template <>
-struct yaml::MappingTraits<StructInstrumentation> {
+template <> struct yaml::MappingTraits<StructInstrumentation> {
   static void mapping(yaml::IO &io, StructInstrumentation &s) {
-    io.mapRequired("name",        s.Name);
-    io.mapRequired("fields",      s.Fields);
+    io.mapRequired("name", s.Name);
+    io.mapRequired("fields", s.Fields);
   }
 };
 
 /// Converts PolicyFileData to/from YAML.
-template <>
-struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
+template <> struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
   static void mapping(yaml::IO &io, PolicyFile::PolicyFileData &policy) {
     io.mapOptional("strategy", policy.Strategy, InstrStrategy::Kind::Callout);
     io.mapOptional("logging", policy.Logging, SimpleLogger::LogType::None);
@@ -269,11 +251,10 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
     io.mapOptional("everything", policy.InstrumentEverything, false);
     io.mapOptional("pointerInsts", policy.InstrumentPointerInsts, false);
-    io.mapOptional("functions",   policy.Functions);
-    io.mapOptional("structures",  policy.Structures);
+    io.mapOptional("functions", policy.Functions);
+    io.mapOptional("structures", policy.Structures);
   }
 };
-
 
 //
 // PolicyFile implementation:
@@ -281,18 +262,12 @@ struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
 
 namespace loom {
 
-PolicyFile::PolicyFile(const PolicyFileData& P)
-  : Policy(unique_ptr<PolicyFileData> { new PolicyFileData(P) })
-{
-}
+PolicyFile::PolicyFile(const PolicyFileData &P)
+    : Policy(unique_ptr<PolicyFileData>{new PolicyFileData(P)}) {}
 
-PolicyFile::~PolicyFile()
-{
-}
+PolicyFile::~PolicyFile() {}
 
-
-ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename)
-{
+ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename) {
   auto F = MemoryBuffer::getFile(Filename);
   if (std::error_code ec = F.getError())
     return ec;
@@ -305,30 +280,16 @@ ErrorOr<unique_ptr<PolicyFile>> PolicyFile::Open(string Filename)
     return ec;
   }
 
-  return unique_ptr<PolicyFile> { new PolicyFile(policy) };
+  return unique_ptr<PolicyFile>{new PolicyFile(policy)};
 }
 
+InstrStrategy::Kind PolicyFile::Strategy() const { return Policy->Strategy; }
 
-InstrStrategy::Kind PolicyFile::Strategy() const
-{
-  return Policy->Strategy;
-}
+SimpleLogger::LogType PolicyFile::Logging() const { return Policy->Logging; }
 
+Policy::KTraceTarget PolicyFile::KTrace() const { return Policy->KTrace; }
 
-SimpleLogger::LogType PolicyFile::Logging() const
-{
-  return Policy->Logging;
-}
-
-
-Policy::KTraceTarget PolicyFile::KTrace() const
-{
-  return Policy->KTrace;
-}
-
-
-unique_ptr<Serializer> PolicyFile::Serialization(Module& Mod) const
-{
+unique_ptr<Serializer> PolicyFile::Serialization(Module &Mod) const {
   switch (Policy->Serial) {
   case SerializationType::LibNV:
     return unique_ptr<Serializer>(new NVSerializer(Mod));
@@ -337,89 +298,58 @@ unique_ptr<Serializer> PolicyFile::Serialization(Module& Mod) const
   }
 }
 
+bool PolicyFile::UseBlockStructure() const { return Policy->UseBlockStructure; }
 
-bool PolicyFile::UseBlockStructure() const
-{
-  return Policy->UseBlockStructure;
-}
+bool PolicyFile::InstrumentAll() const { return Policy->InstrumentEverything; }
 
-
-bool
-PolicyFile::InstrumentAll() const
-{
-  return Policy->InstrumentEverything;
-}
-
-bool
-PolicyFile::InstrumentPointerInsts() const
-{
+bool PolicyFile::InstrumentPointerInsts() const {
   return Policy->InstrumentPointerInsts;
 }
 
-
-Policy::Directions
-PolicyFile::CallHooks(const llvm::Function& Fn) const
-{
+Policy::Directions PolicyFile::CallHooks(const llvm::Function &Fn) const {
   StringRef Name = Fn.getName();
-  
-  for (FnInstrumentation& F : Policy->Functions)
-  {
-    if (MatchName(F.Name, Name))
-    {
-	  return F.Call;
+
+  for (FnInstrumentation &F : Policy->Functions) {
+    if (MatchName(F.Name, Name)) {
+      return F.Call;
     }
   }
 
   return Policy::Directions();
 }
 
-
-Policy::Directions
-PolicyFile::FnHooks(const llvm::Function& Fn) const
-{
+Policy::Directions PolicyFile::FnHooks(const llvm::Function &Fn) const {
   StringRef Name = Fn.getName();
 
   std::string FileName = Fn.getParent()->getSourceFileName();
   std::string BaseFileName = FileName.substr(FileName.find_last_of("/\\") + 1);
 
-  for (FnInstrumentation& F : Policy->Functions)
-  {
-    if (MatchName(F.Name, Name))
-    {
-	  if (!F.FileName.empty()) 
-	  { 
-		  if ( MatchName(F.FileName, BaseFileName))
-		  {
-			 return F.Body;
-
-		  }
-	  } 
-	  else 
-	  {
-		return F.Body;
-	  }
+  for (FnInstrumentation &F : Policy->Functions) {
+    if (MatchName(F.Name, Name)) {
+      if (!F.FileName.empty()) {
+        if (MatchName(F.FileName, BaseFileName)) {
+          return F.Body;
+        }
+      } else {
+        return F.Body;
+      }
     }
   }
 
   return Policy::Directions();
 }
 
-string
-PolicyFile::FnMetadata(const llvm::Function& Fn) const
-{
-	StringRef Name = Fn.getName();
+string PolicyFile::FnMetadata(const llvm::Function &Fn) const {
+  StringRef Name = Fn.getName();
 
-	for (FnInstrumentation& F : Policy->Functions)
-	{
-		if (MatchName(F.Name, Name))
-		{
-			return F.Meta;			
-		}
-	}
+  for (FnInstrumentation &F : Policy->Functions) {
+    if (MatchName(F.Name, Name)) {
+      return F.Meta;
+    }
+  }
 }
 
-bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
-{
+bool PolicyFile::StructTypeMatters(const llvm::StructType &T) const {
   if (not T.hasName()) {
     return false;
   }
@@ -429,10 +359,10 @@ bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
     return false;
   }
 
-  //return true;/*
+  // return true;/*
   StringRef Name = T.getName().substr(7);
 
-  for (StructInstrumentation& S : Policy->Structures) {
+  for (StructInstrumentation &S : Policy->Structures) {
     if (MatchName(S.Name, Name)) {
       return true;
     }
@@ -441,9 +371,8 @@ bool PolicyFile::StructTypeMatters(const llvm::StructType& T) const
   return false; // */
 }
 
-bool
-PolicyFile::FieldReadHook(const llvm::StructType& T, StringRef Field) const
-{
+bool PolicyFile::FieldReadHook(const llvm::StructType &T,
+                               StringRef Field) const {
   if (not T.getName().startswith("struct.")) {
     assert(T.getName().startswith("union."));
     return false;
@@ -451,12 +380,12 @@ PolicyFile::FieldReadHook(const llvm::StructType& T, StringRef Field) const
 
   StringRef Name = T.getName().substr(7);
 
-  for (StructInstrumentation& S : Policy->Structures) {
+  for (StructInstrumentation &S : Policy->Structures) {
     if (!MatchName(S.Name, Name)) {
       continue;
     }
 
-    for (auto& F : S.Fields) {
+    for (auto &F : S.Fields) {
       if (MatchName(F.Name, Field)) {
         return vecContains(F.Operations, FieldOperation::Read);
       }
@@ -466,10 +395,8 @@ PolicyFile::FieldReadHook(const llvm::StructType& T, StringRef Field) const
   return false;
 }
 
-
-bool
-PolicyFile::FieldWriteHook(const llvm::StructType& T, StringRef Field) const
-{
+bool PolicyFile::FieldWriteHook(const llvm::StructType &T,
+                                StringRef Field) const {
   if (not T.getName().startswith("struct.")) {
     assert(T.getName().startswith("union."));
     return false;
@@ -477,12 +404,12 @@ PolicyFile::FieldWriteHook(const llvm::StructType& T, StringRef Field) const
 
   StringRef Name = T.getName().substr(7);
 
-  for (StructInstrumentation& S : Policy->Structures) {
+  for (StructInstrumentation &S : Policy->Structures) {
     if (!MatchName(S.Name, Name)) {
       continue;
     }
 
-    for (auto& F : S.Fields) {
+    for (auto &F : S.Fields) {
       if (MatchName(F.Name, Field)) {
         return vecContains(F.Operations, FieldOperation::Write);
       }
@@ -492,16 +419,14 @@ PolicyFile::FieldWriteHook(const llvm::StructType& T, StringRef Field) const
   return false;
 }
 
-
-bool PolicyFile::GlobalValueMatters(const llvm::Value& V) const
-{
+bool PolicyFile::GlobalValueMatters(const llvm::Value &V) const {
   if (not V.hasName()) {
     return false;
   }
 
   StringRef Name = V.getName();
 
-  for (GlobalInstrumentation& G : Policy->Globals) {
+  for (GlobalInstrumentation &G : Policy->Globals) {
     if (G.Name == Name) {
       return true;
     }
@@ -510,12 +435,10 @@ bool PolicyFile::GlobalValueMatters(const llvm::Value& V) const
   return false;
 }
 
-bool
-PolicyFile::GlobalReadHook(const llvm::Value& V) const
-{
+bool PolicyFile::GlobalReadHook(const llvm::Value &V) const {
   StringRef Name = V.getName();
 
-  for (GlobalInstrumentation& G : Policy->Globals) {
+  for (GlobalInstrumentation &G : Policy->Globals) {
     if (G.Name != Name) {
       continue;
     }
@@ -526,13 +449,10 @@ PolicyFile::GlobalReadHook(const llvm::Value& V) const
   return false;
 }
 
-
-bool
-PolicyFile::GlobalWriteHook(const llvm::Value& V) const
-{
+bool PolicyFile::GlobalWriteHook(const llvm::Value &V) const {
   StringRef Name = V.getName();
 
-  for (GlobalInstrumentation& G : Policy->Globals) {
+  for (GlobalInstrumentation &G : Policy->Globals) {
     if (G.Name != Name) {
       continue;
     }
@@ -543,33 +463,27 @@ PolicyFile::GlobalWriteHook(const llvm::Value& V) const
   return false;
 }
 
-
-string PolicyFile::InstrName(const vector<string>& Components) const
-{
+string PolicyFile::InstrName(const vector<string> &Components) const {
   vector<string> FullName(1, Policy->HookPrefix);
   FullName.insert(FullName.end(), Components.begin(), Components.end());
 
   return Join(FullName, "_");
 }
 
-bool
-PolicyFile::MatchName(std::string instrName, StringRef name) const
-{
+bool PolicyFile::MatchName(std::string instrName, StringRef name) const {
 
-	std::string error; // BJK: What to do with Error?
-	llvm::Regex nameRegex = llvm::Regex(instrName);
+  std::string error; // BJK: What to do with Error?
+  llvm::Regex nameRegex = llvm::Regex(instrName);
 
-	if (!nameRegex.isValid(error))
-	{
-		return false;
-	}
+  if (!nameRegex.isValid(error)) {
+    return false;
+  }
 
-	if (nameRegex.match(name))
-	{
-		return true;
-	}
+  if (nameRegex.match(name)) {
+    return true;
+  }
 
-	return false;
+  return false;
 }
 
 } // namespace loom

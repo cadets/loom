@@ -40,17 +40,14 @@ using namespace loom;
 using namespace llvm;
 using std::vector;
 
-
-KTraceLogger::KTraceLogger(Module& Mod, std::unique_ptr<Serializer> S, bool K)
-  : Logger(Mod), Serial(std::move(S)), KernelMode(K)
-{
+KTraceLogger::KTraceLogger(Module &Mod, std::unique_ptr<Serializer> S, bool K)
+    : Logger(Mod), Serial(std::move(S)), KernelMode(K) {
   assert(Serial && "no Serializer passed into KTraceLogger");
 }
 
-
-Value* KTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
-                         StringRef Name, StringRef Descrip,
-						 StringRef Metadata, bool /* SuppressUniqueness */) {
+Value *KTraceLogger::Log(Instruction *I, ArrayRef<Value *> Values,
+                         StringRef Name, StringRef Descrip, StringRef Metadata,
+                         bool /* SuppressUniqueness */) {
 
   IRBuilder<> B(I);
 
@@ -61,18 +58,18 @@ Value* KTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
 
   if (!KernelMode) {
     // Send record to `utrace`:
-    auto *FT = TypeBuilder<int(const void*, size_t), false>::get(Ctx);
+    auto *FT = TypeBuilder<int(const void *, size_t), false>::get(Ctx);
     Constant *F = Mod.getOrInsertFunction("utrace", FT);
 
-    B.CreateCall(F, { Buffer.first, Buffer.second });
+    B.CreateCall(F, {Buffer.first, Buffer.second});
 
   } else {
     // Send record to `ktrstruct`:
-    auto *FT = TypeBuilder<void(const char*, void*, size_t), false>::get(Ctx);
+    auto *FT = TypeBuilder<void(const char *, void *, size_t), false>::get(Ctx);
     Constant *F = Mod.getOrInsertFunction("ktrstruct", FT);
     Value *Name = B.CreateGlobalStringPtr(Serial->SchemeName(), "scheme");
 
-    B.CreateCall(F, { Name, Buffer.first, Buffer.second });
+    B.CreateCall(F, {Name, Buffer.first, Buffer.second});
   }
 
   return Serial->Cleanup(Buffer, B);

@@ -35,43 +35,34 @@
 using namespace llvm;
 using namespace loom;
 
-
-std::unique_ptr<Serializer> Serializer::None()
-{
+std::unique_ptr<Serializer> Serializer::None() {
   return std::unique_ptr<Serializer>();
 }
 
-
 Serializer::Serializer(llvm::LLVMContext &Ctx)
-  : Ctx(Ctx), Byte(IntegerType::get(Ctx, 8)),
-    BytePtr(PointerType::getUnqual(Byte)), SizeT(IntegerType::get(Ctx, 64))
-{
-}
+    : Ctx(Ctx), Byte(IntegerType::get(Ctx, 8)),
+      BytePtr(PointerType::getUnqual(Byte)), SizeT(IntegerType::get(Ctx, 64)) {}
 
+Serializer::~Serializer() {}
 
-Serializer::~Serializer()
-{
-}
-
-
-Serializer::BufferInfo
-NullSerializer::Serialize(StringRef /* Name */, StringRef /* Description */,
-                          ArrayRef<Value*> V, IRBuilder<>& B) {
+Serializer::BufferInfo NullSerializer::Serialize(StringRef /* Name */,
+                                                 StringRef /* Description */,
+                                                 ArrayRef<Value *> V,
+                                                 IRBuilder<> &B) {
 
   // As a "null" operation, simply copy zero bytes from nullptr.
   Value *NullPtr = ConstantPointerNull::get(BytePtr);
   ConstantInt *Zero = ConstantInt::get(SizeT, 0);
 
-  return { NullPtr, Zero };
+  return {NullPtr, Zero};
 }
 
-
-Value* NullSerializer::Cleanup(BufferInfo&, IRBuilder<>& B) {
+Value *NullSerializer::Cleanup(BufferInfo &, IRBuilder<> &B) {
   // No cleanup is required, as no memory has been allocated.
   return Nop(B);
 }
 
-Value* NullSerializer::Nop(IRBuilder<>& B) {
+Value *NullSerializer::Nop(IRBuilder<> &B) {
   auto *False = ConstantInt::getFalse(Ctx);
   return B.CreateXor(False, False);
 }

@@ -40,11 +40,11 @@
 #include <memory>
 
 namespace llvm {
-  class Function;
-  class FunctionType;
-  class Module;
-  class Value;
-}
+class Function;
+class FunctionType;
+class Module;
+class Value;
+} // namespace llvm
 
 namespace loom {
 
@@ -68,22 +68,21 @@ public:
    *
    * @returns the last instruction (if any) in the generated instrumentation
    */
-  virtual llvm::Value* Log(llvm::Instruction* I,
-                                 llvm::ArrayRef<llvm::Value*> Values,
-                                 llvm::StringRef Name,
-                                 llvm::StringRef Description,
-								 llvm::StringRef Metadata,
-                                 bool SuppressUniqueness) = 0;
+  virtual llvm::Value *Log(llvm::Instruction *I,
+                           llvm::ArrayRef<llvm::Value *> Values,
+                           llvm::StringRef Name, llvm::StringRef Description,
+                           llvm::StringRef Metadata,
+                           bool SuppressUniqueness) = 0;
 
   virtual bool HasInitialization();
 
-  virtual llvm::Value* Initialize(llvm::Function& Main);
+  virtual llvm::Value *Initialize(llvm::Function &Main);
 
 protected:
-  Logger(llvm::Module& Mod) : Mod(Mod) {}
+  Logger(llvm::Module &Mod) : Mod(Mod) {}
 
   //! The module being instrumented: where to find functions like xo_emit().
-  llvm::Module& Mod;
+  llvm::Module &Mod;
 };
 
 /// A logging technique that requires a single call to a printf-like function
@@ -103,42 +102,38 @@ public:
   };
 
   /// Create a new Logger of the specified type (`printf`, `libxo`, etc.).
-  static std::unique_ptr<SimpleLogger> Create(llvm::Module&,
+  static std::unique_ptr<SimpleLogger> Create(llvm::Module &,
                                               LogType Log = LogType::Printf);
 
-  virtual llvm::Value* Log(llvm::Instruction *I,
-                           llvm::ArrayRef<llvm::Value*> Values,
-                           llvm::StringRef Name,
-                           llvm::StringRef Description,
-						   llvm::StringRef Metadata,
+  virtual llvm::Value *Log(llvm::Instruction *I,
+                           llvm::ArrayRef<llvm::Value *> Values,
+                           llvm::StringRef Name, llvm::StringRef Description,
+                           llvm::StringRef Metadata,
                            bool SuppressUniqueness) override;
 
   /// Log a set of values, with optional prefix and suffix text.
-  llvm::CallInst* Call(llvm::IRBuilder<>&, llvm::StringRef FormatStringPrefix,
-                       llvm::ArrayRef<llvm::Value*> Values,
-                       llvm::StringRef Suffix,
-					   llvm::StringRef Metadata,
+  llvm::CallInst *Call(llvm::IRBuilder<> &, llvm::StringRef FormatStringPrefix,
+                       llvm::ArrayRef<llvm::Value *> Values,
+                       llvm::StringRef Suffix, llvm::StringRef Metadata,
                        bool SuppressUniqueness = false);
 
 protected:
-  SimpleLogger(llvm::Module& Mod) : Logger(Mod) {}
+  SimpleLogger(llvm::Module &Mod) : Logger(Mod) {}
 
   /// Get (or create) declaration for the logging function.
-  llvm::Function* GetFunction();
+  llvm::Function *GetFunction();
 
   /// Get the name of the logging function.
   virtual llvm::StringRef FunctionName() const = 0;
 
   /// Get the type of the logging function, often `int (const char*, ...)`.
-  virtual llvm::FunctionType* GetType();
+  virtual llvm::FunctionType *GetType();
 
   /// Create a format string that we can pass to the logging function.
-  virtual llvm::Value* CreateFormatString(llvm::IRBuilder<>&,
-                                          llvm::StringRef Prefix,
-                                          llvm::ArrayRef<llvm::Value*>,
-                                          llvm::StringRef Suffix,
-										  llvm::StringRef Metadata,
-                                          bool SuppressUniqueness) = 0;
+  virtual llvm::Value *
+  CreateFormatString(llvm::IRBuilder<> &, llvm::StringRef Prefix,
+                     llvm::ArrayRef<llvm::Value *>, llvm::StringRef Suffix,
+                     llvm::StringRef Metadata, bool SuppressUniqueness) = 0;
 
   /**
    * Adapt a set of values into a form that can be logged.
@@ -159,11 +154,11 @@ protected:
    *
    * @returns  a vector of possibly-adapted values
    */
-  virtual std::vector<llvm::Value*> Adapt(llvm::ArrayRef<llvm::Value*>,
-                                          llvm::IRBuilder<>&);
+  virtual std::vector<llvm::Value *> Adapt(llvm::ArrayRef<llvm::Value *>,
+                                           llvm::IRBuilder<> &);
 
   //! A cache of already-generated format strings.
-  llvm::StringMap<llvm::Value*> FormatStrings;
+  llvm::StringMap<llvm::Value *> FormatStrings;
 };
 
 } // namespace loom

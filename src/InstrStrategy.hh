@@ -31,8 +31,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef  LOOM_INSTR_STRATEGY_H
-#define  LOOM_INSTR_STRATEGY_H
+#ifndef LOOM_INSTR_STRATEGY_H
+#define LOOM_INSTR_STRATEGY_H
 
 #include <memory>
 
@@ -42,11 +42,9 @@
 #include "IRUtils.hh"
 #include "Logger.hh"
 
-
 namespace llvm {
-  class Instruction;
+class Instruction;
 }
-
 
 namespace loom {
 
@@ -56,8 +54,8 @@ class Instrumentation;
 class InstrStrategy {
 public:
   enum class Kind {
-    Callout,    //!< Call out to a user-defined instrumentation function.
-    Inline,     //!< Add instrumentation inline with the instrumented code.
+    Callout, //!< Call out to a user-defined instrumentation function.
+    Inline,  //!< Add instrumentation inline with the instrumented code.
   };
 
   virtual ~InstrStrategy();
@@ -124,17 +122,14 @@ public:
    *                      Target->isVarArg());
    * ```
    */
-  virtual Instrumentation Instrument(llvm::Instruction *I,
-                                     llvm::StringRef Name,
-                                     llvm::StringRef Description,
-                                     llvm::ArrayRef<Parameter> Params,
-                                     llvm::ArrayRef<llvm::Value*> Values,
-									 llvm::StringRef Metadata = "",
-                                     bool VarArgs = false,
-                                     bool AfterInst = false,
-                                     bool SuppressUniqueness = false) = 0;
+  virtual Instrumentation
+  Instrument(llvm::Instruction *I, llvm::StringRef Name,
+             llvm::StringRef Description, llvm::ArrayRef<Parameter> Params,
+             llvm::ArrayRef<llvm::Value *> Values,
+             llvm::StringRef Metadata = "", bool VarArgs = false,
+             bool AfterInst = false, bool SuppressUniqueness = false) = 0;
 
-  bool  Initialize(llvm::Function& main);
+  bool Initialize(llvm::Function &main);
 
 protected:
   InstrStrategy(bool UseBlocks) : UseBlockStructure(UseBlocks) {}
@@ -145,12 +140,9 @@ protected:
    *
    * @returns   the last instruction of the added logging code (or I if none)
    */
-  llvm::Value* AddLogging(llvm::Instruction *I,
-                          llvm::ArrayRef<llvm::Value*>,
-                          llvm::StringRef Name,
-                          llvm::StringRef Description,
-						  llvm::StringRef Metadata,
-                          bool SuppressUniqueness);
+  llvm::Value *AddLogging(llvm::Instruction *I, llvm::ArrayRef<llvm::Value *>,
+                          llvm::StringRef Name, llvm::StringRef Description,
+                          llvm::StringRef Metadata, bool SuppressUniqueness);
 
   /**
    * Use an explicit structure of premable/instrumentation/end BasicBlocks

@@ -36,9 +36,7 @@
 
 using namespace std;
 
-
-string loom::Join(const vector<string>& Components, const string& Delimiter)
-{
+string loom::Join(const vector<string> &Components, const string &Delimiter) {
   ostringstream Stream;
   ostream_iterator<string> Iterator(Stream, Delimiter.c_str());
 

@@ -44,12 +44,10 @@
 
 #include <llvm/Support/ErrorOr.h>
 
-
 namespace loom {
 
-class PolicyFile : public Policy
-{
-  public:
+class PolicyFile : public Policy {
+public:
   /// A structure that contains policy data parsed from a file.
   struct PolicyFileData;
 
@@ -64,7 +62,7 @@ class PolicyFile : public Policy
 
   KTraceTarget KTrace() const override;
 
-  std::unique_ptr<Serializer> Serialization(llvm::Module&) const override;
+  std::unique_ptr<Serializer> Serialization(llvm::Module &) const override;
 
   bool UseBlockStructure() const override;
 
@@ -72,31 +70,28 @@ class PolicyFile : public Policy
 
   bool InstrumentPointerInsts() const override;
 
-  Policy::Directions
-    CallHooks(const llvm::Function&) const override;
+  Policy::Directions CallHooks(const llvm::Function &) const override;
 
-  Policy::Directions
-    FnHooks(const llvm::Function&) const override;
+  Policy::Directions FnHooks(const llvm::Function &) const override;
 
-  std::string
-    FnMetadata(const llvm::Function& Fn) const override;
-  
-  bool StructTypeMatters(const llvm::StructType&) const override;
+  std::string FnMetadata(const llvm::Function &Fn) const override;
 
-  bool FieldReadHook(const llvm::StructType&, llvm::StringRef) const override;
+  bool StructTypeMatters(const llvm::StructType &) const override;
 
-  bool FieldWriteHook(const llvm::StructType&, llvm::StringRef) const override;
+  bool FieldReadHook(const llvm::StructType &, llvm::StringRef) const override;
 
-  bool GlobalValueMatters(const llvm::Value&) const override;
+  bool FieldWriteHook(const llvm::StructType &, llvm::StringRef) const override;
 
-  bool GlobalReadHook(const llvm::Value&) const override;
+  bool GlobalValueMatters(const llvm::Value &) const override;
 
-  bool GlobalWriteHook(const llvm::Value&) const override;
-  
-  std::string InstrName(const std::vector<std::string>&) const override;
+  bool GlobalReadHook(const llvm::Value &) const override;
 
-  private:
-  PolicyFile(const PolicyFileData&);
+  bool GlobalWriteHook(const llvm::Value &) const override;
+
+  std::string InstrName(const std::vector<std::string> &) const override;
+
+private:
+  PolicyFile(const PolicyFileData &);
 
   bool MatchName(std::string instrName, llvm::StringRef name) const;
 

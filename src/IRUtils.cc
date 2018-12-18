@@ -32,8 +32,8 @@
 
 #include "IRUtils.hh"
 
-#include "llvm/IR/Module.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/Module.h"
 
 #include <sstream>
 
@@ -41,19 +41,17 @@ using namespace llvm;
 using namespace loom;
 using std::vector;
 
-
-BasicBlock* loom::FindBlock(StringRef Name, Function& Fn) {
-  for (auto& B : Fn)
+BasicBlock *loom::FindBlock(StringRef Name, Function &Fn) {
+  for (auto &B : Fn)
     if (B.getName() == Name)
       return &B;
 
   return NULL;
 }
 
-
 ParamVec loom::GetParameters(Function *Fn) {
   ParamVec Parameters;
-  for(auto &Arg : Fn->args()) {
+  for (auto &Arg : Fn->args()) {
     Parameters.emplace_back(Arg.getName(), Arg.getType());
   }
   return Parameters;

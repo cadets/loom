@@ -8,7 +8,7 @@
  * FA8650-15-C-7558 ("CADETS"), as part of the DARPA Transparent Computing
  * (TC) research program.
  *
-  * Copyright (c) 2018 Stephen Lee
+ * Copyright (c) 2018 Stephen Lee
  * All rights reserved.
  *
  * This software was developed by SRI International, Purdue University,
@@ -43,34 +43,27 @@
 
 #include <llvm/IR/Module.h>
 #include <llvm/Transforms/Utils/BasicBlockUtils.h>
-//TODO: separate this out
+// TODO: separate this out
 #include "llvm/IR/DebugInfoMetadata.h"
 
+#include "llvm/Support/raw_ostream.h"
 #include <sstream>
 #include <string>
-#include "llvm/Support/raw_ostream.h"
 
 using namespace llvm;
 using namespace loom;
 using namespace std;
 
-
-unique_ptr<Instrumenter>
-Instrumenter::Create(Module& Mod, NameFn NF, unique_ptr<InstrStrategy> S)
-{
+unique_ptr<Instrumenter> Instrumenter::Create(Module &Mod, NameFn NF,
+                                              unique_ptr<InstrStrategy> S) {
   return unique_ptr<Instrumenter>(new Instrumenter(Mod, NF, std::move(S)));
 }
 
-
-Instrumenter::Instrumenter(llvm::Module& Mod, NameFn NF,
+Instrumenter::Instrumenter(llvm::Module &Mod, NameFn NF,
                            unique_ptr<InstrStrategy> S)
-  : Mod(Mod), Strategy(std::move(S)), Name(NF)
-{
-}
+    : Mod(Mod), Strategy(std::move(S)), Name(NF) {}
 
-
-bool Instrumenter::Instrument(llvm::Instruction *I)
-{
+bool Instrumenter::Instrument(llvm::Instruction *I) {
   // If this instruction terminates a block, we need to treat it a bit
   // differently, placing instrumentation before it rather than after.
   const bool Terminator = I->isTerminator();
@@ -82,16 +75,15 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
   auto *OpcodeTy = IntegerType::get(Mod.getContext(), 32);
   unsigned Opcode = I->getOpcode();
 
-  ParamVec ValueDescriptions = { { "opcode", OpcodeTy } };
-  vector<Value*> Values = { ConstantInt::get(OpcodeTy, Opcode) };
+  ParamVec ValueDescriptions = {{"opcode", OpcodeTy}};
+  vector<Value *> Values = {ConstantInt::get(OpcodeTy, Opcode)};
 
-  if (not Void)
-  {
+  if (not Void) {
     ValueDescriptions.emplace_back(I->getName(), I->getType());
     Values.push_back(I);
   }
 
-  for (Use& U : I->operands()) {
+  for (Use &U : I->operands()) {
     // If this is a phi node, ignore the operands (values that *could* exist)
     // and stick to the phi value (that value that *does* exist).
     if (isa<PHINode>(I)) {
@@ -125,7 +117,7 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
 
   bool Varargs = false;
   if (Function *F = dyn_cast<Function>(I)) {
-	  Varargs = F->isVarArg();
+    Varargs = F->isVarArg();
   }
 
   // Instrument all non-terminators after the instructor, so that we can
@@ -137,39 +129,40 @@ bool Instrumenter::Instrument(llvm::Instruction *I)
   // simplistic approach.
   std::ostringstream NameBuilder;
   NameBuilder << "instrumentation:instruction:";
-  NameBuilder << static_cast<const void*>(I);
+  NameBuilder << static_cast<const void *>(I);
   const string Name = NameBuilder.str();
 
-  Strategy->Instrument(I, Name, Name, ValueDescriptions, Values,
-                       "", Varargs, AfterInst, true);
+  Strategy->Instrument(I, Name, Name, ValueDescriptions, Values, "", Varargs,
+                       AfterInst, true);
 
   return true;
 }
 
-//Currently, the second parameter is unused. It would give us the source name instead of the bitcode name
-bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariable* Var)
-{
+// Currently, the second parameter is unused. It would give us the source name
+// instead of the bitcode name
+bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I,
+                                      const llvm::DIVariable *Var) {
 
   std::ostringstream LocationBuilder;
 
-  Value * Ptr = nullptr;
-  Value * Val = nullptr;
-  if( StoreInst * store = dyn_cast<StoreInst>(I) ) {
+  Value *Ptr = nullptr;
+  Value *Val = nullptr;
+  if (StoreInst *store = dyn_cast<StoreInst>(I)) {
     Ptr = store->getPointerOperand();
     Val = store->getValueOperand();
-  } else if( LoadInst * load = dyn_cast<LoadInst>(I) ) {
+  } else if (LoadInst *load = dyn_cast<LoadInst>(I)) {
     Ptr = load->getPointerOperand();
     Val = load;
-  } else if( GetElementPtrInst * gep = dyn_cast<GetElementPtrInst>(I) ) {
+  } else if (GetElementPtrInst *gep = dyn_cast<GetElementPtrInst>(I)) {
     Ptr = gep->getPointerOperand();
     Val = gep;
-  } else if( BitCastInst * bc = dyn_cast<BitCastInst>(I) ) {
+  } else if (BitCastInst *bc = dyn_cast<BitCastInst>(I)) {
     Ptr = bc->getOperand(0);
     Val = bc;
   }
 
   StringRef PtrName = "";
-  if( Ptr) {
+  if (Ptr) {
     string dummy;
     raw_string_ostream raw(dummy);
 
@@ -179,20 +172,20 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
     Ptr->getType()->print(raw, false, true);
     string out = raw.str();
 
-    //Put in this order to not disturb snd by first inserting at 0
+    // Put in this order to not disturb snd by first inserting at 0
     size_t pos = 0;
     while ((pos = out.find('%', pos)) != std::string::npos) {
-        out.insert(pos, "%");
-        pos += 2;
+      out.insert(pos, "%");
+      pos += 2;
     }
     LocationBuilder << '|' << out << "| ";
 
     PtrName = Ptr->getName();
   }
-  if( !PtrName.empty() ) {
+  if (!PtrName.empty()) {
     string Prefix = isa<GlobalValue>(*Ptr) ? "@" : "%%";
     LocationBuilder << Prefix << PtrName.str();
-  } else  {
+  } else {
     LocationBuilder << "???";
   }
   LocationBuilder << " ";
@@ -210,17 +203,16 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
   const bool Void = Terminator or I->getType()->isVoidTy();
 
   ParamVec ValueDescriptions;
-  vector<Value*> Values;
+  vector<Value *> Values;
 
-  if (not Void)
-  {
+  if (not Void) {
     ValueDescriptions.emplace_back(I->getName(), I->getType());
     Values.push_back(I);
   } else {
     FormatStringPrefix.append(" %%void%%");
   }
 
-  for (Use& U : I->operands()) {
+  for (Use &U : I->operands()) {
     // If this is a phi node, ignore the operands (values that *could* exist)
     // and stick to the phi value (that value that *does* exist).
     if (isa<PHINode>(I)) {
@@ -248,17 +240,17 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
       return false;
     }
 
-    if( T->isPointerTy() )
-    // Remember, can condition on pointer but not && on it
-    if (ConstantExpr * K = dyn_cast<ConstantExpr>(V)) {
+    if (T->isPointerTy())
+      // Remember, can condition on pointer but not && on it
+      if (ConstantExpr *K = dyn_cast<ConstantExpr>(V)) {
 
-      Instruction * N = K->getAsInstruction();
-      if( isa<BitCastInst>(N) || isa<GetElementPtrInst>(N) ) {
-        N->insertBefore(I);
-        this->InstrumentPtrInsts(N, nullptr);
-        //Cannot remove because the instrumentation will use its result
+        Instruction *N = K->getAsInstruction();
+        if (isa<BitCastInst>(N) || isa<GetElementPtrInst>(N)) {
+          N->insertBefore(I);
+          this->InstrumentPtrInsts(N, nullptr);
+          // Cannot remove because the instrumentation will use its result
+        }
       }
-    }
 
     ValueDescriptions.emplace_back(V->getName(), T);
     Values.push_back(V);
@@ -273,8 +265,8 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
   const bool AfterInst = not Terminator;
 
   std::ostringstream NameBuilder;
-  NameBuilder << static_cast<const void*>(I);
-  const string InstrName = Name({ "instruction", NameBuilder.str() });
+  NameBuilder << static_cast<const void *>(I);
+  const string InstrName = Name({"instruction", NameBuilder.str()});
 
   Strategy->Instrument(I, InstrName, FormatStringPrefix, ValueDescriptions,
                        Values, "", Varargs, AfterInst, true);
@@ -282,21 +274,18 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I, const llvm::DIVariab
   return true;
 }
 
-bool Instrumenter::Instrument(CallInst *Call, const Policy::Directions& D)
-{
+bool Instrumenter::Instrument(CallInst *Call, const Policy::Directions &D) {
   bool ModifiedIR = false;
 
-  for(auto Dir : D) {
+  for (auto Dir : D) {
     ModifiedIR |= Instrument(Call, Dir);
   }
 
   return ModifiedIR;
 }
 
-
-bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
-{
-  Function* Target = Call->getCalledFunction();
+bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir) {
+  Function *Target = Call->getCalledFunction();
   assert(Target); // TODO: support indirect targets, too
 
   // Get some relevant details about the call and the target function.
@@ -308,11 +297,11 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
 
   const string Description = Return ? "return" : "call";
   const string FormatStringPrefix = Description + " " + TargetName + ":";
-  const string InstrName = Name({ Description, TargetName });
+  const string InstrName = Name({Description, TargetName});
 
   // Start by copying static and dynamic value details from the target function.
   ParamVec Parameters = GetParameters(Target);
-  vector<Value*> Arguments(Call->getNumArgOperands());
+  vector<Value *> Arguments(Call->getNumArgOperands());
   std::copy(Call->arg_begin(), Call->arg_end(), Arguments.begin());
 
   // The return value, if present, comes first in the instrumentation.
@@ -322,15 +311,14 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir)
   }
 
   bool InstrAfterCall = Return;
-  Strategy->Instrument(Call, InstrName, FormatStringPrefix,
-                       Parameters, Arguments, "", VarArgs, InstrAfterCall);
+  Strategy->Instrument(Call, InstrName, FormatStringPrefix, Parameters,
+                       Arguments, "", VarArgs, InstrAfterCall);
 
   return true;
 }
 
-
-bool
-Instrumenter::Instrument(Function& Fn, const Policy::Directions& D, Policy::Metadata) {
+bool Instrumenter::Instrument(Function &Fn, const Policy::Directions &D,
+                              Policy::Metadata) {
   bool ModifiedIR = false;
 
   for (auto Dir : D) {
@@ -340,16 +328,15 @@ Instrumenter::Instrument(Function& Fn, const Policy::Directions& D, Policy::Meta
   return ModifiedIR;
 }
 
-
-bool
-Instrumenter::Instrument(Function& Fn, Policy::Direction Dir, Policy::Metadata) {
+bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
+                              Policy::Metadata) {
   const bool Return = (Dir == Policy::Direction::Out);
   const string Description = Return ? "leave" : "enter";
   StringRef FnName = Fn.getName();
   const bool VarArgs = Fn.isVarArg();
 
   if (VarArgs) {
-	errs() << "Warning: VarArg functions cannot be fully instrumented.\n";
+    errs() << "Warning: VarArg functions cannot be fully instrumented.\n";
   }
 
   assert(isa<PointerType>(Fn.getType()));
@@ -357,7 +344,7 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir, Policy::Metadata) 
   assert(FnType);
   const bool voidFunction = FnType->getReturnType()->isVoidTy();
 
-  vector<Value*> Arguments;
+  vector<Value *> Arguments;
   vector<Parameter> InstrParameters;
 
   if (Return and not voidFunction) {
@@ -370,14 +357,14 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir, Policy::Metadata) 
     InstrParameters.emplace_back(Arg.getName(), Arg.getType());
   }
 
-  const string InstrName = Name({ Description, FnName });
+  const string InstrName = Name({Description, FnName});
   string FormatStringPrefix = (Description + " " + FnName + ":").str();
 
   if (Return) {
     // Instrument all returns from the function:
-    SmallVector<ReturnInst*, 4> Returns;
+    SmallVector<ReturnInst *, 4> Returns;
 
-    for (auto& Block : Fn) {
+    for (auto &Block : Fn) {
       TerminatorInst *Terminator = Block.getTerminator();
       if (auto *Ret = dyn_cast<ReturnInst>(Terminator)) {
         Returns.push_back(Ret);
@@ -390,19 +377,18 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir, Policy::Metadata) 
       // parameters to the instrumentation.
       if (not voidFunction) {
         Arguments[0] = Ret->getReturnValue();
-      }
-      else {
+      } else {
         FormatStringPrefix.append(" %%void%%");
       }
 
-      Strategy->Instrument(Ret, InstrName, FormatStringPrefix,
-                           InstrParameters, Arguments, "", VarArgs);
+      Strategy->Instrument(Ret, InstrName, FormatStringPrefix, InstrParameters,
+                           Arguments, "", VarArgs);
     }
 
   } else {
     // Instrument the function's preamble:
     assert(not Fn.getBasicBlockList().empty());
-    BasicBlock& Entry = Fn.getBasicBlockList().front();
+    BasicBlock &Entry = Fn.getBasicBlockList().front();
 
     Strategy->Instrument(&Entry.front(), InstrName, FormatStringPrefix,
                          InstrParameters, Arguments, "", VarArgs);
@@ -411,7 +397,6 @@ Instrumenter::Instrument(Function& Fn, Policy::Direction Dir, Policy::Metadata) 
   return true;
 }
 
-
 bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
                               StringRef FieldName) {
   StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
@@ -419,29 +404,27 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
   assert(SourceType->getName().startswith("struct."));
   const string StructName = SourceType->getName().substr(7);
 
-  ParamVec Parameters {
-    { "source", GEP->getPointerOperandType() },
-    { "value", Load->getType() },
+  ParamVec Parameters{
+      {"source", GEP->getPointerOperandType()},
+      {"value", Load->getType()},
   };
 
-  vector<Value*> Arguments {
-    GEP->getPointerOperand(),
-    Load,
+  vector<Value *> Arguments{
+      GEP->getPointerOperand(),
+      Load,
   };
 
-  const string InstrName = Name(
-    { "load", "struct", StructName, "field", FieldName }
-  );
+  const string InstrName =
+      Name({"load", "struct", StructName, "field", FieldName});
 
   const string FormatStringPrefix =
-    (StructName + "." + FieldName + " load:").str();
+      (StructName + "." + FieldName + " load:").str();
 
-  Strategy->Instrument(Load, InstrName, FormatStringPrefix,
-                       Parameters, Arguments, "", false, true);
+  Strategy->Instrument(Load, InstrName, FormatStringPrefix, Parameters,
+                       Arguments, "", false, true);
 
   return true;
 }
-
 
 bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
                               StringRef FieldName) {
@@ -450,47 +433,44 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
   assert(SourceType->getName().startswith("struct."));
   const string StructName = SourceType->getName().substr(7);
 
-  ParamVec Parameters {
-    { "source", GEP->getPointerOperandType() },
-    { "value", Store->getValueOperand()->getType() },
+  ParamVec Parameters{
+      {"source", GEP->getPointerOperandType()},
+      {"value", Store->getValueOperand()->getType()},
   };
 
-  vector<Value*> Arguments {
-    GEP->getPointerOperand(),
-    Store->getValueOperand(),
+  vector<Value *> Arguments{
+      GEP->getPointerOperand(),
+      Store->getValueOperand(),
   };
 
-  const string InstrName = Name(
-    { "store", "struct", StructName, "field", FieldName }
-  );
+  const string InstrName =
+      Name({"store", "struct", StructName, "field", FieldName});
 
   const string FormatStringPrefix =
-    (StructName + "." + FieldName + " store:").str();
+      (StructName + "." + FieldName + " store:").str();
 
-  Strategy->Instrument(Store, InstrName, FormatStringPrefix,
-                       Parameters, Arguments);
+  Strategy->Instrument(Store, InstrName, FormatStringPrefix, Parameters,
+                       Arguments);
 
   return true;
 }
 
-bool Instrumenter::InitializeLoggers(llvm::Function& Main) 
-{
+bool Instrumenter::InitializeLoggers(llvm::Function &Main) {
 
   assert(Main.getName().startswith("main"));
   return Strategy->Initialize(Main);
-
 }
 
-CallInst* Instrumenter::Extend(CallInst *Call, StringRef NewName,
-                               ArrayRef<Value*> NewArgs, ParamPosition Position)
-{
+CallInst *Instrumenter::Extend(CallInst *Call, StringRef NewName,
+                               ArrayRef<Value *> NewArgs,
+                               ParamPosition Position) {
   Function *F = Call->getCalledFunction();
   FunctionType *FT = F->getFunctionType();
 
   // Create the new function and call by adding parameters and arguments
   // to the front or the back of the existing arguments and parameters.
-  std::vector<Type*> ParamTypes = FT->params();
-  SmallVector<Value*, 4> Arguments(Call->arg_begin(), Call->arg_end());
+  std::vector<Type *> ParamTypes = FT->params();
+  SmallVector<Value *, 4> Arguments(Call->arg_begin(), Call->arg_end());
 
   for (Value *Arg : NewArgs) {
     if (Position == ParamPosition::End) {
@@ -502,8 +482,9 @@ CallInst* Instrumenter::Extend(CallInst *Call, StringRef NewName,
     }
   }
 
-  Constant *NewFn = Mod.getOrInsertFunction(NewName,
-    FunctionType::get(FT->getReturnType(), ParamTypes, FT->isVarArg()));
+  Constant *NewFn = Mod.getOrInsertFunction(
+      NewName,
+      FunctionType::get(FT->getReturnType(), ParamTypes, FT->isVarArg()));
 
   // Create the new call to the new function and replace the old call with it.
   CallInst *NewCall = CallInst::Create(NewFn, Arguments);
@@ -511,7 +492,6 @@ CallInst* Instrumenter::Extend(CallInst *Call, StringRef NewName,
 
   return NewCall;
 }
-
 
 uint32_t Instrumenter::FieldNumber(GetElementPtrInst *GEP) {
   // A field access getelementptr should have two indices:

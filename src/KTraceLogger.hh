@@ -47,12 +47,12 @@ class Serializer;
  */
 class KTraceLogger : public loom::Logger {
 public:
-  KTraceLogger(llvm::Module& Mod, std::unique_ptr<Serializer>, bool KernelMode);
+  KTraceLogger(llvm::Module &Mod, std::unique_ptr<Serializer>, bool KernelMode);
 
-  virtual llvm::Value* Log(llvm::Instruction*, llvm::ArrayRef<llvm::Value*>,
+  virtual llvm::Value *Log(llvm::Instruction *, llvm::ArrayRef<llvm::Value *>,
                            llvm::StringRef Name, llvm::StringRef Descrip,
-                           llvm::StringRef Metadata, 
-						   bool SuppressUniqueness) override;
+                           llvm::StringRef Metadata,
+                           bool SuppressUniqueness) override;
 
 private:
   const std::unique_ptr<Serializer> Serial;

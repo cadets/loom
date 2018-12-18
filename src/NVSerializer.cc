@@ -42,25 +42,26 @@ using namespace loom;
 namespace {
 
 /// Whether or not to emit libnv API calls for debug self-checking.
-cl::opt<bool>
-NVDebug("loom-nv-debug", cl::desc("emit libnv debug code"), cl::init(false));
-
+cl::opt<bool> NVDebug("loom-nv-debug", cl::desc("emit libnv debug code"),
+                      cl::init(false));
 
 /// Object that finds/creates libnv functions.
 class LibNV {
 public:
-  LibNV(Module&);
+  LibNV(Module &);
 
-  CallInst* Free(Value*, IRBuilder<>&);         //!< libc's `free(void*)`
+  CallInst *Free(Value *, IRBuilder<> &); //!< libc's `free(void*)`
 
   //! libnv's `nvlist_create(int flags = NV_FLAG_NO_UNIQUE)`
-  CallInst* Create(IRBuilder<>&);
-  CallInst* Destroy(Value*, IRBuilder<>&);      //!< `_destroy(nvlist_t*)`
-  CallInst* Pack(Value*, Value*, IRBuilder<>&); //!< `_pack(nvlist_t*, size_t*)`
-  CallInst* Dump(Value*, Value*, IRBuilder<>&); //!< `_dump(nvlist_t*, int fd)`
+  CallInst *Create(IRBuilder<> &);
+  CallInst *Destroy(Value *, IRBuilder<> &); //!< `_destroy(nvlist_t*)`
+  CallInst *Pack(Value *, Value *,
+                 IRBuilder<> &); //!< `_pack(nvlist_t*, size_t*)`
+  CallInst *Dump(Value *, Value *,
+                 IRBuilder<> &); //!< `_dump(nvlist_t*, int fd)`
 
   /// Add a named value to the NVList.
-  void Add(Value *List, StringRef Name, Value *V, IRBuilder<>&);
+  void Add(Value *List, StringRef Name, Value *V, IRBuilder<> &);
 
   /**
    * Add a static string to the NVList.
@@ -69,9 +70,9 @@ public:
    * we can only trust that a string is a valid C-style string if we were able
    * to inspect it at instrumentation time.
    */
-  void Add(Value *List, StringRef Name, StringRef Value, IRBuilder<>&);
+  void Add(Value *List, StringRef Name, StringRef Value, IRBuilder<> &);
 
-  Constant* Fn(StringRef Name, Type* Ret, ArrayRef<Type*> Params);
+  Constant *Fn(StringRef Name, Type *Ret, ArrayRef<Type *> Params);
 
   Module &M;
   LLVMContext &Ctx;
@@ -84,16 +85,13 @@ public:
 
 } // anonymous namespace
 
-
 NVSerializer::NVSerializer(llvm::Module &M)
-  : Serializer(M.getContext()), NV(new LibNV(M))
-{
-}
+    : Serializer(M.getContext()), NV(new LibNV(M)) {}
 
-
-Serializer::BufferInfo
-NVSerializer::Serialize(StringRef Name, StringRef Descrip,
-                        ArrayRef<Value*> Values, IRBuilder<>& B) {
+Serializer::BufferInfo NVSerializer::Serialize(StringRef Name,
+                                               StringRef Descrip,
+                                               ArrayRef<Value *> Values,
+                                               IRBuilder<> &B) {
 
   Value *NVList = NV->Create(B);
   NV->Add(NVList, "name", Name, B);
@@ -117,64 +115,58 @@ NVSerializer::Serialize(StringRef Name, StringRef Descrip,
   // Destroy the nvlist_t instances: all we is now in the packed buffer.
   NV->Destroy(NVList, B);
 
-  return { Buffer, B.CreateLoad(SizePtr) };
+  return {Buffer, B.CreateLoad(SizePtr)};
 }
 
-
-Instruction* NVSerializer::Cleanup(BufferInfo& Buffer, IRBuilder<>& B) {
+Instruction *NVSerializer::Cleanup(BufferInfo &Buffer, IRBuilder<> &B) {
   return NV->Free(Buffer.first, B);
 }
 
-
 namespace {
 
-LibNV::LibNV(Module& M)
-  : M(M), Ctx(M.getContext()),
-    Void(Type::getVoidTy(Ctx)),
-    Int(IntegerType::get(Ctx, 32)),
-    SizeT(TypeBuilder<size_t, false>::get(Ctx)),
-    BytePtr(PointerType::getUnqual(IntegerType::get(Ctx, 8))),
-    NVListPtr(PointerType::getUnqual(StructType::create(Ctx, "nvlist_t")))
-{
-}
+LibNV::LibNV(Module &M)
+    : M(M), Ctx(M.getContext()), Void(Type::getVoidTy(Ctx)),
+      Int(IntegerType::get(Ctx, 32)),
+      SizeT(TypeBuilder<size_t, false>::get(Ctx)),
+      BytePtr(PointerType::getUnqual(IntegerType::get(Ctx, 8))),
+      NVListPtr(PointerType::getUnqual(StructType::create(Ctx, "nvlist_t"))) {}
 
-
-CallInst* LibNV::Free(Value *V, IRBuilder<>& B) {
+CallInst *LibNV::Free(Value *V, IRBuilder<> &B) {
   assert(V->getType() == BytePtr);
-  Constant *F = Fn("free", Void, { BytePtr });
+  Constant *F = Fn("free", Void, {BytePtr});
   return B.CreateCall(F, V);
 }
 
-CallInst* LibNV::Create(IRBuilder<>& B) {
-  Constant *F = Fn("nvlist_create", NVListPtr, { Int });
+CallInst *LibNV::Create(IRBuilder<> &B) {
+  Constant *F = Fn("nvlist_create", NVListPtr, {Int});
 
   ConstantInt *NvFlagNoUnique = ConstantInt::get(Int, 2);
   return B.CreateCall(F, NvFlagNoUnique);
 }
 
-CallInst* LibNV::Destroy(Value *NVList, IRBuilder<>& B) {
+CallInst *LibNV::Destroy(Value *NVList, IRBuilder<> &B) {
   assert(NVList->getType() == NVListPtr);
-  Constant *F = Fn("nvlist_destroy", Void, { NVListPtr });
+  Constant *F = Fn("nvlist_destroy", Void, {NVListPtr});
 
   return B.CreateCall(F, NVList);
 }
 
-CallInst* LibNV::Pack(Value *NVList, Value *SizePtr, IRBuilder<>& B) {
+CallInst *LibNV::Pack(Value *NVList, Value *SizePtr, IRBuilder<> &B) {
   assert(NVList->getType() == NVListPtr);
   PointerType *SizeTPtr = PointerType::getUnqual(SizeT);
-  Constant *F = Fn("nvlist_pack", BytePtr, { NVListPtr, SizeTPtr });
+  Constant *F = Fn("nvlist_pack", BytePtr, {NVListPtr, SizeTPtr});
 
-  return B.CreateCall(F, { NVList, SizePtr });
+  return B.CreateCall(F, {NVList, SizePtr});
 }
 
-CallInst* LibNV::Dump(Value *NVList, Value *File, IRBuilder<>& B) {
+CallInst *LibNV::Dump(Value *NVList, Value *File, IRBuilder<> &B) {
   assert(NVList->getType() == NVListPtr);
-  Constant *F = Fn("nvlist_dump", BytePtr, { NVListPtr, Int });
+  Constant *F = Fn("nvlist_dump", BytePtr, {NVListPtr, Int});
 
-  return B.CreateCall(F, { NVList, File });
+  return B.CreateCall(F, {NVList, File});
 }
 
-void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<>& B) {
+void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<> &B) {
   Type *T = V->getType();
   Constant *F = nullptr;
 
@@ -184,10 +176,10 @@ void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<>& B) {
   } else if (auto *IT = dyn_cast<IntegerType>(T)) {
     if (IT->getBitWidth() == 1) {
       IntegerType *Bool = IntegerType::get(Ctx, 1);
-      F = Fn("nvlist_add_bool", Void, { NVListPtr, BytePtr, Bool });
+      F = Fn("nvlist_add_bool", Void, {NVListPtr, BytePtr, Bool});
 
     } else {
-      F = Fn("nvlist_add_number", Void, { NVListPtr, BytePtr, SizeT });
+      F = Fn("nvlist_add_number", Void, {NVListPtr, BytePtr, SizeT});
 
       if (T != SizeT) {
         V = B.CreateSExt(V, SizeT);
@@ -196,15 +188,15 @@ void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<>& B) {
 
   } else if (T->isPointerTy()) {
     if (T == NVListPtr) {
-      F = Fn("nvlist_add_nvlist", Void, { NVListPtr, BytePtr, NVListPtr });
+      F = Fn("nvlist_add_nvlist", Void, {NVListPtr, BytePtr, NVListPtr});
 
     } else {
-      F = Fn("nvlist_add_number", Void, { NVListPtr, BytePtr, SizeT });
+      F = Fn("nvlist_add_number", Void, {NVListPtr, BytePtr, SizeT});
       V = B.CreatePointerCast(V, SizeT);
     }
 
   } else {
-    raw_ostream& err = llvm::errs();
+    raw_ostream &err = llvm::errs();
     err << "WARNING: NVSerializer doesn't support ";
     T->print(err, true);
     err << " (yet)\n";
@@ -215,19 +207,19 @@ void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<>& B) {
 
   Value *NameVal = B.CreateGlobalStringPtr(Name);
 
-  B.CreateCall(F, { List, NameVal, V });
+  B.CreateCall(F, {List, NameVal, V});
 }
 
-void LibNV::Add(Value *List, StringRef Name, StringRef Str, IRBuilder<>& B) {
-  Constant *F = Fn("nvlist_add_string", Void, { NVListPtr, BytePtr, BytePtr });
+void LibNV::Add(Value *List, StringRef Name, StringRef Str, IRBuilder<> &B) {
+  Constant *F = Fn("nvlist_add_string", Void, {NVListPtr, BytePtr, BytePtr});
 
   Value *NamePtr = B.CreateGlobalStringPtr(Name);
   Value *V = B.CreateGlobalStringPtr(Str);
 
-  B.CreateCall(F, { List, NamePtr, V });
+  B.CreateCall(F, {List, NamePtr, V});
 }
 
-Constant* LibNV::Fn(StringRef Name, Type* Ret, ArrayRef<Type*> Params) {
+Constant *LibNV::Fn(StringRef Name, Type *Ret, ArrayRef<Type *> Params) {
   FunctionType *T = FunctionType::get(Ret, Params, false);
   return M.getOrInsertFunction(Name, T);
 }
