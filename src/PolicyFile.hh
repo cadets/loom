@@ -87,6 +87,12 @@ class PolicyFile : public Policy
 
   bool FieldWriteHook(const llvm::StructType&, llvm::StringRef) const override;
 
+  bool GlobalValueMatters(const llvm::Value&) const override;
+
+  bool GlobalReadHook(const llvm::Value&) const override;
+
+  bool GlobalWriteHook(const llvm::Value&) const override;
+  
   std::string InstrName(const std::vector<std::string>&) const override;
 
   private:

@@ -493,6 +493,57 @@ PolicyFile::FieldWriteHook(const llvm::StructType& T, StringRef Field) const
 }
 
 
+bool PolicyFile::GlobalValueMatters(const llvm::Value& V) const
+{
+  if (not V.hasName()) {
+    return false;
+  }
+
+  StringRef Name = V.getName();
+
+  for (GlobalInstrumentation& G : Policy->Globals) {
+    if (G.Name == Name) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool
+PolicyFile::GlobalReadHook(const llvm::Value& V) const
+{
+  StringRef Name = V.getName();
+
+  for (GlobalInstrumentation& G : Policy->Globals) {
+    if (G.Name != Name) {
+      continue;
+    }
+
+    return vecContains(G.Operations, Operation::Read);
+  }
+
+  return false;
+}
+
+
+bool
+PolicyFile::GlobalWriteHook(const llvm::Value& V) const
+{
+  StringRef Name = V.getName();
+
+  for (GlobalInstrumentation& G : Policy->Globals) {
+    if (G.Name != Name) {
+      continue;
+    }
+
+    return vecContains(G.Operations, Operation::Write);
+  }
+
+  return false;
+}
+
+
 string PolicyFile::InstrName(const vector<string>& Components) const
 {
   vector<string> FullName(1, Policy->HookPrefix);
