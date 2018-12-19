@@ -55,8 +55,8 @@ public:
   Value *CreateFormatString(IRBuilder<> &, StringRef Prefix,
                             ArrayRef<Value *> Params, StringRef Suffix,
                             StringRef Metadata, bool SuppressUniq) override;
-  //bool HasInitialization() override { return true; }
-  //Value *Initialize(Function &Main) override;
+  bool HasInitialization() override { return true; }
+  Value *Initialize(Function &Main) override;
 };
 
 //! A logger that calls `printf()`.
@@ -146,6 +146,7 @@ Value *LibxoLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
                                        StringRef Suffix, StringRef Metadata,
                                        bool SuppressUniqueness) {
 
+  SuppressUniqueness = false;
   std::stringstream FormatString;
 
   FormatString << Prefix.str();
@@ -163,6 +164,7 @@ Value *LibxoLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
                  << "{" << (Humanize ? "h" : "") << ":"
                  << (SuppressUniqueness ? "" : Name) << "/";
 
+	errs() << "Name:\t" << Name << "\n";
     FormatString << "%";
 
     if (T->isIntegerTy(8)) {
@@ -211,11 +213,45 @@ Value *LibxoLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
   return Ptr;
 }
 
-Value *PrintfLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
-                                        ArrayRef<Value *> Values,
-                                        StringRef Suffix, StringRef Metadata,
-                                        bool /*SuppressUniqueness*/) {
+Value*
+LibxoLogger::Initialize(Function& Main)
+{
 
+  unsigned short XO_STYLE_JSON = 2;
+
+  BasicBlock *BB = &Main.getEntryBlock();
+  auto &Ctx = Mod.getContext();
+  IRBuilder<> B = IRBuilder<>(Ctx);
+
+  Function::iterator b = Main.begin();
+  BasicBlock::iterator BI = b->begin();
+
+  B.SetInsertPoint(BB, BI);
+
+  auto *param = TypeBuilder<uintptr_t, false>::get(Ctx);
+
+  StringRef InitFn = "xo_set_style";
+  std::vector<Type*> params;
+  params.push_back(TypeBuilder<void*, false>::get(Ctx));
+  params.push_back(TypeBuilder<unsigned short, false>::get(Ctx));
+
+  auto *FT = FunctionType::get( TypeBuilder<void, false>::get(Ctx), params, false);
+
+  auto *Fn = Mod.getOrInsertFunction(InitFn, FT);
+
+  vector<Value*> Args;
+  Args.push_back(ConstantPointerNull::get(TypeBuilder<void*, false>::get(Ctx)));
+  Args.push_back(ConstantInt::get(TypeBuilder<unsigned short, false>::get(Ctx), XO_STYLE_JSON, false ));
+
+  return B.CreateCall(Fn, Args);
+}
+
+Value*
+PrintfLogger::CreateFormatString(IRBuilder<>& Builder, StringRef Prefix,
+                                 ArrayRef<Value*> Values, StringRef Suffix,
+                                 StringRef Metadata, 
+								 bool /*SuppressUniqueness*/) {
+  
   std::stringstream FormatString;
 
   FormatString << Prefix.str();
@@ -249,6 +285,9 @@ Value *PrintfLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
       assert(false);
     }
   }
+
+  /* if (not Metadata.empty()) */
+	  /* FormatString << " %s"; */
 
   FormatString << Suffix.str();
 
