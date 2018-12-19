@@ -106,7 +106,14 @@ public:
   typedef std::vector<Direction> Directions;
 
   //! Metadata to be recorded with the instrumentation
-  typedef std::string Metadata;
+  typedef struct Metadata {
+    Metadata(std::string n = "", int i = 0) {
+	  Name = n;
+	  Id = i;
+	}
+    std::string Name;
+    unsigned int Id;
+  } Metadata;
 
   //! In which directions should calls to a function be instrumented?
   virtual Directions CallHooks(const llvm::Function &) const = 0;
@@ -114,7 +121,7 @@ public:
   //! In which directions (preamble/return) should a function be instrumented?
   virtual Directions FnHooks(const llvm::Function &) const = 0;
 
-  virtual std::string FnMetadata(const llvm::Function &Fn) const = 0;
+  virtual Metadata InstrMetadata(const llvm::Function &Fn) const = 0;
 
   /**
    * A structure type is relevant in some way to instrumentation.
