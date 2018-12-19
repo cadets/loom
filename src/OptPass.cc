@@ -321,6 +321,7 @@ bool OptPass::runOnModule(Module &Mod) {
 
     return ModifiedIR;
   }
+}
 
-  char OptPass::ID = 0;
-  static RegisterPass<OptPass> X("loom", "Loom instrumentation", false, false);
+char OptPass::ID = 0;
+static RegisterPass<OptPass> X("loom", "Loom instrumentation", false, false);
