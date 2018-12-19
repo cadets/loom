@@ -81,7 +81,7 @@ struct FnInstrumentation {
   Policy::Directions Body;
 
   /// Additional information about the function call
-  string Meta;
+  Policy::Metadata  Meta;
 };
 
 /// An operation that can be performed on a variable
@@ -199,6 +199,14 @@ template <> struct yaml::ScalarEnumerationTraits<Policy::Direction> {
   static void enumeration(yaml::IO &io, Policy::Direction &Dir) {
     io.enumCase(Dir, "entry", Policy::Direction::In);
     io.enumCase(Dir, "exit", Policy::Direction::Out);
+  }
+};
+
+/// Converts a Policy::Metadata to/from YAML.
+template <> struct yaml::MappingTraits<Policy::Metadata> {
+  static void mapping(yaml::IO &io, Policy::Metadata &Meta) {
+    io.mapOptional("name", Meta.Name);
+    io.mapOptional("id", Meta.Id);
   }
 };
 
@@ -364,7 +372,7 @@ Policy::Directions PolicyFile::FnHooks(const llvm::Function &Fn) const {
   return Policy::Directions();
 }
 
-string PolicyFile::FnMetadata(const llvm::Function &Fn) const {
+Policy::Metadata PolicyFile::InstrMetadata(const llvm::Function &Fn) const {
   StringRef Name = Fn.getName();
 
   for (FnInstrumentation &F : Policy->Functions) {
