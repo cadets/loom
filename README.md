@@ -168,11 +168,11 @@ $ opt -load /path/to/LLVMLoom.so -help | grep loom
 
 ### Instrumenting FreeBSD
 
-To build FreeBSD with Loom, you need to clone our [IR-augmented version of FreeBSD](https://github.com/cadets/freebsd/branches/loom). Then, you can use our `loom-fbsdmake` script as a drop-in wrapper around `make`:
+To build FreeBSD with Loom, you need to clone our IR-augmented version of FreeBSD. Then, you can use our `loom-fbsdmake` script as a drop-in wrapper around `make`:
 
 ```sh
-$ git clone https://github.com/cadets/freebsd -b loom freebsd-loom
-$ cd freebsd-loom
+$ git clone https://github.com/cadets/freebsd -b cadets freebsd-cadets
+$ cd freebsd-cadets
 $ export LLVM_PREFIX=/path/to/LLVM/Release
 $ export LOOM_LIB=/path/to/Loom/Release/lib/LLVMLoom.so
 $ /path/to/Loom/scripts/loom-fbsdmake buildworld buildkernel
