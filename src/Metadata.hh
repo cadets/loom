@@ -1,12 +1,10 @@
-//! @file KTraceLogger.hh  Declaration of @ref loom::KTraceLogger.
+//! @file Strings.hh    Declaration of string manipulation functions.
 /*
- * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2015 Jonathan Anderson
  * All rights reserved.
  *
- * This software was developed by BAE Systems, the University of Cambridge
- * Computer Laboratory, and Memorial University under DARPA/AFRL contract
- * FA8650-15-C-7558 ("CADETS"), as part of the DARPA Transparent Computing
- * (TC) research program.
+ * This software was developed at Memorial University under the
+ * NSERC Discovery program (RGPIN-2015-06048).
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,35 +28,31 @@
  * SUCH DAMAGE.
  */
 
-#ifndef KTRACE_LOGGER_H_
-#define KTRACE_LOGGER_H_
+#ifndef LOOM_METADATA_H
+#define LOOM_METADATA_H
 
-#include "Logger.hh"
 
 namespace loom {
 
-class Serializer;
+  //! Metadata to be recorded with the instrumentation
+  typedef struct Metadata {
+    Metadata(std::string n = "", int i = 0) {
+	  Name = n;
+	  Id = i;
+	}
 
-/**
- * A logging technique that serializes values with libnv and writes them
- * to the BSD `ktrace` framework. If we're instrumenting kernel code, we
- * submit the record directly to `ktrace` ourselves. If we're instrumenting
- * userspace code, we submit it via the `utrace` system call.
- */
-class KTraceLogger : public loom::Logger {
-public:
-  KTraceLogger(llvm::Module &Mod, std::unique_ptr<Serializer>, bool KernelMode);
+	bool isValid() {
+		if (Name.empty() and Id == 0) {
+			return false;
+		}
+		return true;
+	}
 
-  virtual llvm::Value *Log(llvm::Instruction *, llvm::ArrayRef<llvm::Value *>,
-                           llvm::StringRef Name, llvm::StringRef Descrip,
-                           loom::Metadata Md,
-                           bool SuppressUniqueness) override;
+	std::string Name;
+    unsigned int Id;
+  } Metadata;
 
-private:
-  const std::unique_ptr<Serializer> Serial;
-  const bool KernelMode;
-};
 
 } // namespace loom
 
-#endif // !KTRACE_LOGGER_H_
+#endif /* LOOM_METADATA_H */

@@ -41,6 +41,7 @@
 
 #include "IRUtils.hh"
 #include "Logger.hh"
+#include "Metadata.hh"
 
 namespace llvm {
 class Instruction;
@@ -126,7 +127,7 @@ public:
   Instrument(llvm::Instruction *I, llvm::StringRef Name,
              llvm::StringRef Description, llvm::ArrayRef<Parameter> Params,
              llvm::ArrayRef<llvm::Value *> Values,
-             llvm::StringRef Metadata = "", bool VarArgs = false,
+             Metadata Md, bool VarArgs = false,
              bool AfterInst = false, bool SuppressUniqueness = false) = 0;
 
   bool Initialize(llvm::Function &main);
@@ -142,7 +143,7 @@ protected:
    */
   llvm::Value *AddLogging(llvm::Instruction *I, llvm::ArrayRef<llvm::Value *>,
                           llvm::StringRef Name, llvm::StringRef Description,
-                          llvm::StringRef Metadata, bool SuppressUniqueness);
+                          Metadata Md, bool SuppressUniqueness);
 
   /**
    * Use an explicit structure of premable/instrumentation/end BasicBlocks

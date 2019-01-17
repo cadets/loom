@@ -74,7 +74,7 @@ public:
 
   Policy::Directions FnHooks(const llvm::Function &) const override;
 
-  Policy::Metadata InstrMetadata(const llvm::Function &Fn) const override;
+  Metadata InstrMetadata(const llvm::Function &Fn) const override;
 
   bool StructTypeMatters(const llvm::StructType &) const override;
 
