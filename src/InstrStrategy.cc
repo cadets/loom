@@ -43,6 +43,7 @@
 
 #include "InstrStrategy.hh"
 #include "Instrumentation.hh"
+#include "Metadata.hh"
 
 using namespace llvm;
 using namespace loom;
@@ -56,7 +57,7 @@ public:
 
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
-                             ArrayRef<Value *> Values, StringRef Metadata,
+                             ArrayRef<Value *> Values, loom::Metadata Md,
                              bool VarArgs, bool AfterInst, bool) override;
 };
 
@@ -66,7 +67,7 @@ public:
 
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
-                             ArrayRef<Value *> Values, StringRef Metadata,
+                             ArrayRef<Value *> Values, loom::Metadata Md,
                              bool VarArgs, bool AfterInst,
                              bool SuppressInstrumentation) override;
 };
@@ -92,12 +93,12 @@ void InstrStrategy::AddLogger(unique_ptr<Logger> L) {
 
 Value *InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value *> Values,
                                  StringRef Name, StringRef Description,
-                                 StringRef Metadata, bool SuppressUniqueness) {
+                                 loom::Metadata Md, bool SuppressUniqueness) {
   Value *End = nullptr;
 
   for (auto &L : Loggers) {
     assert(L);
-    End = L->Log(I, Values, Name, Description, Metadata, SuppressUniqueness);
+    End = L->Log(I, Values, Name, Description, Md, SuppressUniqueness);
   }
 
   return End;
@@ -107,7 +108,7 @@ Instrumentation CalloutStrategy::Instrument(Instruction *I, StringRef Name,
                                             StringRef Descrip,
                                             ArrayRef<Parameter> Params,
                                             ArrayRef<Value *> Values,
-                                            StringRef Metadata, bool VarArgs,
+                                            loom::Metadata Md, bool VarArgs,
                                             bool AfterInst, bool SuppressUniq) {
 
   Module *M = I->getModule();
@@ -157,7 +158,7 @@ Instrumentation CalloutStrategy::Instrument(Instruction *I, StringRef Name,
       End = PreambleEnd;
     }
 
-    AddLogging(PreambleEnd, InstrValues, Name, Descrip, Metadata, SuppressUniq);
+    AddLogging(PreambleEnd, InstrValues, Name, Descrip, Md, SuppressUniq);
 
     // Also set instrumentation function's parameter names:
     size_t i = 0;
@@ -191,7 +192,7 @@ Instrumentation InlineStrategy::Instrument(Instruction *I, StringRef Name,
                                            StringRef Descrip,
                                            ArrayRef<Parameter> Params,
                                            ArrayRef<Value *> Values,
-                                           StringRef Metadata, bool VarArgs,
+                                           loom::Metadata Md, bool VarArgs,
                                            bool AfterInst, bool SuppressUniq) {
 
   BasicBlock *BB = I->getParent();
@@ -237,7 +238,7 @@ Instrumentation InlineStrategy::Instrument(Instruction *I, StringRef Name,
     End = I;
   }
 
-  AddLogging(PreambleEnd, Values, Name, Descrip, Metadata, SuppressUniq);
+  AddLogging(PreambleEnd, Values, Name, Descrip, Md, SuppressUniq);
 
   SmallVector<Value *, 4> V(Values.begin(), Values.end());
 

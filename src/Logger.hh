@@ -34,6 +34,7 @@
 #define LOOM_LOGGER_H
 
 #include "IRUtils.hh"
+#include "Metadata.hh"
 
 #include <llvm/IR/IRBuilder.h>
 
@@ -71,7 +72,7 @@ public:
   virtual llvm::Value *Log(llvm::Instruction *I,
                            llvm::ArrayRef<llvm::Value *> Values,
                            llvm::StringRef Name, llvm::StringRef Description,
-                           llvm::StringRef Metadata,
+                           Metadata Metadata,
                            bool SuppressUniqueness) = 0;
 
   virtual bool HasInitialization();
@@ -108,13 +109,13 @@ public:
   virtual llvm::Value *Log(llvm::Instruction *I,
                            llvm::ArrayRef<llvm::Value *> Values,
                            llvm::StringRef Name, llvm::StringRef Description,
-                           llvm::StringRef Metadata,
+                           Metadata Metadata,
                            bool SuppressUniqueness) override;
 
   /// Log a set of values, with optional prefix and suffix text.
   llvm::CallInst *Call(llvm::IRBuilder<> &, llvm::StringRef FormatStringPrefix,
                        llvm::ArrayRef<llvm::Value *> Values,
-                       llvm::StringRef Suffix, llvm::StringRef Metadata,
+                       llvm::StringRef Suffix, Metadata Metadata,
                        bool SuppressUniqueness = false);
 
 protected:
@@ -133,7 +134,7 @@ protected:
   virtual llvm::Value *
   CreateFormatString(llvm::IRBuilder<> &, llvm::StringRef Prefix,
                      llvm::ArrayRef<llvm::Value *>, llvm::StringRef Suffix,
-                     llvm::StringRef Metadata, bool SuppressUniqueness) = 0;
+                     Metadata Metadata, bool SuppressUniqueness) = 0;
 
   /**
    * Adapt a set of values into a form that can be logged.

@@ -70,33 +70,36 @@ public:
                                               std::unique_ptr<InstrStrategy>);
 
   /// Instrument an instruction generically: instruction name and values.
-  bool Instrument(llvm::Instruction *);
+  bool Instrument(llvm::Instruction *, Metadata = Metadata());
 
   /// Instrument an instruction generically with better info: instruction type
   /// and values.
-  bool InstrumentPtrInsts(llvm::Instruction *, const llvm::DIVariable *);
+  bool InstrumentPtrInsts(llvm::Instruction *, const llvm::DIVariable *,
+		  Metadata = Metadata());
 
   /// Instrument a function call in the call and/or return direction.
-  bool Instrument(llvm::CallInst *, const Policy::Directions &);
+  bool Instrument(llvm::CallInst *, const Policy::Directions &,
+		  Metadata = Metadata());
 
   /// Instrument a function call (caller-side), either calling or returning.
-  bool Instrument(llvm::CallInst *Call, Policy::Direction);
+  bool Instrument(llvm::CallInst *Call, Policy::Direction,
+		  Metadata = Metadata());
 
   /// Instrument a function entry and/or exit.
   bool Instrument(llvm::Function &, const Policy::Directions &,
-    Policy::Metadata = Policy::Metadata());
+    Metadata = Metadata());
 
   /// Instrument a function entry or exit.
   bool Instrument(llvm::Function &, Policy::Direction, 
-    Policy::Metadata = Policy::Metadata());
+    Metadata = Metadata());
 
   /// Instrument a read from a structure field.
   bool Instrument(llvm::GetElementPtrInst *, llvm::LoadInst *,
-                  llvm::StringRef FieldName);
+                  llvm::StringRef FieldName, Metadata = Metadata());
 
   /// Instrument a write to a structure field.
   bool Instrument(llvm::GetElementPtrInst *, llvm::StoreInst *,
-                  llvm::StringRef FieldName);
+                  llvm::StringRef FieldName, Metadata = Metadata());
 
   /// Add initialization required by Loggers
   bool InitializeLoggers(llvm::Function &);

@@ -43,6 +43,7 @@
 
 #include "InstrStrategy.hh"
 #include "Serializer.hh"
+#include "Metadata.hh"
 
 #include <string>
 #include <vector>
@@ -104,16 +105,6 @@ public:
 
   //! A set of directions that we might like to instrument something on.
   typedef std::vector<Direction> Directions;
-
-  //! Metadata to be recorded with the instrumentation
-  typedef struct Metadata {
-    Metadata(std::string n = "", int i = 0) {
-	  Name = n;
-	  Id = i;
-	}
-    std::string Name;
-    unsigned int Id;
-  } Metadata;
 
   //! In which directions should calls to a function be instrumented?
   virtual Directions CallHooks(const llvm::Function &) const = 0;

@@ -43,6 +43,7 @@
 #include "IRUtils.hh"
 #include "Instrumenter.hh"
 #include "PolicyFile.hh"
+#include "Metadata.hh"
 
 #include "llvm/IR/InstIterator.h"
 #include "llvm/IR/Module.h"
@@ -110,7 +111,7 @@ bool OptPass::runOnModule(Module &Mod) {
   std::vector<Instruction *> AllInstructions;
 
   std::unordered_map<Function *, Policy::Directions> Functions;
-  std::unordered_map<Function *, Policy::Metadata> FnMetaData;
+  std::unordered_map<Function *, loom::Metadata> FnMetadata;
   std::unordered_map<CallInst *, Policy::Directions> Calls;
 
   typedef std::pair<GetElementPtrInst *, std::string> NamedGEP;
@@ -137,7 +138,7 @@ bool OptPass::runOnModule(Module &Mod) {
 
       auto Md = P.InstrMetadata(Fn);
       if (not Md.Name.empty() && not Md.Id == 0) {
-        FnMetaData.emplace(&Fn, Md);
+        FnMetadata.emplace(&Fn, Md);
       }
     }
 
@@ -274,7 +275,8 @@ bool OptPass::runOnModule(Module &Mod) {
   }
 
   for (auto &i : Functions) {
-    ModifiedIR |= Instr->Instrument(*i.first, i.second);
+	auto Md = FnMetadata[i.first];
+    ModifiedIR |= Instr->Instrument(*i.first, i.second, Md);
   }
 
   for (auto &i : Calls) {

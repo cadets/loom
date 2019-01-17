@@ -40,6 +40,7 @@
 
 #include "Instrumenter.hh"
 #include "Logger.hh"
+#include "Metadata.hh"
 
 #include <llvm/IR/Module.h>
 #include <llvm/Transforms/Utils/BasicBlockUtils.h>
@@ -63,7 +64,7 @@ Instrumenter::Instrumenter(llvm::Module &Mod, NameFn NF,
                            unique_ptr<InstrStrategy> S)
     : Mod(Mod), Strategy(std::move(S)), Name(NF) {}
 
-bool Instrumenter::Instrument(llvm::Instruction *I) {
+bool Instrumenter::Instrument(llvm::Instruction *I, loom::Metadata Md) {
   // If this instruction terminates a block, we need to treat it a bit
   // differently, placing instrumentation before it rather than after.
   const bool Terminator = I->isTerminator();
@@ -132,7 +133,7 @@ bool Instrumenter::Instrument(llvm::Instruction *I) {
   NameBuilder << static_cast<const void *>(I);
   const string Name = NameBuilder.str();
 
-  Strategy->Instrument(I, Name, Name, ValueDescriptions, Values, "", Varargs,
+  Strategy->Instrument(I, Name, Name, ValueDescriptions, Values, Md, Varargs,
                        AfterInst, true);
 
   return true;
@@ -141,7 +142,8 @@ bool Instrumenter::Instrument(llvm::Instruction *I) {
 // Currently, the second parameter is unused. It would give us the source name
 // instead of the bitcode name
 bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I,
-                                      const llvm::DIVariable *Var) {
+                                      const llvm::DIVariable *Var,
+									  loom::Metadata Md) {
 
   std::ostringstream LocationBuilder;
 
@@ -269,22 +271,24 @@ bool Instrumenter::InstrumentPtrInsts(llvm::Instruction *I,
   const string InstrName = Name({"instruction", NameBuilder.str()});
 
   Strategy->Instrument(I, InstrName, FormatStringPrefix, ValueDescriptions,
-                       Values, "", Varargs, AfterInst, true);
+                       Values, Md, Varargs, AfterInst, true);
 
   return true;
 }
 
-bool Instrumenter::Instrument(CallInst *Call, const Policy::Directions &D) {
+bool Instrumenter::Instrument(CallInst *Call, const Policy::Directions &D,
+		loom::Metadata Md) {
   bool ModifiedIR = false;
 
   for (auto Dir : D) {
-    ModifiedIR |= Instrument(Call, Dir);
+    ModifiedIR |= Instrument(Call, Dir, Md);
   }
 
   return ModifiedIR;
 }
 
-bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir) {
+bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir,
+		loom::Metadata Md) {
   Function *Target = Call->getCalledFunction();
   assert(Target); // TODO: support indirect targets, too
 
@@ -312,24 +316,24 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir) {
 
   bool InstrAfterCall = Return;
   Strategy->Instrument(Call, InstrName, FormatStringPrefix, Parameters,
-                       Arguments, "", VarArgs, InstrAfterCall);
+                       Arguments, Md, VarArgs, InstrAfterCall);
 
   return true;
 }
 
 bool Instrumenter::Instrument(Function &Fn, const Policy::Directions &D,
-                              Policy::Metadata) {
+                              loom::Metadata Md) {
   bool ModifiedIR = false;
 
   for (auto Dir : D) {
-    ModifiedIR |= Instrument(Fn, Dir);
+    ModifiedIR |= Instrument(Fn, Dir, Md);
   }
 
   return ModifiedIR;
 }
 
 bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
-                              Policy::Metadata) {
+                              loom::Metadata Md) {
   const bool Return = (Dir == Policy::Direction::Out);
   const string Description = Return ? "leave" : "enter";
   StringRef FnName = Fn.getName();
@@ -382,7 +386,7 @@ bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
       }
 
       Strategy->Instrument(Ret, InstrName, FormatStringPrefix, InstrParameters,
-                           Arguments, "", VarArgs);
+                           Arguments, Md, VarArgs);
     }
 
   } else {
@@ -391,14 +395,14 @@ bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
     BasicBlock &Entry = Fn.getBasicBlockList().front();
 
     Strategy->Instrument(&Entry.front(), InstrName, FormatStringPrefix,
-                         InstrParameters, Arguments, "", VarArgs);
+                         InstrParameters, Arguments, Md, VarArgs);
   }
 
   return true;
 }
 
 bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
-                              StringRef FieldName) {
+                              StringRef FieldName, loom::Metadata Md) {
   StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
   assert(SourceType);
   assert(SourceType->getName().startswith("struct."));
@@ -421,13 +425,13 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
       (StructName + "." + FieldName + " load:").str();
 
   Strategy->Instrument(Load, InstrName, FormatStringPrefix, Parameters,
-                       Arguments, "", false, true);
+                       Arguments, Md, false, true);
 
   return true;
 }
 
 bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
-                              StringRef FieldName) {
+                              StringRef FieldName, loom::Metadata Md) {
   StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
   assert(SourceType);
   assert(SourceType->getName().startswith("struct."));
@@ -450,7 +454,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
       (StructName + "." + FieldName + " store:").str();
 
   Strategy->Instrument(Store, InstrName, FormatStringPrefix, Parameters,
-                       Arguments);
+                       Arguments, Md);
 
   return true;
 }
