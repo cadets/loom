@@ -51,6 +51,7 @@ public:
 
   virtual llvm::Value* Log(llvm::Instruction *I, llvm::ArrayRef<llvm::Value*> Values,
                          llvm::StringRef Name, llvm::StringRef Descrip,
+                         Metadata Metadata,
                          bool /* SuppressUniqueness */) override;
 };
 

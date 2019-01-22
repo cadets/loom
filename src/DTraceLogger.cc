@@ -48,15 +48,18 @@ DTraceLogger::DTraceLogger(llvm::Module& Mod)
 
 Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
                          StringRef Name, StringRef Descrip,
+                         Metadata Metadata,
                          bool /* SuppressUniqueness */) {
 
+  if (not Metadata.isValid())
+	  errs() << "Warning: Dtrace Logger requires the use of Metadata to function properly.";
 
   IRBuilder<> B(I);
 
   LLVMContext &Ctx = Mod.getContext();
   Type* param = TypeBuilder<uintptr_t, false>::get(Ctx);
 
-  size_t n_args = std::min(Values.size(), 6ul);
+  size_t n_args = std::min(Values.size(), 5ul);
 
   std::vector<Type*> params;
   for (int i = 0; i < n_args; i++) {
@@ -69,6 +72,7 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
 
 
   Value* args[6];
+  args[0] = B.CreateSExt(ConstantInt::get(TypeBuilder<unsigned int, false>::get(Ctx), Metadata.Id), param);;
   for (int i = 0; i < n_args; i++)
   {
     Value *ptr;
@@ -87,7 +91,7 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
       ptr = ConstantInt::get(param , 0);
     }
     
-    args[i] = ptr;
+    args[i + 1] = ptr;
   }
 
   ArrayRef<Value*> argsRef(args, n_args);
