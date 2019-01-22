@@ -319,8 +319,8 @@ bool OptPass::runOnModule(Module &Mod) {
       ModifiedIR |= Instr->InitializeLoggers(*Main);
     }
 
-    return ModifiedIR;
   }
+  return ModifiedIR;
 }
 
 char OptPass::ID = 0;
