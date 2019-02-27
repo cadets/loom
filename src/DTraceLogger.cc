@@ -57,13 +57,14 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
   IRBuilder<> B(I);
 
   LLVMContext &Ctx = Mod.getContext();
-  Type* param = TypeBuilder<uintptr_t, false>::get(Ctx);
+  Type* id_t = TypeBuilder<unsigned int, false>::get(Ctx);
+  Type* param_t = TypeBuilder<uintptr_t, false>::get(Ctx);
 
   size_t n_args = std::min(Values.size(), 5ul);
 
   std::vector<Type*> params;
-  for (int i = 0; i < n_args; i++) {
-      params.push_back(param);
+  for (int i = 0; i < n_args + 1; i++) {
+      params.push_back(param_t);
   }
   
   auto *FT = FunctionType::get( TypeBuilder<int, false>::get(Ctx), params, false);
@@ -72,29 +73,29 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
 
 
   Value* args[6];
-  args[0] = B.CreateSExt(ConstantInt::get(TypeBuilder<unsigned int, false>::get(Ctx), Metadata.Id), param);;
+  args[0] = B.CreateSExt(ConstantInt::get(id_t, Metadata.Id), param_t);;
   for (int i = 0; i < n_args; i++)
   {
     Value *ptr;
 
     Type *T = Values[i]->getType();
     if (T->isPointerTy()) {
-        ptr = B.CreatePtrToInt(Values[i], param);
+        ptr = B.CreatePtrToInt(Values[i], param_t);
     } else if (T->isIntegerTy()) {
-        ptr = B.CreateSExt(Values[i], param);
+        ptr = B.CreateSExt(Values[i], param_t);
     } else if (T->isDoubleTy()) {
         ptr = B.CreateBitCast(Values[i], TypeBuilder<int64_t, false>::get(Ctx));
     } else if (T->isFloatTy()) {
         auto *BC = B.CreateBitCast(Values[i], TypeBuilder<int32_t, false>::get(Ctx));
-        ptr = B.CreateSExt(BC, param);
+        ptr = B.CreateSExt(BC, param_t);
     } else {
-      ptr = ConstantInt::get(param , 0);
+      ptr = ConstantInt::get(param_t, 0);
     }
     
     args[i + 1] = ptr;
   }
 
-  ArrayRef<Value*> argsRef(args, n_args);
+  ArrayRef<Value*> argsRef(args, n_args + 1);
 
   return B.CreateCall(F, argsRef);
 
