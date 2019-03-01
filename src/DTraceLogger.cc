@@ -104,7 +104,6 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
 	}
 
 	if (Tf.isValid()) {
-		errs() << "Transforming argument " << Tf.Arg << " with function " << Tf.Fn << "\n";
 		ptr = ConvertValueToPtr(B, Ctx, Tf.CreateTransform(I, Mod, Values[i]), param_t);
 	} else {
 		ptr = ConvertValueToPtr(B, Ctx, Values[i], param_t);
