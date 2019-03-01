@@ -47,7 +47,7 @@ KTraceLogger::KTraceLogger(Module &Mod, std::unique_ptr<Serializer> S, bool K)
 
 Value *KTraceLogger::Log(Instruction *I, ArrayRef<Value *> Values,
                          StringRef Name, StringRef Descrip, loom::Metadata Md,
-                         bool /* SuppressUniqueness */) {
+                         std::vector<loom::Transform> Transforms, bool /* SuppressUniqueness */) {
 
   IRBuilder<> B(I);
 

@@ -43,7 +43,6 @@
 
 #include "InstrStrategy.hh"
 #include "Instrumentation.hh"
-#include "Metadata.hh"
 
 using namespace llvm;
 using namespace loom;
@@ -58,7 +57,8 @@ public:
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value *> Values, loom::Metadata Md,
-                             bool VarArgs, bool AfterInst, bool) override;
+                             std::vector<loom::Transform> Transforms, bool VarArgs,
+							 bool AfterInst, bool) override;
 };
 
 class InlineStrategy : public InstrStrategy {
@@ -68,8 +68,8 @@ public:
   Instrumentation Instrument(Instruction *I, StringRef Name, StringRef Descrip,
                              ArrayRef<Parameter> Params,
                              ArrayRef<Value *> Values, loom::Metadata Md,
-                             bool VarArgs, bool AfterInst,
-                             bool SuppressInstrumentation) override;
+                             std::vector<loom::Transform> Transforms, bool VarArgs,
+							 bool AfterInst, bool SuppressInstrumentation) override;
 };
 
 } // anonymous namespace
@@ -93,12 +93,13 @@ void InstrStrategy::AddLogger(unique_ptr<Logger> L) {
 
 Value *InstrStrategy::AddLogging(Instruction *I, ArrayRef<Value *> Values,
                                  StringRef Name, StringRef Description,
-                                 loom::Metadata Md, bool SuppressUniqueness) {
+                                 loom::Metadata Md, std::vector<loom::Transform> Transforms,
+								 bool SuppressUniqueness) {
   Value *End = nullptr;
 
   for (auto &L : Loggers) {
     assert(L);
-    End = L->Log(I, Values, Name, Description, Md, SuppressUniqueness);
+    End = L->Log(I, Values, Name, Description, Md, Transforms, SuppressUniqueness);
   }
 
   return End;
@@ -108,7 +109,8 @@ Instrumentation CalloutStrategy::Instrument(Instruction *I, StringRef Name,
                                             StringRef Descrip,
                                             ArrayRef<Parameter> Params,
                                             ArrayRef<Value *> Values,
-                                            loom::Metadata Md, bool VarArgs,
+                                            loom::Metadata Md, 
+											std::vector<loom::Transform> Transforms, bool VarArgs,
                                             bool AfterInst, bool SuppressUniq) {
 
   Module *M = I->getModule();
@@ -158,7 +160,7 @@ Instrumentation CalloutStrategy::Instrument(Instruction *I, StringRef Name,
       End = PreambleEnd;
     }
 
-    AddLogging(PreambleEnd, InstrValues, Name, Descrip, Md, SuppressUniq);
+    AddLogging(PreambleEnd, InstrValues, Name, Descrip, Md, Transforms, SuppressUniq);
 
     // Also set instrumentation function's parameter names:
     size_t i = 0;
@@ -192,7 +194,8 @@ Instrumentation InlineStrategy::Instrument(Instruction *I, StringRef Name,
                                            StringRef Descrip,
                                            ArrayRef<Parameter> Params,
                                            ArrayRef<Value *> Values,
-                                           loom::Metadata Md, bool VarArgs,
+                                           loom::Metadata Md,
+										   std::vector<loom::Transform> Transforms, bool VarArgs,
                                            bool AfterInst, bool SuppressUniq) {
 
   BasicBlock *BB = I->getParent();
@@ -238,7 +241,7 @@ Instrumentation InlineStrategy::Instrument(Instruction *I, StringRef Name,
     End = I;
   }
 
-  AddLogging(PreambleEnd, Values, Name, Descrip, Md, SuppressUniq);
+  AddLogging(PreambleEnd, Values, Name, Descrip, Md, Transforms, SuppressUniq);
 
   SmallVector<Value *, 4> V(Values.begin(), Values.end());
 

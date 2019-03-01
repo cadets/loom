@@ -82,6 +82,9 @@ struct FnInstrumentation {
 
   /// Additional information about the function call
   loom::Metadata  Meta;
+
+  /// Additions transformations that should be applied when logging function call.
+  vector<loom::Transform> Transforms;
 };
 
 /// An operation that can be performed on a variable
@@ -222,6 +225,14 @@ template <> struct yaml::MappingTraits<loom::Metadata> {
   }
 };
 
+/// Converts a Policy::Transforms to/from YAML.
+template <> struct yaml::MappingTraits<loom::Transform> {
+  static void mapping(yaml::IO &io, loom::Transform &Transform) {
+    io.mapOptional("arg", Transform.Arg);
+    io.mapOptional("fn", Transform.Fn);
+  }
+};
+
 /// Converts a SerializationType to/from YAML.
 template <> struct yaml::ScalarEnumerationTraits<SerializationType> {
   static void enumeration(yaml::IO &io, SerializationType &S) {
@@ -247,6 +258,7 @@ template <> struct yaml::MappingTraits<FnInstrumentation> {
     io.mapOptional("caller", fn.Call);
     io.mapOptional("callee", fn.Body);
     io.mapOptional("metadata", fn.Meta);
+    io.mapOptional("transforms", fn.Transforms);
   }
 };
 
@@ -394,6 +406,16 @@ loom::Metadata PolicyFile::InstrMetadata(const llvm::Function &Fn) const {
   for (FnInstrumentation &F : Policy->Functions) {
     if (MatchName(F.Name, Name)) {
       return F.Meta;
+    }
+  }
+}
+
+vector<loom::Transform> PolicyFile::InstrTransforms(const llvm::Function &Fn) const {
+  StringRef Name = Fn.getName();
+
+  for (FnInstrumentation &F : Policy->Functions) {
+    if (MatchName(F.Name, Name)) {
+      return F.Transforms;
     }
   }
 }

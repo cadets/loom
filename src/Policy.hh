@@ -44,6 +44,7 @@
 #include "InstrStrategy.hh"
 #include "Serializer.hh"
 #include "Metadata.hh"
+#include "Transform.hh"
 
 #include <string>
 #include <vector>
@@ -119,7 +120,11 @@ public:
   //! In which directions (preamble/return) should a function be instrumented?
   virtual Directions FnHooks(const llvm::Function &) const = 0;
 
+  //! Return any metadata defined for an instruction
   virtual Metadata InstrMetadata(const llvm::Function &Fn) const = 0;
+  
+  //! Return any transforms defined for an instruction
+  virtual std::vector<Transform> InstrTransforms(const llvm::Function &Fn) const = 0;
 
   /**
    * A structure type is relevant in some way to instrumentation.

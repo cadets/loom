@@ -48,7 +48,7 @@ DTraceLogger::DTraceLogger(llvm::Module& Mod)
 
 Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
                          StringRef Name, StringRef Descrip,
-                         Metadata Metadata,
+                         Metadata Metadata, std::vector<Transform> Transforms,
                          bool /* SuppressUniqueness */) {
 
   if (not Metadata.isValid())

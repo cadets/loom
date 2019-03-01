@@ -51,7 +51,7 @@ public:
 
   virtual llvm::Value *Log(llvm::Instruction *, llvm::ArrayRef<llvm::Value *>,
                            llvm::StringRef Name, llvm::StringRef Descrip,
-                           loom::Metadata Md,
+                           loom::Metadata Md, std::vector<loom::Transform> Transforms,
                            bool SuppressUniqueness) override;
 
 private:

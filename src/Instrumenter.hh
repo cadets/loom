@@ -1,6 +1,7 @@
 //! @file Instrumenter.hh  Declaration of @ref loom::Instrumenter.
 /*
  * Copyright (c) 2016 Jonathan Anderson
+ * Copyright (c) 2018 Brian Kidney
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -70,36 +71,36 @@ public:
                                               std::unique_ptr<InstrStrategy>);
 
   /// Instrument an instruction generically: instruction name and values.
-  bool Instrument(llvm::Instruction *, Metadata = Metadata());
+  bool Instrument(llvm::Instruction *, Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Instrument an instruction generically with better info: instruction type
   /// and values.
   bool InstrumentPtrInsts(llvm::Instruction *, const llvm::DIVariable *,
-		  Metadata = Metadata());
+		  Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Instrument a function call in the call and/or return direction.
   bool Instrument(llvm::CallInst *, const Policy::Directions &,
-		  Metadata = Metadata());
+		  Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Instrument a function call (caller-side), either calling or returning.
   bool Instrument(llvm::CallInst *Call, Policy::Direction,
-		  Metadata = Metadata());
+		  Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Instrument a function entry and/or exit.
   bool Instrument(llvm::Function &, const Policy::Directions &,
-    Metadata = Metadata());
+    Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Instrument a function entry or exit.
   bool Instrument(llvm::Function &, Policy::Direction, 
-    Metadata = Metadata());
+    Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Instrument a read from a structure field.
   bool Instrument(llvm::GetElementPtrInst *, llvm::LoadInst *,
-                  llvm::StringRef FieldName, Metadata = Metadata());
+                  llvm::StringRef FieldName, Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Instrument a write to a structure field.
   bool Instrument(llvm::GetElementPtrInst *, llvm::StoreInst *,
-                  llvm::StringRef FieldName, Metadata = Metadata());
+                  llvm::StringRef FieldName, Metadata = Metadata(), std::vector<Transform> = std::vector<Transform>());
 
   /// Add initialization required by Loggers
   bool InitializeLoggers(llvm::Function &);
