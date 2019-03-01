@@ -12,6 +12,7 @@ set(FILES
 	PolicyFile
 	Serializer
 	Strings
+	Transform
 )
 
 foreach(base IN LISTS FILES)
