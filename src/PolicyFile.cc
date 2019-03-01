@@ -163,7 +163,7 @@ struct PolicyFile::PolicyFileData {
 
   /// Structure field instrumentation.
   vector<StructInstrumentation> Structures;
-
+  
   /// Global variable insstrumentation.
   vector<GlobalInstrumentation> Globals;
 };
