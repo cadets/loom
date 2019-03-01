@@ -46,6 +46,24 @@ using std::vector;
 DTraceLogger::DTraceLogger(llvm::Module& Mod)
   : Logger(Mod){ };
 
+Value* DTraceLogger::ConvertValueToPtr(IRBuilder<>& B, LLVMContext& Ctx, Value* V, Type* param_t)
+{
+	Type *T = V->getType();
+	if (T->isPointerTy()) {
+		return  B.CreatePtrToInt(V, param_t);
+	} else if (T->isIntegerTy()) {
+		return B.CreateSExt(V, param_t);
+	} else if (T->isDoubleTy()) {
+		return B.CreateBitCast(V, TypeBuilder<int64_t, false>::get(Ctx));
+	} else if (T->isFloatTy()) {
+		auto *BC = B.CreateBitCast(V, TypeBuilder<int32_t, false>::get(Ctx));
+		return B.CreateSExt(BC, param_t);
+	}
+	return ConstantInt::get(param_t, 0);
+}
+
+
+
 Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
                          StringRef Name, StringRef Descrip,
                          Metadata Metadata, std::vector<Transform> Transforms,
@@ -78,20 +96,20 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
   {
     Value *ptr;
 
-    Type *T = Values[i]->getType();
-    if (T->isPointerTy()) {
-        ptr = B.CreatePtrToInt(Values[i], param_t);
-    } else if (T->isIntegerTy()) {
-        ptr = B.CreateSExt(Values[i], param_t);
-    } else if (T->isDoubleTy()) {
-        ptr = B.CreateBitCast(Values[i], TypeBuilder<int64_t, false>::get(Ctx));
-    } else if (T->isFloatTy()) {
-        auto *BC = B.CreateBitCast(Values[i], TypeBuilder<int32_t, false>::get(Ctx));
-        ptr = B.CreateSExt(BC, param_t);
-    } else {
-      ptr = ConstantInt::get(param_t, 0);
-    }
-    
+	Transform Tf;
+	for (auto t: Transforms) {
+		if (t.Arg == i)
+			Tf = t;
+			break;
+	}
+
+	if (Tf.isValid()) {
+		errs() << "Transforming argument " << Tf.Arg << " with function " << Tf.Fn << "\n";
+		ptr = ConvertValueToPtr(B, Ctx, Tf.CreateTransform(I, Mod, Values[i]), param_t);
+	} else {
+		ptr = ConvertValueToPtr(B, Ctx, Values[i], param_t);
+	}
+	
     args[i + 1] = ptr;
   }
 

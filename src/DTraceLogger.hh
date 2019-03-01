@@ -53,6 +53,9 @@ public:
                          llvm::StringRef Name, llvm::StringRef Descrip,
                          Metadata Metadata, std::vector<Transform> Transforms,
                          bool /* SuppressUniqueness */) override;
+private:
+	llvm::Value* ConvertValueToPtr(llvm::IRBuilder<>&, llvm::LLVMContext&, llvm::Value*, llvm::Type*);
+
 };
 
 } // namespace loom
