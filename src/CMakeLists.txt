@@ -19,6 +19,7 @@ foreach(base IN LISTS FILES)
 endforeach(base)
 
 list(APPEND SOURCES OptPass.cc)
+list(APPEND HEADERS Metadata.hh)
 
 file(COPY ${HEADERS} DESTINATION ${CMAKE_BINARY_DIR}/include/loom)
 install(FILES ${HEADERS} COMPONENT "development" DESTINATION "include/loom")

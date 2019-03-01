@@ -1,4 +1,4 @@
-//! @file Strings.hh    Declaration of string manipulation functions.
+//! @file Metadata.hh    Declaration of Metadata
 /*
  * Copyright (c) 2015 Jonathan Anderson
  * All rights reserved.
