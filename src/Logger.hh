@@ -35,6 +35,7 @@
 
 #include "IRUtils.hh"
 #include "Metadata.hh"
+#include "Transform.hh"
 
 #include <llvm/IR/IRBuilder.h>
 
@@ -72,7 +73,7 @@ public:
   virtual llvm::Value *Log(llvm::Instruction *I,
                            llvm::ArrayRef<llvm::Value *> Values,
                            llvm::StringRef Name, llvm::StringRef Description,
-                           Metadata Metadata,
+                           Metadata Metadata, std::vector<Transform> Transforms,
                            bool SuppressUniqueness) = 0;
 
   virtual bool HasInitialization();
@@ -109,13 +110,14 @@ public:
   virtual llvm::Value *Log(llvm::Instruction *I,
                            llvm::ArrayRef<llvm::Value *> Values,
                            llvm::StringRef Name, llvm::StringRef Description,
-                           Metadata Metadata,
+                           Metadata Metadata, std::vector<Transform> Transforms,
                            bool SuppressUniqueness) override;
 
   /// Log a set of values, with optional prefix and suffix text.
   llvm::CallInst *Call(llvm::IRBuilder<> &, llvm::StringRef FormatStringPrefix,
                        llvm::ArrayRef<llvm::Value *> Values,
                        llvm::StringRef Suffix, Metadata Metadata,
+					   std::vector<Transform> Transforms,
                        bool SuppressUniqueness = false);
 
 protected:

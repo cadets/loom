@@ -1,5 +1,6 @@
 set(FILES
 	DebugInfo
+    DTraceLogger
 	Instrumentation
 	Instrumenter
 	InstrStrategy
@@ -11,6 +12,7 @@ set(FILES
 	PolicyFile
 	Serializer
 	Strings
+	Transform
 )
 
 foreach(base IN LISTS FILES)

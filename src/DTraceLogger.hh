@@ -1,6 +1,6 @@
-//! @file Policy.cc  Definition of @ref loom::Policy.
+//! @file DTraceLogger.hh  Declaration of @ref DTraceLogger.
 /*
- * Copyright (c) 2016-2017 Jonathan Anderson
+ * Copyright (c) 2017 Brian Kidney
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -30,48 +30,34 @@
  * SUCH DAMAGE.
  */
 
-#include "DTraceLogger.hh"
-#include "Policy.hh"
-#include "KTraceLogger.hh"
+#ifndef DTRACE_LOGGER_H_
+#define DTRACE_LOGGER_H_
 
-using namespace llvm;
-using namespace loom;
-using std::unique_ptr;
+#include "Logger.hh"
 
-Policy::~Policy() {}
+namespace loom {
 
-std::vector<unique_ptr<Logger>> Policy::Loggers(Module &Mod) const {
-  std::vector<unique_ptr<Logger>> Loggers;
+class Serializer;
 
-  auto SimpleLogType = this->Logging();
+/**
+ * A logging technique that writes values to the DTrace framework using
+ * Userland Statically Defined Traces (USDT). libusdt is used to create probes
+ * at runtime.
+ */
+class DTraceLogger : public loom::Logger {
+public:
+  DTraceLogger(llvm::Module& Mod);
 
-  if (SimpleLogType != SimpleLogger::LogType::None) {
-    Loggers.push_back(SimpleLogger::Create(Mod, SimpleLogType));
-  }
 
-  unique_ptr<Serializer> Serial = this->Serialization(Mod);
+  virtual llvm::Value* Log(llvm::Instruction *I, llvm::ArrayRef<llvm::Value*> Values,
+                         llvm::StringRef Name, llvm::StringRef Descrip,
+                         Metadata Metadata, std::vector<Transform> Transforms,
+                         bool /* SuppressUniqueness */) override;
+private:
+	llvm::Value* ConvertValueToPtr(llvm::IRBuilder<>&, llvm::LLVMContext&, llvm::Value*, llvm::Type*);
 
-  switch (this->KTrace()) {
-  case Policy::KTraceTarget::Kernel:
-    Loggers.emplace_back(new KTraceLogger(Mod, std::move(Serial), true));
-    break;
+};
 
-  case Policy::KTraceTarget::Userspace:
-    Loggers.emplace_back(new KTraceLogger(Mod, std::move(Serial), false));
-    break;
+} // namespace loom
 
-  case Policy::KTraceTarget::None:
-    break;
-  }
-  
-  switch (this->DTrace()) {
-  case Policy::DTraceTarget::Userspace:
-    Loggers.emplace_back(new DTraceLogger(Mod));
-    break;
-
-  case Policy::DTraceTarget::None:
-    break;
-  }
-
-  return Loggers;
-}
+#endif // !DTRACE_LOGGER_H_

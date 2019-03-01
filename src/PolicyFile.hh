@@ -61,6 +61,8 @@ public:
   SimpleLogger::LogType Logging() const override;
 
   KTraceTarget KTrace() const override;
+  
+  DTraceTarget DTrace() const override;
 
   std::unique_ptr<Serializer> Serialization(llvm::Module &) const override;
 
@@ -75,6 +77,8 @@ public:
   Policy::Directions FnHooks(const llvm::Function &) const override;
 
   Metadata InstrMetadata(const llvm::Function &Fn) const override;
+  
+  std::vector<Transform> InstrTransforms(const llvm::Function &Fn) const override;
 
   bool StructTypeMatters(const llvm::StructType &) const override;
 

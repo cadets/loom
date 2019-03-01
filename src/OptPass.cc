@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2016 Jonathan Anderson
  * Copyright (c) 2016 Cem Kilic
+ * Copyright (c) 2018 Brian Kidney
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -44,6 +45,7 @@
 #include "Instrumenter.hh"
 #include "PolicyFile.hh"
 #include "Metadata.hh"
+#include "Transform.hh"
 
 #include "llvm/IR/InstIterator.h"
 #include "llvm/IR/Module.h"
@@ -112,6 +114,7 @@ bool OptPass::runOnModule(Module &Mod) {
 
   std::unordered_map<Function *, Policy::Directions> Functions;
   std::unordered_map<Function *, loom::Metadata> FnMetadata;
+  std::unordered_map<Function *, vector<loom::Transform>> FnTransforms;
   std::unordered_map<CallInst *, Policy::Directions> Calls;
 
   typedef std::pair<GetElementPtrInst *, std::string> NamedGEP;
@@ -139,6 +142,10 @@ bool OptPass::runOnModule(Module &Mod) {
       auto Md = P.InstrMetadata(Fn);
       if (not Md.Name.empty() && not Md.Id == 0) {
         FnMetadata.emplace(&Fn, Md);
+      }
+      auto Transforms = P.InstrTransforms(Fn);
+      if (not Md.Name.empty() && not Md.Id == 0) {
+        FnTransforms.emplace(&Fn, Transforms);
       }
     }
 
@@ -276,7 +283,8 @@ bool OptPass::runOnModule(Module &Mod) {
 
   for (auto &i : Functions) {
 	auto Md = FnMetadata[i.first];
-    ModifiedIR |= Instr->Instrument(*i.first, i.second, Md);
+	auto Transforms = FnTransforms[i.first];
+    ModifiedIR |= Instr->Instrument(*i.first, i.second, Md, Transforms);
   }
 
   for (auto &i : Calls) {

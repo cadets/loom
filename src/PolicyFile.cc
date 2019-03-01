@@ -82,6 +82,9 @@ struct FnInstrumentation {
 
   /// Additional information about the function call
   loom::Metadata  Meta;
+
+  /// Additions transformations that should be applied when logging function call.
+  vector<loom::Transform> Transforms;
 };
 
 /// An operation that can be performed on a variable
@@ -139,6 +142,9 @@ struct PolicyFile::PolicyFileData {
 
   /// KTrace-based logging.
   Policy::KTraceTarget KTrace;
+  
+  /// DTrace-based logging.
+  Policy::DTraceTarget DTrace;
 
   /// Serialization.
   SerializationType Serial;
@@ -157,7 +163,7 @@ struct PolicyFile::PolicyFileData {
 
   /// Structure field instrumentation.
   vector<StructInstrumentation> Structures;
-
+  
   /// Global variable insstrumentation.
   vector<GlobalInstrumentation> Globals;
 };
@@ -194,6 +200,15 @@ template <> struct yaml::ScalarEnumerationTraits<Policy::KTraceTarget> {
   }
 };
 
+/// Converts an DTraceTarget to/from YAML.
+template <>
+struct yaml::ScalarEnumerationTraits<Policy::DTraceTarget> {
+  static void enumeration(yaml::IO &io, Policy::DTraceTarget& T) {
+    io.enumCase(T, "userspace", Policy::DTraceTarget::Userspace);
+    io.enumCase(T, "none", Policy::DTraceTarget::None);
+  }
+};
+
 /// Converts a Policy::Direction to/from YAML.
 template <> struct yaml::ScalarEnumerationTraits<Policy::Direction> {
   static void enumeration(yaml::IO &io, Policy::Direction &Dir) {
@@ -207,6 +222,14 @@ template <> struct yaml::MappingTraits<loom::Metadata> {
   static void mapping(yaml::IO &io, loom::Metadata &Meta) {
     io.mapOptional("name", Meta.Name);
     io.mapOptional("id", Meta.Id);
+  }
+};
+
+/// Converts a Policy::Transforms to/from YAML.
+template <> struct yaml::MappingTraits<loom::Transform> {
+  static void mapping(yaml::IO &io, loom::Transform &Transform) {
+    io.mapOptional("arg", Transform.Arg);
+    io.mapOptional("fn", Transform.Fn);
   }
 };
 
@@ -235,6 +258,7 @@ template <> struct yaml::MappingTraits<FnInstrumentation> {
     io.mapOptional("caller", fn.Call);
     io.mapOptional("callee", fn.Body);
     io.mapOptional("metadata", fn.Meta);
+    io.mapOptional("transforms", fn.Transforms);
   }
 };
 
@@ -278,6 +302,7 @@ template <> struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("strategy", policy.Strategy, InstrStrategy::Kind::Callout);
     io.mapOptional("logging", policy.Logging, SimpleLogger::LogType::None);
     io.mapOptional("ktrace", policy.KTrace, Policy::KTraceTarget::None);
+    io.mapOptional("dtrace", policy.DTrace, Policy::DTraceTarget::None);
     io.mapOptional("serialization", policy.Serial, SerializationType::None);
     io.mapOptional("block_structure", policy.UseBlockStructure, false);
     io.mapOptional("hook_prefix", policy.HookPrefix, string("__loom"));
@@ -322,7 +347,10 @@ SimpleLogger::LogType PolicyFile::Logging() const { return Policy->Logging; }
 
 Policy::KTraceTarget PolicyFile::KTrace() const { return Policy->KTrace; }
 
-unique_ptr<Serializer> PolicyFile::Serialization(Module &Mod) const {
+Policy::DTraceTarget PolicyFile::DTrace() const { return Policy->DTrace; }
+
+unique_ptr<Serializer> PolicyFile::Serialization(Module& Mod) const
+{
   switch (Policy->Serial) {
   case SerializationType::LibNV:
     return unique_ptr<Serializer>(new NVSerializer(Mod));
@@ -378,6 +406,16 @@ loom::Metadata PolicyFile::InstrMetadata(const llvm::Function &Fn) const {
   for (FnInstrumentation &F : Policy->Functions) {
     if (MatchName(F.Name, Name)) {
       return F.Meta;
+    }
+  }
+}
+
+vector<loom::Transform> PolicyFile::InstrTransforms(const llvm::Function &Fn) const {
+  StringRef Name = Fn.getName();
+
+  for (FnInstrumentation &F : Policy->Functions) {
+    if (MatchName(F.Name, Name)) {
+      return F.Transforms;
     }
   }
 }

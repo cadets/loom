@@ -1,6 +1,6 @@
-//! @file Policy.cc  Definition of @ref loom::Policy.
+//! @file Transform.hh    Declaration of logging transforms.
 /*
- * Copyright (c) 2016-2017 Jonathan Anderson
+ * Copyright (c) 2019 Brian Kidney
  * All rights reserved.
  *
  * This software was developed by BAE Systems, the University of Cambridge
@@ -30,48 +30,40 @@
  * SUCH DAMAGE.
  */
 
-#include "DTraceLogger.hh"
-#include "Policy.hh"
-#include "KTraceLogger.hh"
+#ifndef LOOM_TRANSFORM_H
+#define LOOM_TRANSFORM_H
 
-using namespace llvm;
-using namespace loom;
-using std::unique_ptr;
 
-Policy::~Policy() {}
+namespace loom {
 
-std::vector<unique_ptr<Logger>> Policy::Loggers(Module &Mod) const {
-  std::vector<unique_ptr<Logger>> Loggers;
+  //! Transforms to be applied during the instrumentation
+  class Transform {
 
-  auto SimpleLogType = this->Logging();
+  public:
+    Transform(std::string fn = "", int i = 0) {
+	  Arg = i;
+	  Fn = fn;
+	}
 
-  if (SimpleLogType != SimpleLogger::LogType::None) {
-    Loggers.push_back(SimpleLogger::Create(Mod, SimpleLogType));
-  }
+	bool isValid() {
+		if (Fn.empty() and Arg == 0) {
+			return false;
+		}
+		return true;
+	}
 
-  unique_ptr<Serializer> Serial = this->Serialization(Mod);
+    unsigned int Arg;
+	std::string Fn;
 
-  switch (this->KTrace()) {
-  case Policy::KTraceTarget::Kernel:
-    Loggers.emplace_back(new KTraceLogger(Mod, std::move(Serial), true));
-    break;
+	llvm::Value* CreateTransform(llvm::Instruction*, llvm::Module&, llvm::Value*);
 
-  case Policy::KTraceTarget::Userspace:
-    Loggers.emplace_back(new KTraceLogger(Mod, std::move(Serial), false));
-    break;
-
-  case Policy::KTraceTarget::None:
-    break;
-  }
+  private:
+	llvm::Value* CreateUUIDTransform(llvm::Instruction*, llvm::Module&, llvm::Value*);
   
-  switch (this->DTrace()) {
-  case Policy::DTraceTarget::Userspace:
-    Loggers.emplace_back(new DTraceLogger(Mod));
-    break;
+  };
 
-  case Policy::DTraceTarget::None:
-    break;
-  }
 
-  return Loggers;
-}
+
+} // namespace loom
+
+#endif /* LOOM_TRANSFORMS_H */
