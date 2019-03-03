@@ -41,6 +41,7 @@
 #include "NVSerializer.hh"
 #include "Strings.hh"
 
+#include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Module.h>
 #include <llvm/Support/CommandLine.h>
@@ -382,7 +383,11 @@ Policy::Directions PolicyFile::CallHooks(const llvm::Function &Fn) const {
 Policy::Directions PolicyFile::FnHooks(const llvm::Function &Fn) const {
   StringRef Name = Fn.getName();
 
-  std::string FileName = Fn.getParent()->getSourceFileName();
+  std::string FileName = "";
+  DISubprogram* Sp = Fn.getSubprogram();
+  if (Sp) {
+	  FileName = Sp->getFilename();
+  }
   std::string BaseFileName = FileName.substr(FileName.find_last_of("/\\") + 1);
 
   for (FnInstrumentation &F : Policy->Functions) {
