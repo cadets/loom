@@ -24,7 +24,7 @@ block_structure: true
 
 functions:
     - name: foo
-      within-file: function-instrumentation-with-file-scope.c.tmp.c
+      within-file: function-instrumentation-with-file-scope.c
       callee: [ entry, exit ]
 
     - name: bar
