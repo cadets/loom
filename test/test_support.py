@@ -41,7 +41,7 @@ def ldflags(dirs, libs, extras = []):
 
 def cpp_out():
 	""" How do we specify the output file from our platform's cpp? """
-	cpp_version = run_command('cpp', [ '--version' ]).split('\n')[0]
+	cpp_version = run_command('cpp', [ '--version' ]).decode().split('\n')[0]
 
 	# Clang usage: 'cpp in -o out'; GCC usage: 'cpp in out'
 	if 'clang version 3.3' in cpp_version: return '-o'
@@ -96,7 +96,7 @@ def run_command(command, args = []):
 
 	argv = [ command ] + args
 	try: cmd = subprocess.Popen(argv, stdout = subprocess.PIPE)
-	except OSError, why:
+	except OSError as why:
 		sys.stderr.write('Unable to run %s: %s\n' % (command, why))
 		sys.stderr.flush()
 		sys.exit(1)
