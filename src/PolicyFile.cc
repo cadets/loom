@@ -548,6 +548,12 @@ string PolicyFile::InstrName(const vector<string> &Components) const {
 
 bool PolicyFile::MatchName(std::string instrName, StringRef name) const {
 
+  if (name.find("llvm.") == 0)
+  {
+	  errs() << "Skipping llvm debug function: " << name << "\n";
+	  return false;
+  }
+
   std::string error; // BJK: What to do with Error?
   llvm::Regex nameRegex = llvm::Regex(instrName);
 
