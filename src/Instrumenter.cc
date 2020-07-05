@@ -340,7 +340,8 @@ bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
   const bool VarArgs = Fn.isVarArg();
 
   if (VarArgs) {
-    errs() << "Warning: VarArg functions cannot be fully instrumented.\n";
+    errs() << "Warning: VarArg functions cannot be instrumented.\n";
+	return false;
   }
 
   assert(isa<PointerType>(Fn.getType()));
