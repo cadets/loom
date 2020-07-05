@@ -558,6 +558,7 @@ bool PolicyFile::MatchName(std::string instrName, StringRef name) const {
   llvm::Regex nameRegex = llvm::Regex(instrName);
 
   if (!nameRegex.isValid(error)) {
+	errs() << "Invalid regex: " << error << "\n";
     return false;
   }
 
