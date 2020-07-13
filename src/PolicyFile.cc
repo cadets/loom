@@ -550,7 +550,6 @@ bool PolicyFile::MatchName(std::string instrName, StringRef name) const {
 
   if (name.find("llvm.") == 0)
   {
-	  errs() << "Skipping llvm debug function: " << name << "\n";
 	  return false;
   }
 

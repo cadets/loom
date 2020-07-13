@@ -340,7 +340,7 @@ bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
   const bool VarArgs = Fn.isVarArg();
 
   if (VarArgs) {
-    errs() << "Warning: VarArg functions cannot be instrumented.\n";
+    errs() << "Warning: Trying to instrument vararg function " << FnName <<  ". Loom does not support instrumenting vararg functions.\n";
 	return false;
   }
 
