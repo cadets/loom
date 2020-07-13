@@ -130,6 +130,16 @@ struct GlobalInstrumentation
 	vector<Operation> Operations;
 };
 
+/// A description of calls that should be replaced and their replacement
+struct CallReplacement
+{
+	/// Name of the call to be replaced
+	string Name;
+
+	/// Replacement call (note: signatures must match)
+	string Replacement;
+};
+
 /// Everything contained in an instrumentation description file.
 struct PolicyFile::PolicyFileData {
   /// Prefix to prepend to all instrumentation hooks (e.g., "__loom").
@@ -167,6 +177,9 @@ struct PolicyFile::PolicyFileData {
   
   /// Global variable insstrumentation.
   vector<GlobalInstrumentation> Globals;
+
+  /// List of call replacements
+  vector<CallReplacement> Replacements;
 };
 
 //
@@ -288,12 +301,21 @@ template <> struct yaml::MappingTraits<StructInstrumentation> {
   }
 };
 
-///  COnverts GlobalInstrumentation to/from YAML.
+///  Converts GlobalInstrumentation to/from YAML.
 template<>
 struct yaml::MappingTraits<GlobalInstrumentation> {
 	static void  mapping(yaml::IO &io, GlobalInstrumentation &g) {
 		io.mapRequired("name",			g.Name);
 		io.mapRequired("operations",	g.Operations);
+	}
+};
+
+/// Converts CallReplacement to/from YAML.
+template<>
+struct yaml::MappingTraits<CallReplacement> {
+	static void mapping(yaml::IO &io, CallReplacement &c) {
+		io.mapRequired("name",			c.Name);
+		io.mapRequired("replacement",	c.Replacement);
 	}
 };
 
@@ -312,6 +334,7 @@ template <> struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("functions", policy.Functions);
     io.mapOptional("structures", policy.Structures);
 	io.mapOptional("globals", policy.Globals);
+	io.mapOptional("call_replacements", policy.Replacements);
   }
 };
 
@@ -378,6 +401,16 @@ Policy::Directions PolicyFile::CallHooks(const llvm::Function &Fn) const {
   }
 
   return Policy::Directions();
+}
+
+std::string PolicyFile::ReplaceCall(const llvm::Function &Fn) const {
+	StringRef Name = Fn.getName();
+	for (CallReplacement &C : Policy->Replacements) {
+		if (MatchName(C.Name, Name)) {
+			return C.Replacement;
+		}
+	}
+	return "";
 }
 
 Policy::Directions PolicyFile::FnHooks(const llvm::Function &Fn) const {

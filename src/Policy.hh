@@ -117,6 +117,9 @@ public:
   //! In which directions should calls to a function be instrumented?
   virtual Directions CallHooks(const llvm::Function &) const = 0;
 
+  //! Should a call be replaced?
+  virtual std::string ReplaceCall(const llvm::Function &) const = 0;
+
   //! In which directions (preamble/return) should a function be instrumented?
   virtual Directions FnHooks(const llvm::Function &) const = 0;
 
