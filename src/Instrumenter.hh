@@ -130,6 +130,8 @@ public:
                          llvm::ArrayRef<llvm::Value *> NewArgs,
                          ParamPosition Position = ParamPosition::End);
 
+  bool ReplaceCall(llvm::CallInst *Call, llvm::StringRef NewCall);
+
   llvm::Module &getModule() { return Mod; }
 
 private:

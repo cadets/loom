@@ -499,6 +499,17 @@ CallInst *Instrumenter::Extend(CallInst *Call, StringRef NewName,
   return NewCall;
 }
 
+
+bool Instrumenter::ReplaceCall(llvm::CallInst *Call, llvm::StringRef NewCall) {
+
+	ArrayRef<Value *> Empty;
+	ParamPosition End = ParamPosition::End;
+
+	Extend(Call, NewCall, Empty, End);
+
+	return true;
+}
+
 uint32_t Instrumenter::FieldNumber(GetElementPtrInst *GEP) {
   // A field access getelementptr should have two indices:
   // a zero and the target field number (a constant integer).
