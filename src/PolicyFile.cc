@@ -246,6 +246,7 @@ template <> struct yaml::ScalarEnumerationTraits<SerializationType> {
 template <> struct yaml::ScalarEnumerationTraits<SimpleLogger::LogType> {
   static void enumeration(yaml::IO &io, SimpleLogger::LogType &T) {
     io.enumCase(T, "printf", SimpleLogger::LogType::Printf);
+    io.enumCase(T, "unsafe_printf", SimpleLogger::LogType::UnsafePrintf);
     io.enumCase(T, "xo", SimpleLogger::LogType::Libxo);
     io.enumCase(T, "none", SimpleLogger::LogType::None);
   }

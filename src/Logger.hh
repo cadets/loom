@@ -93,6 +93,9 @@ public:
   /// Types of simple loggers.
   enum class LogType {
 
+	/// The libc printf() function, but treating all u8 pointers as char*
+	UnsafePrintf,
+
     /// The libc printf() function
     Printf,
 

@@ -68,6 +68,18 @@ public:
 							bool SuppressUniq) override;
 };
 
+//! A logger that calls `printf()` but treats u8 pointer as pointers to `char*`
+
+class UnsafePrintfLogger : public PrintfLogger {
+public:
+  UnsafePrintfLogger(Module &Mod) : PrintfLogger(Mod) {}
+
+  Value *CreateFormatString(IRBuilder<> &, StringRef Prefix,
+                            ArrayRef<Value *> Params, StringRef Suffix,
+                            loom::Metadata Md,
+							bool SuppressUniq) override;
+};
+
 } // anonymous namespace
 
 Logger::~Logger() {}
@@ -78,6 +90,9 @@ Value *Logger::Initialize(Function &Main) { return nullptr; }
 
 unique_ptr<SimpleLogger> SimpleLogger::Create(Module &Mod, LogType Log) {
   switch (Log) {
+  case LogType::UnsafePrintf:
+    return unique_ptr<SimpleLogger>(new UnsafePrintfLogger(Mod));
+
   case LogType::Printf:
     return unique_ptr<SimpleLogger>(new PrintfLogger(Mod));
 
@@ -245,6 +260,54 @@ Value *PrintfLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
     } else if (T->isPointerTy()) {
       FormatString << "p";
 
+    } else {
+      assert(false);
+    }
+  }
+
+  FormatString << Suffix.str();
+
+  return Builder.CreateGlobalStringPtr(FormatString.str());
+}
+
+Value *UnsafePrintfLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
+                                        ArrayRef<Value *> Values,
+                                        StringRef Suffix, loom::Metadata Md,
+                                        bool /*SuppressUniqueness*/) {
+
+  std::stringstream FormatString;
+
+  FormatString << Prefix.str();
+
+  for (Value *V : Values) {
+    Type *T = V->getType();
+
+    FormatString << " %";
+
+    if (T->isIntegerTy(8)) {
+      FormatString << "c";
+
+    } else if (T->isIntegerTy()) {
+      const unsigned Bits = dyn_cast<IntegerType>(T)->getBitWidth();
+
+      if (Bits > 64) {
+        FormatString << "ll";
+      } else if (Bits > 32) {
+        FormatString << "l";
+      }
+
+      FormatString << "d";
+
+    } else if (T->isFloatTy() || T->isDoubleTy()) {
+      FormatString << "f";
+
+    } else if (T->isPointerTy()) {
+	  if (dyn_cast<PointerType>(T)->getElementType()->isIntegerTy(8)) {
+        FormatString << "s";
+      }
+	  else {
+        FormatString << "p";
+      }
     } else {
       assert(false);
     }
