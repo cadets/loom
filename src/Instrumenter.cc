@@ -301,10 +301,27 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir,
 
   const string Description = Return ? "return" : "call";
   const string FormatStringPrefix = Description + " " + TargetName + ":";
-  const string InstrName = Name({Description, TargetName});
+
+  // To avoid creating overloaded callout functions
+  string Suffix;
+  if (VarArgs) {
+	  const void *address = static_cast<const void*>(Call);
+	  std::stringstream ss;
+	  ss << address;
+	  Suffix = ss.str();
+  }
+  const string InstrName = Name({Description, TargetName, Suffix});
 
   // Start by copying static and dynamic value details from the target function.
-  ParamVec Parameters = GetParameters(Target);
+  //  If the function is variatric we used the types of the arguments.
+  ParamVec Parameters;
+  if (VarArgs) {
+	for (auto &Arg : make_range(Call->arg_begin(), Call->arg_end())) {
+		Parameters.emplace_back(Arg->getName(), Arg->getType());
+	}
+  } else {
+	Parameters  = GetParameters(Target);
+  }
   vector<Value *> Arguments(Call->getNumArgOperands());
   std::copy(Call->arg_begin(), Call->arg_end(), Arguments.begin());
 
