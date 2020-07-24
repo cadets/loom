@@ -73,6 +73,8 @@ public:
   bool InstrumentPointerInsts() const override;
 
   Policy::Directions CallHooks(const llvm::Function &) const override;
+  
+  std::string ReplaceCall(const llvm::Function &) const override;
 
   Policy::Directions FnHooks(const llvm::Function &) const override;
 

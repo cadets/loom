@@ -116,6 +116,7 @@ bool OptPass::runOnModule(Module &Mod) {
   std::unordered_map<Function *, loom::Metadata> FnMetadata;
   std::unordered_map<Function *, vector<loom::Transform>> FnTransforms;
   std::unordered_map<CallInst *, Policy::Directions> Calls;
+  std::unordered_map<CallInst *, std::string> CallReplacements;
 
   typedef std::pair<GetElementPtrInst *, std::string> NamedGEP;
   std::unordered_map<LoadInst *, NamedGEP> FieldReads;
@@ -263,7 +264,22 @@ bool OptPass::runOnModule(Module &Mod) {
         if (not Directions.empty())
           Calls.emplace(Call, Directions);
       }
-    }
+       
+	  // Is this a call to replace?
+      if (CallInst *Call = dyn_cast<CallInst>(&Inst)) {
+        Function *Target = Call->getCalledFunction();
+        if (not Target)
+          continue; // TODO: support indirect targets
+
+        std::string Replacement = P.ReplaceCall(*Target);
+        if (not Replacement.empty())
+        {
+          CallReplacements.emplace(Call, Replacement);
+        }
+      }
+     
+	}
+
   }
 
   //
@@ -289,6 +305,10 @@ bool OptPass::runOnModule(Module &Mod) {
 
   for (auto &i : Calls) {
     ModifiedIR |= Instr->Instrument(i.first, i.second);
+  }
+
+  for (auto &i : CallReplacements) {
+    ModifiedIR |= Instr->ReplaceCall(i.first, i.second);
   }
 
   for (auto &i : FieldReads) {
