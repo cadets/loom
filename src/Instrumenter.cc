@@ -302,6 +302,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir,
   const string Description = Return ? "return" : "call";
   const string FormatStringPrefix = Description + " " + TargetName + ":";
 
+  std::vector<string> NameComponents = {Description, TargetName};
   // To avoid creating overloaded callout functions
   string Suffix;
   if (VarArgs) {
@@ -309,8 +310,9 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir,
 	  std::stringstream ss;
 	  ss << address;
 	  Suffix = ss.str();
+	  NameComponents.push_back(Suffix);
   }
-  const string InstrName = Name({Description, TargetName, Suffix});
+  const string InstrName = Name(NameComponents);
 
   // Start by copying static and dynamic value details from the target function.
   //  If the function is variatric we used the types of the arguments.
