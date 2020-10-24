@@ -26,5 +26,5 @@ list(APPEND HEADERS Metadata.hh)
 file(COPY ${HEADERS} DESTINATION ${CMAKE_BINARY_DIR}/include/loom)
 install(FILES ${HEADERS} COMPONENT "development" DESTINATION "include/loom")
 
-add_llvm_loadable_module(LLVMLoom ${SOURCES})
+add_llvm_library(LLVMLoom MODULE ${SOURCES})
 install(TARGETS LLVMLoom COMPONENT "runtime" DESTINATION "lib")

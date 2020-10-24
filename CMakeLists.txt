@@ -23,7 +23,7 @@ link_directories(${LLVM_LIBRARY_DIRS})
 set(LLVM_BINARY_DIR ${LLVM_DIR}/../../../bin)
 
 # Always use C++11.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 # Enable warnings, i.e., suppress LLVM's insertion of `-w`.
 set(LLVM_ENABLE_WARNINGS TRUE)
