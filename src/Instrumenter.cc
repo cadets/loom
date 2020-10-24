@@ -389,7 +389,7 @@ bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
     SmallVector<ReturnInst *, 4> Returns;
 
     for (auto &Block : Fn) {
-      TerminatorInst *Terminator = Block.getTerminator();
+      Instruction *Terminator = Block.getTerminator();
       if (auto *Ret = dyn_cast<ReturnInst>(Terminator)) {
         Returns.push_back(Ret);
       }
