@@ -35,7 +35,6 @@
  */
 
 #include "Instrumentation.hh"
-#include "llvm/IR/TypeBuilder.h"
 
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>

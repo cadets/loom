@@ -33,7 +33,6 @@
 #include "Logger.hh"
 
 #include <llvm/IR/Module.h>
-#include <llvm/IR/TypeBuilder.h>
 
 #include <sstream>
 
@@ -139,7 +138,10 @@ Function *SimpleLogger::GetFunction() {
 }
 
 FunctionType *SimpleLogger::GetType() {
-  return TypeBuilder<int(const char *, ...), false>::get(Mod.getContext());
+  Type *params[] = {
+    PointerType::getUnqual(IntegerType::get(Mod.getContext(), sizeof(char) * CHAR_BIT)),
+  };
+  return FunctionType::get(IntegerType::get(Mod.getContext(), sizeof(int) * CHAR_BIT), params, true);
 }
 
 vector<Value *> SimpleLogger::Adapt(ArrayRef<Value *> Values, IRBuilder<> &B) {

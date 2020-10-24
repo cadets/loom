@@ -33,7 +33,6 @@
 #include "NVSerializer.hh"
 
 #include <llvm/IR/Module.h>
-#include <llvm/IR/TypeBuilder.h>
 #include <llvm/Support/raw_ostream.h>
 
 using namespace llvm;
@@ -127,7 +126,7 @@ namespace {
 LibNV::LibNV(Module &M)
     : M(M), Ctx(M.getContext()), Void(Type::getVoidTy(Ctx)),
       Int(IntegerType::get(Ctx, 32)),
-      SizeT(TypeBuilder<size_t, false>::get(Ctx)),
+      SizeT(IntegerType::get(Ctx, sizeof(size_t) * CHAR_BIT)),
       BytePtr(PointerType::getUnqual(IntegerType::get(Ctx, 8))),
       NVListPtr(PointerType::getUnqual(StructType::create(Ctx, "nvlist_t"))) {}
 

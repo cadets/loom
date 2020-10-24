@@ -36,7 +36,6 @@
 
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Module.h>
-#include <llvm/IR/TypeBuilder.h>
 #include <llvm/Support/raw_ostream.h>
 
 using namespace loom;
@@ -76,13 +75,13 @@ Value* Transform::CreateUUIDTransform(Instruction* I, Module& Mod, Value* V) {
   IRBuilder<> B(I);
 
   LLVMContext &Ctx = Mod.getContext();
-  Type* fd_t = TypeBuilder<int, false>::get(Ctx);
-  Type* uuid_t = StructType::get( TypeBuilder<uint32_t, false>::get(Ctx),
-								  TypeBuilder<uint16_t, false>::get(Ctx),
-								  TypeBuilder<uint16_t, false>::get(Ctx),
-								  TypeBuilder<uint8_t, false>::get(Ctx),
-								  TypeBuilder<uint8_t, false>::get(Ctx),
-								  TypeBuilder<uint8_t[6], false>::get(Ctx));
+  Type* fd_t = IntegerType::get(Ctx, sizeof(int) * CHAR_BIT);
+  Type* uuid_t = StructType::get( IntegerType::get(Ctx, sizeof(uint32_t) * CHAR_BIT),
+								  IntegerType::get(Ctx, sizeof(uint16_t) * CHAR_BIT),
+								  IntegerType::get(Ctx, sizeof(uint16_t) * CHAR_BIT),
+								  IntegerType::get(Ctx, sizeof(uint8_t) * CHAR_BIT),
+								  IntegerType::get(Ctx, sizeof(uint8_t) * CHAR_BIT),
+								  ArrayType::get(IntegerType::get(Ctx, sizeof(uint8_t) * CHAR_BIT), 6));
 
 
   Value* args[2];
@@ -94,7 +93,7 @@ Value* Transform::CreateUUIDTransform(Instruction* I, Module& Mod, Value* V) {
   params.push_back(fd_t);
   params.push_back(args[1]->getType());
   
-  auto *FT = FunctionType::get( TypeBuilder<int, false>::get(Ctx), params, false);
+  auto *FT = FunctionType::get( IntegerType::get(Ctx, sizeof(int) * CHAR_BIT), params, false);
   
   Constant *F = Mod.getOrInsertFunction("fgetuuid", FT);
 

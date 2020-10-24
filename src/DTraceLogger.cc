@@ -36,7 +36,6 @@
 
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Module.h>
-#include <llvm/IR/TypeBuilder.h>
 #include <llvm/Support/raw_ostream.h>
 
 using namespace loom;
@@ -54,9 +53,9 @@ Value* DTraceLogger::ConvertValueToPtr(IRBuilder<>& B, LLVMContext& Ctx, Value* 
 	} else if (T->isIntegerTy()) {
 		return B.CreateSExt(V, param_t);
 	} else if (T->isDoubleTy()) {
-		return B.CreateBitCast(V, TypeBuilder<int64_t, false>::get(Ctx));
+		return B.CreateBitCast(V, IntegerType::get(Ctx, sizeof(int64_t) * CHAR_BIT));
 	} else if (T->isFloatTy()) {
-		auto *BC = B.CreateBitCast(V, TypeBuilder<int32_t, false>::get(Ctx));
+		auto *BC = B.CreateBitCast(V, IntegerType::get(Ctx, sizeof(int32_t) * CHAR_BIT));
 		return B.CreateSExt(BC, param_t);
 	}
 	return ConstantInt::get(param_t, 0);
@@ -75,24 +74,24 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
   IRBuilder<> B(I);
 
   LLVMContext &Ctx = Mod.getContext();
-  Type* id_t = TypeBuilder<unsigned int, false>::get(Ctx);
-  Type* param_t = TypeBuilder<uintptr_t, false>::get(Ctx);
+  Type* id_t = IntegerType::get(Ctx, sizeof(unsigned int) * CHAR_BIT);
+  Type* param_t = IntegerType::get(Ctx, sizeof(uintptr_t) * CHAR_BIT);
 
   size_t n_args = std::min(Values.size(), 5ul);
 
   std::vector<Type*> params;
-  for (int i = 0; i < n_args + 1; i++) {
+  for (unsigned int i = 0; i < n_args + 1; i++) {
       params.push_back(param_t);
   }
   
-  auto *FT = FunctionType::get( TypeBuilder<int, false>::get(Ctx), params, false);
+  auto *FT = FunctionType::get( IntegerType::get(Ctx, sizeof(int) * CHAR_BIT), params, false);
   
   Constant *F = Mod.getOrInsertFunction("dt_probe", FT);
 
 
   Value* args[6];
   args[0] = B.CreateSExt(ConstantInt::get(id_t, Metadata.Id), param_t);;
-  for (int i = 0; i < n_args; i++)
+  for (unsigned int i = 0; i < n_args; i++)
   {
     Value *ptr;
 

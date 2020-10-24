@@ -34,7 +34,6 @@
 #include "Serializer.hh"
 
 #include <llvm/IR/Module.h>
-#include <llvm/IR/TypeBuilder.h>
 
 using namespace loom;
 using namespace llvm;
@@ -58,14 +57,24 @@ Value *KTraceLogger::Log(Instruction *I, ArrayRef<Value *> Values,
 
   if (!KernelMode) {
     // Send record to `utrace`:
-    auto *FT = TypeBuilder<int(const void *, size_t), false>::get(Ctx);
+	Type *params[] = {
+      PointerType::getUnqual(IntegerType::get(Ctx, sizeof(uint8_t) * CHAR_BIT)),
+      IntegerType::get(Ctx, sizeof(size_t) * CHAR_BIT),
+    };
+    auto *FT = FunctionType::get(IntegerType::get(Ctx, sizeof(int) * CHAR_BIT), params, false);
+
     Constant *F = Mod.getOrInsertFunction("utrace", FT);
 
     B.CreateCall(F, {Buffer.first, Buffer.second});
 
   } else {
     // Send record to `ktrstruct`:
-    auto *FT = TypeBuilder<void(const char *, void *, size_t), false>::get(Ctx);
+	Type *params[] = {
+      PointerType::getUnqual(IntegerType::get(Ctx, sizeof(char) * CHAR_BIT)),
+      PointerType::getUnqual(IntegerType::get(Ctx, sizeof(uint8_t) * CHAR_BIT)), // void*
+      IntegerType::get(Ctx, sizeof(size_t) * CHAR_BIT),
+    };
+    auto *FT = FunctionType::get(Type::getVoidTy(Ctx), params, false);
     Constant *F = Mod.getOrInsertFunction("ktrstruct", FT);
     Value *Name = B.CreateGlobalStringPtr(Serial->SchemeName(), "scheme");
 
