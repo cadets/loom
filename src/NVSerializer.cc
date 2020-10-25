@@ -71,7 +71,7 @@ public:
    */
   void Add(Value *List, StringRef Name, StringRef Value, IRBuilder<> &);
 
-  Constant *Fn(StringRef Name, Type *Ret, ArrayRef<Type *> Params);
+  FunctionCallee Fn(StringRef Name, Type *Ret, ArrayRef<Type *> Params);
 
   Module &M;
   LLVMContext &Ctx;
@@ -132,12 +132,12 @@ LibNV::LibNV(Module &M)
 
 CallInst *LibNV::Free(Value *V, IRBuilder<> &B) {
   assert(V->getType() == BytePtr);
-  Constant *F = Fn("free", Void, {BytePtr});
+  FunctionCallee F = Fn("free", Void, {BytePtr});
   return B.CreateCall(F, V);
 }
 
 CallInst *LibNV::Create(IRBuilder<> &B) {
-  Constant *F = Fn("nvlist_create", NVListPtr, {Int});
+  FunctionCallee F = Fn("nvlist_create", NVListPtr, {Int});
 
   ConstantInt *NvFlagNoUnique = ConstantInt::get(Int, 2);
   return B.CreateCall(F, NvFlagNoUnique);
@@ -145,7 +145,7 @@ CallInst *LibNV::Create(IRBuilder<> &B) {
 
 CallInst *LibNV::Destroy(Value *NVList, IRBuilder<> &B) {
   assert(NVList->getType() == NVListPtr);
-  Constant *F = Fn("nvlist_destroy", Void, {NVListPtr});
+  FunctionCallee F = Fn("nvlist_destroy", Void, {NVListPtr});
 
   return B.CreateCall(F, NVList);
 }
@@ -153,21 +153,21 @@ CallInst *LibNV::Destroy(Value *NVList, IRBuilder<> &B) {
 CallInst *LibNV::Pack(Value *NVList, Value *SizePtr, IRBuilder<> &B) {
   assert(NVList->getType() == NVListPtr);
   PointerType *SizeTPtr = PointerType::getUnqual(SizeT);
-  Constant *F = Fn("nvlist_pack", BytePtr, {NVListPtr, SizeTPtr});
+  FunctionCallee F = Fn("nvlist_pack", BytePtr, {NVListPtr, SizeTPtr});
 
   return B.CreateCall(F, {NVList, SizePtr});
 }
 
 CallInst *LibNV::Dump(Value *NVList, Value *File, IRBuilder<> &B) {
   assert(NVList->getType() == NVListPtr);
-  Constant *F = Fn("nvlist_dump", BytePtr, {NVListPtr, Int});
+  FunctionCallee F = Fn("nvlist_dump", BytePtr, {NVListPtr, Int});
 
   return B.CreateCall(F, {NVList, File});
 }
 
 void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<> &B) {
   Type *T = V->getType();
-  Constant *F = nullptr;
+  FunctionCallee F;
 
   if (T->isFloatTy() or T->isDoubleTy()) {
     llvm::errs() << "WARNING: libnv doesn't support floating-point numbers\n";
@@ -201,7 +201,7 @@ void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<> &B) {
     err << " (yet)\n";
   }
 
-  if (F == nullptr)
+  if (F.getCallee() == nullptr)
     return;
 
   Value *NameVal = B.CreateGlobalStringPtr(Name);
@@ -210,7 +210,7 @@ void LibNV::Add(Value *List, StringRef Name, Value *V, IRBuilder<> &B) {
 }
 
 void LibNV::Add(Value *List, StringRef Name, StringRef Str, IRBuilder<> &B) {
-  Constant *F = Fn("nvlist_add_string", Void, {NVListPtr, BytePtr, BytePtr});
+  FunctionCallee F = Fn("nvlist_add_string", Void, {NVListPtr, BytePtr, BytePtr});
 
   Value *NamePtr = B.CreateGlobalStringPtr(Name);
   Value *V = B.CreateGlobalStringPtr(Str);
@@ -218,7 +218,7 @@ void LibNV::Add(Value *List, StringRef Name, StringRef Str, IRBuilder<> &B) {
   B.CreateCall(F, {List, NamePtr, V});
 }
 
-Constant *LibNV::Fn(StringRef Name, Type *Ret, ArrayRef<Type *> Params) {
+FunctionCallee LibNV::Fn(StringRef Name, Type *Ret, ArrayRef<Type *> Params) {
   FunctionType *T = FunctionType::get(Ret, Params, false);
   return M.getOrInsertFunction(Name, T);
 }

@@ -86,7 +86,7 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
   
   auto *FT = FunctionType::get( IntegerType::get(Ctx, sizeof(int) * CHAR_BIT), params, false);
   
-  Constant *F = Mod.getOrInsertFunction("dt_probe", FT);
+  FunctionCallee F = Mod.getOrInsertFunction("dt_probe", FT);
 
 
   Value* args[6];

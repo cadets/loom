@@ -63,7 +63,7 @@ Value *KTraceLogger::Log(Instruction *I, ArrayRef<Value *> Values,
     };
     auto *FT = FunctionType::get(IntegerType::get(Ctx, sizeof(int) * CHAR_BIT), params, false);
 
-    Constant *F = Mod.getOrInsertFunction("utrace", FT);
+    FunctionCallee F = Mod.getOrInsertFunction("utrace", FT);
 
     B.CreateCall(F, {Buffer.first, Buffer.second});
 
@@ -75,7 +75,7 @@ Value *KTraceLogger::Log(Instruction *I, ArrayRef<Value *> Values,
       IntegerType::get(Ctx, sizeof(size_t) * CHAR_BIT),
     };
     auto *FT = FunctionType::get(Type::getVoidTy(Ctx), params, false);
-    Constant *F = Mod.getOrInsertFunction("ktrstruct", FT);
+    FunctionCallee F = Mod.getOrInsertFunction("ktrstruct", FT);
     Value *Name = B.CreateGlobalStringPtr(Serial->SchemeName(), "scheme");
 
     B.CreateCall(F, {Name, Buffer.first, Buffer.second});

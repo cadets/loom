@@ -95,7 +95,7 @@ Value* Transform::CreateUUIDTransform(Instruction* I, Module& Mod, Value* V) {
   
   auto *FT = FunctionType::get( IntegerType::get(Ctx, sizeof(int) * CHAR_BIT), params, false);
   
-  Constant *F = Mod.getOrInsertFunction("fgetuuid", FT);
+  FunctionCallee F = Mod.getOrInsertFunction("fgetuuid", FT);
 
 
   B.CreateCall(F, argsRef);

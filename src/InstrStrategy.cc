@@ -121,7 +121,8 @@ Instrumentation CalloutStrategy::Instrument(Instruction *I, StringRef Name,
                  [](const Parameter &P) { return P.second; });
 
   auto *T = FunctionType::get(Type::getVoidTy(Ctx), ParamTypes, VarArgs);
-  auto *InstrFn = dyn_cast<Function>(M->getOrInsertFunction(Name, T));
+  FunctionCallee Func = M->getOrInsertFunction(Name, T);
+  auto *InstrFn = dyn_cast<Function>(Func.getCallee());
 
   //
   // The instrumented values, as accessed within the instrumentation, are the

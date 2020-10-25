@@ -508,7 +508,7 @@ CallInst *Instrumenter::Extend(CallInst *Call, StringRef NewName,
     }
   }
 
-  Constant *NewFn = Mod.getOrInsertFunction(
+  FunctionCallee NewFn = Mod.getOrInsertFunction(
       NewName,
       FunctionType::get(FT->getReturnType(), ParamTypes, FT->isVarArg()));
 
