@@ -221,7 +221,7 @@ Value *LibxoLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
   Value *Ptr = Builder.CreateGlobalStringPtr(Str);
   auto *GV = dyn_cast<GlobalVariable>(Ptr->stripInBoundsConstantOffsets());
   GV->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
-  GV->setAlignment(1);
+  GV->setAlignment(MaybeAlign(1));
 
   FormatStrings[Str] = Ptr;
 
