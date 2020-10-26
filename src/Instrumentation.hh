@@ -79,19 +79,6 @@ public:
   //! Retrieve the values passed into the instrumentation.
   llvm::ArrayRef<llvm::Value *> Values() { return InstrValues; }
 
-  /**
-   * Get an IRBuilder to insert instructions into the instrumentation preamble.
-   *
-   * The preamble is a block where we can put instructions that should run
-   * whenever the instrumentation is called, regardless of the values that
-   * are passed into it. This could be used to implement gprof-style counting
-   * or simple logging.
-   */
-  llvm::IRBuilder<> GetBuilder();
-
-  /// Add a new link in the chain of actions for this instrumentation.
-  llvm::IRBuilder<> AddAction(llvm::StringRef Name);
-
 private:
   llvm::SmallVector<llvm::Value *, 4> InstrValues; //!< Instrumented values
   llvm::BasicBlock *Preamble;     //!< Cross-instrumentation logging, etc.
