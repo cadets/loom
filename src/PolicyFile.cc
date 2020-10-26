@@ -420,7 +420,7 @@ Policy::Directions PolicyFile::FnHooks(const llvm::Function &Fn) const {
   std::string FileName = "";
   DISubprogram* Sp = Fn.getSubprogram();
   if (Sp) {
-	  FileName = Sp->getFilename();
+	  FileName = Sp->getFilename().str();
   }
   std::string BaseFileName = FileName.substr(FileName.find_last_of("/\\") + 1);
 

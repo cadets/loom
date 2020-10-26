@@ -127,7 +127,7 @@ std::string DebugInfo::FieldName(GetElementPtrInst *GEP) {
       auto *Member = dyn_cast<DIDerivedType>(CT->getElements()[Index]);
 
       if (GEPOffsets.empty()) {
-        return Member->getName();
+        return Member->getName().str();
       } else {
         T = dyn_cast<DIType>(Member->getBaseType());
       }

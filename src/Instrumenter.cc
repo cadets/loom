@@ -293,7 +293,7 @@ bool Instrumenter::Instrument(llvm::CallInst *Call, Policy::Direction Dir,
   assert(Target); // TODO: support indirect targets, too
 
   // Get some relevant details about the call and the target function.
-  const string TargetName = Target->getName();
+  const string TargetName = Target->getName().str();
   const bool VarArgs = Target->isVarArg();
   Type *CallType = Call->getType();
   const bool voidFunction = CallType->isVoidTy();
@@ -381,7 +381,7 @@ bool Instrumenter::Instrument(Function &Fn, Policy::Direction Dir,
     InstrParameters.emplace_back(Arg.getName(), Arg.getType());
   }
 
-  const string InstrName = Name({Description, FnName});
+  const string InstrName = Name({Description, FnName.str()});
   string FormatStringPrefix = (Description + " " + FnName + ":").str();
 
   if (Return) {
@@ -427,7 +427,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
   StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
   assert(SourceType);
   assert(SourceType->getName().startswith("struct."));
-  const string StructName = SourceType->getName().substr(7);
+  const string StructName = SourceType->getName().str().substr(7);
 
   ParamVec Parameters{
       {"source", GEP->getPointerOperandType()},
@@ -440,7 +440,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, LoadInst *Load,
   };
 
   const string InstrName =
-      Name({"load", "struct", StructName, "field", FieldName});
+      Name({"load", "struct", StructName, "field", FieldName.str()});
 
   const string FormatStringPrefix =
       (StructName + "." + FieldName + " load:").str();
@@ -457,7 +457,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
   StructType *SourceType = dyn_cast<StructType>(GEP->getSourceElementType());
   assert(SourceType);
   assert(SourceType->getName().startswith("struct."));
-  const string StructName = SourceType->getName().substr(7);
+  const string StructName = SourceType->getName().str().substr(7);
 
   ParamVec Parameters{
       {"source", GEP->getPointerOperandType()},
@@ -470,7 +470,7 @@ bool Instrumenter::Instrument(GetElementPtrInst *GEP, StoreInst *Store,
   };
 
   const string InstrName =
-      Name({"store", "struct", StructName, "field", FieldName});
+      Name({"store", "struct", StructName, "field", FieldName.str()});
 
   const string FormatStringPrefix =
       (StructName + "." + FieldName + " store:").str();

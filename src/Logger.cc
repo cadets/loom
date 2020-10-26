@@ -128,7 +128,7 @@ CallInst *SimpleLogger::Call(IRBuilder<> &Builder, StringRef Prefix,
 }
 
 Function *SimpleLogger::GetFunction() {
-  const string Name = FunctionName();
+  const string Name = FunctionName().str();
 
   Function *Fn = Mod.getFunction(Name);
   if (Fn)
@@ -168,7 +168,7 @@ Value *LibxoLogger::CreateFormatString(IRBuilder<> &Builder, StringRef Prefix,
   FormatString << Prefix.str();
 
   for (Value *V : Values) {
-    const string Name = V->getName();
+    const string Name = V->getName().str();
     Type *T = V->getType();
 
     // xo can humanize values (e.g., 41025981 -> 41M), but we don't want to
