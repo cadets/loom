@@ -48,6 +48,7 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 
 namespace llvm {
 class Function;
@@ -119,6 +120,10 @@ public:
 
   //! Should a call be replaced?
   virtual std::string ReplaceCall(const llvm::Function &) const = 0;
+  
+  virtual std::string ReplaceDAG(const llvm::Function &Fn) const = 0;
+  
+  virtual std::queue<llvm::StringRef> DAGTail(const llvm::Function &Fn) const = 0;
 
   //! In which directions (preamble/return) should a function be instrumented?
   virtual Directions FnHooks(const llvm::Function &) const = 0;

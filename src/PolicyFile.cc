@@ -140,6 +140,22 @@ struct CallReplacement
 	string Replacement;
 };
 
+struct NamedFunction {
+	string Name;
+};
+
+/// A description of a DAG to Replace
+struct DAGReplacement {
+	/// Function name that starts the DAG
+	string Name;
+
+	/// Call to Replace Original Function with
+	string Replacement;
+	
+	/// List of call that follow the Function
+	vector<NamedFunction> Functions;
+};
+
 /// Everything contained in an instrumentation description file.
 struct PolicyFile::PolicyFileData {
   /// Prefix to prepend to all instrumentation hooks (e.g., "__loom").
@@ -180,6 +196,10 @@ struct PolicyFile::PolicyFileData {
 
   /// List of call replacements
   vector<CallReplacement> Replacements;
+
+  /// Function instrumentation.
+  vector<DAGReplacement> DAGReplacements;
+
 };
 
 //
@@ -320,6 +340,23 @@ struct yaml::MappingTraits<CallReplacement> {
 	}
 };
 
+/// Converts Function to/from YAML.
+template <> struct yaml::MappingTraits<NamedFunction> {
+  static void mapping(yaml::IO &io, NamedFunction &nf) {
+    io.mapRequired("name", nf.Name);
+  }
+};
+
+/// Converts FnInstrumentation to/from YAML.
+template <>
+struct yaml::MappingTraits<DAGReplacement> {
+  static void mapping(yaml::IO &io, DAGReplacement &dag) {
+    io.mapRequired("name", dag.Name);
+    io.mapRequired("replacement", dag.Replacement);
+    io.mapRequired("followed-by", dag.Functions);
+  }
+};
+
 /// Converts PolicyFileData to/from YAML.
 template <> struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
   static void mapping(yaml::IO &io, PolicyFile::PolicyFileData &policy) {
@@ -336,6 +373,7 @@ template <> struct yaml::MappingTraits<PolicyFile::PolicyFileData> {
     io.mapOptional("structures", policy.Structures);
 	io.mapOptional("globals", policy.Globals);
 	io.mapOptional("call_replacements", policy.Replacements);
+	io.mapOptional("dag_replacements", policy.DAGReplacements);
   }
 };
 
@@ -412,6 +450,29 @@ std::string PolicyFile::ReplaceCall(const llvm::Function &Fn) const {
 		}
 	}
 	return "";
+}
+
+std::string PolicyFile::ReplaceDAG(const llvm::Function &Fn) const {
+	StringRef Name = Fn.getName();
+	for (DAGReplacement &C : Policy->DAGReplacements) {
+		if (MatchName(C.Name, Name)) {
+			return C.Replacement;
+		}
+	}
+	return "";
+}
+
+std::queue<StringRef> PolicyFile::DAGTail(const llvm::Function &Fn) const {
+	std::queue<StringRef> functions;
+	StringRef Name = Fn.getName();
+	for (DAGReplacement &C : Policy->DAGReplacements) {
+		if (MatchName(C.Name, Name)) {
+			for (auto &S : C.Functions) {
+				functions.push(S.Name);
+			}
+		}
+	}
+	return functions;
 }
 
 Policy::Directions PolicyFile::FnHooks(const llvm::Function &Fn) const {

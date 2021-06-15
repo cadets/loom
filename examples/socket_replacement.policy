@@ -1,0 +1,9 @@
+strategy: callout
+hook_prefix: __test_hook
+logging: printf
+
+dag_replacements:
+  - name: socket
+    replacement: socket_paired
+    followed-by:
+      - name: connect

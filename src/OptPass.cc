@@ -46,12 +46,14 @@
 #include "PolicyFile.hh"
 #include "Metadata.hh"
 #include "Transform.hh"
+#include "DagTransform.hh"
 
 #include "llvm/IR/InstIterator.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/CommandLine.h"
+#include "llvm/Transforms/Utils/BasicBlockUtils.h"
 
 #include <unordered_map>
 
@@ -118,6 +120,10 @@ bool OptPass::runOnModule(Module &Mod) {
   std::unordered_map<Function *, vector<loom::Transform>> FnTransforms;
   std::unordered_map<CallInst *, Policy::Directions> Calls;
   std::unordered_map<CallInst *, std::string> CallReplacements;
+  std::unordered_map<CallInst *, std::string> DAGReplacements;
+  std::vector<Instruction*> DAGDeletions;
+  std::vector<BasicBlock*> DAGDeletionsBB;
+  std::vector<BasicBlock*> DAGMergesBB;
 
   typedef std::pair<GetElementPtrInst *, std::string> NamedGEP;
   std::unordered_map<LoadInst *, NamedGEP> FieldReads;
@@ -250,10 +256,11 @@ bool OptPass::runOnModule(Module &Mod) {
               if (auto *Store = dyn_cast<StoreInst>(U)) {
                 GlobalWrites[Store] = {GEP, GlobalName};
               }
-            }
-          }
+    
+			}
+		  }
         }
-      }
+	  }
 
       // Is this a call to instrument?
       if (CallInst *Call = dyn_cast<CallInst>(&Inst)) {
@@ -278,6 +285,29 @@ bool OptPass::runOnModule(Module &Mod) {
           CallReplacements.emplace(Call, Replacement);
         }
       }
+
+	  // Is this a DAG to replace?
+	  if (CallInst *Call = dyn_cast<CallInst>(&Inst)) {
+	    Function *Target = Call->getCalledFunction();
+		if (not Target)
+			continue;
+
+		std::string Replacement = P.ReplaceDAG(*Target);
+		if (not Replacement.empty())
+		{
+		  errs() << *Target << "\n";
+		  std::queue<StringRef> dagTail = P.DAGTail(*Target);;
+		  std::vector<Instruction*> possibleDeletions;
+		  bool dagMatch = findAllUsers(Call, dagTail, possibleDeletions);
+
+		  if (dagMatch) {
+			DAGReplacements.emplace(Call, Replacement);
+			for (auto &I : possibleDeletions) {
+				DAGDeletions.push_back(I);
+			}
+		  }
+		}
+	  }
      
 	}
 
@@ -311,6 +341,33 @@ bool OptPass::runOnModule(Module &Mod) {
   for (auto &i : CallReplacements) {
     ModifiedIR |= Instr->ReplaceCall(i.first, i.second);
   }
+
+  for (auto &i : DAGReplacements) {
+    ModifiedIR |= Instr->ReplaceCall(i.first, i.second);
+	errs() << "Replacing: " << *i.first << " with " << i.second << "\n";
+  }
+
+  for (auto &i : DAGDeletions) {
+	errs() << "Deleting: " << *i << "\n";
+	if (BranchInst *BR = dyn_cast<BranchInst>(i)) {
+		BranchInst *New = BranchInst::Create(BR->getSuccessor(1));
+		ReplaceInstWithInst(BR, New);
+		BR->getSuccessor(0)->eraseFromParent();
+	} else {
+		ModifiedIR |= Instr->DeleteInst(i);
+	}
+  }
+  
+  /* for (auto &BB : DAGDeletionsBB) { */
+	/* errs() << "BB Deleting: " << *BB << "\n"; */
+	/* BB->eraseFromParent(); */
+  /* } */
+
+  /* for (auto &BB : DAGMergesBB) { */
+	/* errs() << "BB Merging: " << *BB << "\n"; */
+	/* MergeBlockIntoPredecessor(BB); */
+  /* } */
+  
 
   for (auto &i : FieldReads) {
     LoadInst *Load = i.first;

@@ -530,6 +530,13 @@ bool Instrumenter::ReplaceCall(llvm::CallInst *Call, llvm::StringRef NewCall) {
 	return true;
 }
 
+bool Instrumenter::DeleteInst(llvm::Instruction *Inst) {
+
+	Inst->eraseFromParent();
+
+	return true;
+}
+
 uint32_t Instrumenter::FieldNumber(GetElementPtrInst *GEP) {
   // A field access getelementptr should have two indices:
   // a zero and the target field number (a constant integer).

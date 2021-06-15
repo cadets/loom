@@ -13,6 +13,7 @@ set(FILES
 	Serializer
 	Strings
 	Transform
+	DagTransform
 )
 
 foreach(base IN LISTS FILES)

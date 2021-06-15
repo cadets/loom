@@ -75,6 +75,10 @@ public:
   Policy::Directions CallHooks(const llvm::Function &) const override;
   
   std::string ReplaceCall(const llvm::Function &) const override;
+  
+  std::string ReplaceDAG(const llvm::Function &Fn) const override;
+  
+  std::queue<llvm::StringRef> DAGTail(const llvm::Function &Fn) const override;
 
   Policy::Directions FnHooks(const llvm::Function &) const override;
 
