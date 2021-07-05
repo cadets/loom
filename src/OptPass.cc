@@ -148,11 +148,11 @@ bool OptPass::runOnModule(Module &Mod) {
       Functions.emplace(&Fn, Directions);
 
       auto Md = P.InstrMetadata(Fn);
-      if (not Md.Name.empty() && not Md.Id == 0) {
+      if (not Md.Name.empty() && not (Md.Id == 0)) {
         FnMetadata.emplace(&Fn, Md);
       }
       auto Transforms = P.InstrTransforms(Fn);
-      if (not Md.Name.empty() && not Md.Id == 0) {
+      if (not Md.Name.empty() && not (Md.Id == 0)) {
         FnTransforms.emplace(&Fn, Transforms);
       }
     }
@@ -295,7 +295,6 @@ bool OptPass::runOnModule(Module &Mod) {
 		std::string Replacement = P.ReplaceDAG(*Target);
 		if (not Replacement.empty())
 		{
-		  errs() << *Target << "\n";
 		  std::queue<StringRef> dagTail = P.DAGTail(*Target);;
 		  std::vector<Instruction*> possibleDeletions;
 		  bool dagMatch = findAllUsers(Call, dagTail, possibleDeletions);
@@ -344,11 +343,9 @@ bool OptPass::runOnModule(Module &Mod) {
 
   for (auto &i : DAGReplacements) {
     ModifiedIR |= Instr->ReplaceCall(i.first, i.second);
-	errs() << "Replacing: " << *i.first << " with " << i.second << "\n";
   }
 
   for (auto &i : DAGDeletions) {
-	errs() << "Deleting: " << *i << "\n";
 	if (BranchInst *BR = dyn_cast<BranchInst>(i)) {
 		BranchInst *New = BranchInst::Create(BR->getSuccessor(1));
 		ReplaceInstWithInst(BR, New);
@@ -358,17 +355,6 @@ bool OptPass::runOnModule(Module &Mod) {
 	}
   }
   
-  /* for (auto &BB : DAGDeletionsBB) { */
-	/* errs() << "BB Deleting: " << *BB << "\n"; */
-	/* BB->eraseFromParent(); */
-  /* } */
-
-  /* for (auto &BB : DAGMergesBB) { */
-	/* errs() << "BB Merging: " << *BB << "\n"; */
-	/* MergeBlockIntoPredecessor(BB); */
-  /* } */
-  
-
   for (auto &i : FieldReads) {
     LoadInst *Load = i.first;
     GetElementPtrInst *GEP = i.second.first;
