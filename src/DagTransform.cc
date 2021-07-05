@@ -58,11 +58,9 @@ bool loom::findAllUsers(Instruction *Call,
 	{
 		if (Instruction *Inst = dyn_cast<Instruction>(U)) {
 			toDelete.push_back(Inst);
-			errs() << "Users deleting: " << *Inst << "\n";
 			if (CallInst *Call = dyn_cast<CallInst>(Inst)) {
 				Function *Target = Call->getCalledFunction();
 				if (Target->getName() == dagTail.front()) {
-					errs() << "Users popping: " << *Target << "\n";
 					dagTail.pop();
 				}
 			}
@@ -84,14 +82,10 @@ bool loom::findStoreCalls(StoreInst *Store,
 
 	for (User* U : Store->getPointerOperand()->users()) {
 		if (Instruction *Inst = dyn_cast<Instruction>(U)) {
-			errs() << "Store: " << *Inst << "\n";
 			for (User *User: Inst->users()) {
 				if (CallInst *Call = dyn_cast<CallInst>(User)) {
-					errs() << "Store user: " << *Call << "\n";
 					Function *Target = Call->getCalledFunction();
 					if (Target->getName() == dagTail.front()) {
-						errs() << "Store deleting " << *Call << "\n";
-						errs() << "Store popping " << *Target << "\n";
 						dagTail.pop();
 						toDelete.push_back(Call);
 						isDagComplete |= findAllUsers(Call, dagTail, toDelete);
