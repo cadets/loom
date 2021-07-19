@@ -4,6 +4,7 @@ logging: printf
 
 dag_replacements:
   - name: socket
-    replacement: socket_paired
+    replacement: connect_dag_replacement
     followed-by:
+      - name: __inet_pton
       - name: connect
