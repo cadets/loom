@@ -1,0 +1,4 @@
+strategy: callout
+hook_prefix: __test_hook
+logging: printf
+
