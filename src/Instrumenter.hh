@@ -131,6 +131,7 @@ public:
                          ParamPosition Position = ParamPosition::End);
 
   bool ReplaceCall(llvm::CallInst *Call, llvm::StringRef NewCall);
+  bool ReplaceCall(llvm::CallInst *Call, llvm::StringRef NewCall, llvm::ArrayRef<llvm::Value*> NewArgs);
   bool DeleteInst(llvm::Instruction *Inst);
 
   llvm::Module &getModule() { return Mod; }

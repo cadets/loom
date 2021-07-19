@@ -523,12 +523,19 @@ CallInst *Instrumenter::Extend(CallInst *Call, StringRef NewName,
 bool Instrumenter::ReplaceCall(llvm::CallInst *Call, llvm::StringRef NewCall) {
 
 	ArrayRef<Value *> Empty;
+
+	return ReplaceCall(Call, NewCall, Empty);
+}
+
+bool Instrumenter::ReplaceCall(llvm::CallInst *Call, llvm::StringRef NewCall, llvm::ArrayRef<Value*> NewArgs) {
+
 	ParamPosition End = ParamPosition::End;
 
-	Extend(Call, NewCall, Empty, End);
+	Extend(Call, NewCall, NewArgs, End);
 
 	return true;
 }
+
 
 bool Instrumenter::DeleteInst(llvm::Instruction *Inst) {
 
