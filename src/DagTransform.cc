@@ -43,31 +43,47 @@ using std::vector;
 using std::queue;
 
 
-bool loom::findAllUsers(Instruction *Call, 
+bool loom::findAllUsers(Instruction *Inst, 
 		std::queue<StringRef> dagTail, 
-		std::vector<Instruction*>& toDelete) {
+		//std::vector<Instruction*>& toDelete,
+		std::set<Instruction*>& toDelete,
+		std::vector<Value*>& arguments) {
 	
+	if (CallInst* c = dyn_cast<CallInst>(Inst)) {
+		StringRef calledFn = c->getCalledFunction()->getName();
+		if (calledFn == "socket") {
+			arguments.push_back(c->getArgOperand(0));
+			arguments.push_back(c->getArgOperand(1));
+			arguments.push_back(c->getArgOperand(2));
+		} else if (calledFn == "__inet_pton") {
+			arguments.push_back(c->getArgOperand(1));
+		}
+	}
 
 	bool isDagComplete = false;
-	StringRef nextCall;
 	if (dagTail.empty()) {
 		isDagComplete = true;
 	}
 
-	for (User *U: Call->users())
+	for (User *U: Inst->users())
 	{
-		if (Instruction *Inst = dyn_cast<Instruction>(U)) {
-			toDelete.push_back(Inst);
-			if (CallInst *Call = dyn_cast<CallInst>(Inst)) {
-				Function *Target = Call->getCalledFunction();
-				if (Target->getName() == dagTail.front()) {
-					dagTail.pop();
-				}
+		if (Instruction *I = dyn_cast<Instruction>(U)) {
+			toDelete.insert(I); //push_back(I);
+			/* if (CallInst *Call = dyn_cast<CallInst>(I)) { */
+			/* 	Function *Target = Call->getCalledFunction(); */
+			/* 	if (Target->getName() == dagTail.front()) { */
+			/* 		dagTail.pop(); */
+			/* 	} */
+			/* } */
+			if (StoreInst *Store = dyn_cast<StoreInst>(I)) {
+				isDagComplete |= findStoreCalls(Store, dagTail, toDelete, arguments);
+			} else {
+				isDagComplete |= findAllUsers(I, dagTail, toDelete, arguments);
 			}
-			isDagComplete |= findAllUsers(Inst, dagTail, toDelete);
-			if (StoreInst *Store = dyn_cast<StoreInst>(Inst)) {
-				isDagComplete |= findStoreCalls(Store, dagTail, toDelete);
-			}
+			/* isDagComplete |= findAllUsers(I, dagTail, toDelete, arguments); */
+			/* if (StoreInst *Store = dyn_cast<StoreInst>(I)) { */
+			/* 	isDagComplete |= findStoreCalls(Store, dagTail, toDelete, arguments); */
+			/* } */
 	
 		}
 	}
@@ -76,21 +92,28 @@ bool loom::findAllUsers(Instruction *Call,
 
 bool loom::findStoreCalls(StoreInst *Store, 
 		std::queue<StringRef> dagTail, 
-		std::vector<Instruction*>& toDelete) {
+		// std::vector<Instruction*>& toDelete,
+		std::set<Instruction*>& toDelete,
+		std::vector<Value*>& arguments) {
 
 	bool isDagComplete = false;
 
 	for (User* U : Store->getPointerOperand()->users()) {
 		if (Instruction *Inst = dyn_cast<Instruction>(U)) {
-			for (User *User: Inst->users()) {
-				if (CallInst *Call = dyn_cast<CallInst>(User)) {
-					Function *Target = Call->getCalledFunction();
-					if (Target->getName() == dagTail.front()) {
-						dagTail.pop();
-						toDelete.push_back(Call);
-						isDagComplete |= findAllUsers(Call, dagTail, toDelete);
-					}
+			toDelete.insert(Inst);//push_back(Inst);
+			for (User *U: Inst->users()) {
+				/* if (CallInst *Call = dyn_cast<CallInst>(U)) { */
+				/* 	Function *Target = Call->getCalledFunction(); */
+				/* 	if (Target->getName() == dagTail.front()) { */
+				/* 		dagTail.pop(); */
+				/* 	} */
+				/* } */
+				
+				if (Instruction *I = dyn_cast<Instruction>(U)) {
+					toDelete.insert(I);
+					isDagComplete |= findAllUsers(I, dagTail, toDelete, arguments);
 				}
+
 			}
 		}
 	}

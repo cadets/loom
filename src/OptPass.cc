@@ -115,15 +115,18 @@ bool OptPass::runOnModule(Module &Mod) {
   //
   std::vector<Instruction *> AllInstructions;
 
+  typedef struct {
+	  std::string name;
+	  std::vector<Value*> args;
+  } FnReplacement;
+
   std::unordered_map<Function *, Policy::Directions> Functions;
   std::unordered_map<Function *, loom::Metadata> FnMetadata;
   std::unordered_map<Function *, vector<loom::Transform>> FnTransforms;
   std::unordered_map<CallInst *, Policy::Directions> Calls;
   std::unordered_map<CallInst *, std::string> CallReplacements;
-  std::unordered_map<CallInst *, std::string> DAGReplacements;
+  std::unordered_map<CallInst *, FnReplacement> DAGReplacements;
   std::vector<Instruction*> DAGDeletions;
-  std::vector<BasicBlock*> DAGDeletionsBB;
-  std::vector<BasicBlock*> DAGMergesBB;
 
   typedef std::pair<GetElementPtrInst *, std::string> NamedGEP;
   std::unordered_map<LoadInst *, NamedGEP> FieldReads;
@@ -135,6 +138,11 @@ bool OptPass::runOnModule(Module &Mod) {
   std::unordered_map<Instruction *, const DIVariable *> PointerInsts;
 
   Function *Main = nullptr;
+
+  // BJK: Temporary for hard coding of socket replacement.
+  bool isSocketReplacement = false;
+
+  std::vector<CallInst*> foundInstructions;
 
   for (auto &Fn : Mod) {
     // Store a reference to main for initialization code
@@ -286,31 +294,103 @@ bool OptPass::runOnModule(Module &Mod) {
         }
       }
 
-	  // Is this a DAG to replace?
+	  /* // Is this a DAG to replace? */
+	  /* if (CallInst *Call = dyn_cast<CallInst>(&Inst)) { */
+	  /*   Function *Target = Call->getCalledFunction(); */
+		/* if (not Target) */
+			/* continue; */
+
+		/* std::string ReplacementName = P.ReplaceDAG(*Target); */
+		/* if (not ReplacementName.empty()) */
+		/* { */
+		  /* std::queue<StringRef> dagTail = P.DAGTail(*Target); */
+		  /* std::vector<Instruction*> possibleDeletions; */
+		  /* std::vector<Value*> arguments; */
+		  /* bool dagMatch = findAllUsers(Call, dagTail, possibleDeletions, arguments); */
+
+		  /* if (dagMatch) { */
+			/* FnReplacement Replacement; */
+			/* Replacement.name = ReplacementName; */
+			/* Replacement.args = arguments; */
+
+			/* DAGReplacements.emplace(Call, Replacement); */
+			/* for (auto &I : possibleDeletions) { */
+				/* DAGDeletions.push_back(I); */
+			/* } */
+		  /* } */
+		/* } */
+	  /* } */
+	
 	  if (CallInst *Call = dyn_cast<CallInst>(&Inst)) {
 	    Function *Target = Call->getCalledFunction();
 		if (not Target)
 			continue;
 
-		std::string Replacement = P.ReplaceDAG(*Target);
-		if (not Replacement.empty())
+		std::string ReplacementName = P.ReplaceDAG(*Target);
+		if (not ReplacementName.empty())
 		{
-		  std::queue<StringRef> dagTail = P.DAGTail(*Target);;
-		  std::vector<Instruction*> possibleDeletions;
-		  bool dagMatch = findAllUsers(Call, dagTail, possibleDeletions);
+			isSocketReplacement = true;
+		}
+	  }
 
-		  if (dagMatch) {
-			DAGReplacements.emplace(Call, Replacement);
-			for (auto &I : possibleDeletions) {
-				DAGDeletions.push_back(I);
+	  if (isSocketReplacement) {
+		if (CallInst *Call = dyn_cast<CallInst>(&Inst)) {
+			Function *Target = Call->getCalledFunction();
+			if (not Target)
+			continue;
+
+			StringRef FnName = Target->getName();
+			if (foundInstructions.size() == 0) {
+				if (FnName  == "socket") {
+					/* errs() << "Found socket! \n"; */
+					foundInstructions.push_back(Call);
+				}
+			} else if (foundInstructions.size() == 1) {
+				if (FnName  == "__inet_pton") {
+					/* errs() << "Found inet_pton! \n"; */
+					foundInstructions.push_back(Call);
+				}
+			} else if (foundInstructions.size() == 2) {
+				if (FnName  == "connect") {
+					/* errs() << "Found connect! \n"; */
+					foundInstructions.push_back(Call);
+				}
 			}
-		  }
 		}
 	  }
      
 	}
 
   }
+
+  if (foundInstructions.size() == 3) {
+	std::vector<Value*> arguments;
+	std::queue<StringRef> dagtail;
+	std::set<Instruction*> possibleDeletions;
+	/* std::vector<Instruction*> possibleDeletions; */
+	for (auto *Call: foundInstructions) {
+		if (Call->getCalledFunction()->getName() != "socket") {
+			possibleDeletions.insert(Call);
+			findAllUsers(Call, dagtail, possibleDeletions, arguments);
+		}
+	}
+
+	/* errs() << "Found them all! \n"; */
+	FnReplacement Replacement;
+	Replacement.name = "connect_dag_replacement";
+	Replacement.args = arguments;
+
+	DAGReplacements.emplace(foundInstructions.at(0), Replacement);
+	for (auto &I: possibleDeletions)
+		DAGDeletions.push_back(I);
+  }
+
+  /* errs() << "--- Delete List --- \n"; */
+  /* for (auto &i: DAGDeletions) { */
+    /* i->print(errs()); */
+	/* errs() << "\n"; */
+  /* } */
+  /* errs() << "--- End Delete List --- \n"; */
 
   //
   // Now we actually perform the instrumentation:
@@ -342,10 +422,13 @@ bool OptPass::runOnModule(Module &Mod) {
   }
 
   for (auto &i : DAGReplacements) {
-    ModifiedIR |= Instr->ReplaceCall(i.first, i.second);
+    ModifiedIR |= Instr->ReplaceCall(i.first, i.second.name, i.second.args);
   }
 
+  /* errs() << "--- DAG Deletions ---\n"; */
   for (auto &i : DAGDeletions) {
+	/* errs() << "Deleting: "; */
+	/* i->print(errs()); errs() << "\n"; */
 	if (BranchInst *BR = dyn_cast<BranchInst>(i)) {
 		BranchInst *New = BranchInst::Create(BR->getSuccessor(1));
 		ReplaceInstWithInst(BR, New);

@@ -30,6 +30,7 @@
 
 #include <vector>
 #include <queue>
+#include <set>
 
 namespace llvm {
 class BasicBlock;
@@ -42,8 +43,10 @@ class StringRef;
 
 namespace loom {
 
-	bool findAllUsers(llvm::Instruction *Call, std::queue<llvm::StringRef> dagTail, std::vector<llvm::Instruction*>& toDelete);
-	bool findStoreCalls(llvm::StoreInst *Store, std::queue<llvm::StringRef> dagTail, std::vector<llvm::Instruction*>& toDelete);
+	/* bool findAllUsers(llvm::Instruction *Call, std::queue<llvm::StringRef> dagTail, std::vector<llvm::Instruction*>& toDelete, std::vector<llvm::Value*>& arguments); */
+	/* bool findStoreCalls(llvm::StoreInst *Store, std::queue<llvm::StringRef> dagTail, std::vector<llvm::Instruction*>& toDelete, std::vector<llvm::Value*>& arguments); */
+	bool findAllUsers(llvm::Instruction *Call, std::queue<llvm::StringRef> dagTail, std::set<llvm::Instruction*>& toDelete, std::vector<llvm::Value*>& arguments);
+	bool findStoreCalls(llvm::StoreInst *Store, std::queue<llvm::StringRef> dagTail, std::set<llvm::Instruction*>& toDelete, std::vector<llvm::Value*>& arguments);
 
 } // namespace loom
 
