@@ -431,8 +431,8 @@ bool OptPass::runOnModule(Module &Mod) {
 	/* i->print(errs()); errs() << "\n"; */
 	if (BranchInst *BR = dyn_cast<BranchInst>(i)) {
 		BranchInst *New = BranchInst::Create(BR->getSuccessor(1));
-		ReplaceInstWithInst(BR, New);
 		BR->getSuccessor(0)->eraseFromParent();
+		ReplaceInstWithInst(BR, New);
 	} else {
 		ModifiedIR |= Instr->DeleteInst(i);
 	}
