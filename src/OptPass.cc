@@ -148,11 +148,11 @@ bool OptPass::runOnModule(Module &Mod) {
       Functions.emplace(&Fn, Directions);
 
       auto Md = P.InstrMetadata(Fn);
-      if (not Md.Name.empty() && not Md.Id == 0) {
+      if (not Md.Name.empty() && Md.Id != 0) {
         FnMetadata.emplace(&Fn, Md);
       }
       auto Transforms = P.InstrTransforms(Fn);
-      if (not Md.Name.empty() && not Md.Id == 0) {
+      if (not Md.Name.empty() && Md.Id != 0) {
         FnTransforms.emplace(&Fn, Transforms);
       }
     }
