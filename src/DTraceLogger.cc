@@ -93,13 +93,13 @@ Value* DTraceLogger::Log(Instruction *I, ArrayRef<Value*> Values,
   args[0] = B.CreateSExt(ConstantInt::get(id_t, Metadata.Id), param_t);;
   for (unsigned int i = 0; i < n_args; i++)
   {
-    Value *ptr;
+	Value *ptr;
 
 	Transform Tf;
 	for (auto t: Transforms) {
 		if (t.Arg == i)
 			Tf = t;
-			break;
+		break;
 	}
 
 	if (Tf.isValid()) {
