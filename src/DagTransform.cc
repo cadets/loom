@@ -49,7 +49,6 @@ bool loom::findAllUsers(Instruction *Call,
 	
 
 	bool isDagComplete = false;
-	StringRef nextCall;
 	if (dagTail.empty()) {
 		isDagComplete = true;
 	}
